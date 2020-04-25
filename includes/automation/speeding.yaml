@@ -1,0 +1,56 @@
+######## Speeding ########
+- alias: Going fast
+  trigger:
+    platform: numeric_state
+    entity_id: device_tracker.life360_tori
+    value_template: '{{ state.attributes.speed }}'
+    above: 65
+    for:
+      minutes: 1
+  action:
+    - service: scene.create
+      data:
+        scene_id: office_save
+        snapshot_entities:
+        - light.wled
+        - light.office_lamp
+    - service: scene.turn_on
+      entity_id: scene.going_fast
+    - service: timer.start
+      data:
+        entity_id: timer.alert
+
+- alias: Going too fast
+  trigger:
+    platform: numeric_state
+    entity_id: device_tracker.life360_tori
+    value_template: '{{ state.attributes.speed }}'
+    above: 73
+    for:
+      minutes: 1
+  action:
+    - service: scene.create
+      data:
+        scene_id: office_save
+        snapshot_entities:
+        - light.wled
+        - light.office_lamp
+    - service: scene.turn_on
+      entity_id: scene.going_too_fast
+    - service: timer.start
+      data:
+        entity_id: timer.alert
+
+
+#- alias: Going slow enough
+#  trigger:
+#    platform: numeric_state
+#    entity_id: device_tracker.life360_tori
+#    value_template: '{{ state.attributes.speed }}'
+#    below: 65
+#    for:
+#      minutes: 1
+#  action:
+#    service: scene.turn_on
+#    entity_id: scene.office_save
+

@@ -1,0 +1,19 @@
+##################################################################
+#
+# Camera definitions
+# https://www.home-assistant.io/integrations/camera/
+# https://www.home-assistant.io/integrations/generic_ip_camera/
+#
+##################################################################
+
+  - platform: ffmpeg
+    name: Back Door
+    input: !secret Camera_backdoor
+
+  - platform: ffmpeg
+    name: Driveway
+    input: !secret Camera_frontyard
+
+  - platform: ffmpeg
+    name: Kitchen
+    input: !secret Camera_kitchen

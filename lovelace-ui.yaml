@@ -1,0 +1,17 @@
+####################################################
+#                                                  #
+#                   RESOURCES                      #
+#                                                  #
+####################################################
+
+#resources:
+#  - url: /community_plugin/light-entity-card/light-entity-card.js
+#    type: js
+#  - url: /community_plugin/button-card/button-card.js
+#    type: module
+#
+#https://github.com/kalkih/mini-graph-card
+#  - url: /local/mini-graph-card-bundle.js?v=0.4.3
+#    type: module
+
+background: var(--background-image)

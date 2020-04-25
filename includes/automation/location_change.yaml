@@ -1,0 +1,150 @@
+- alias: Tori Leaving Home
+  trigger:
+    platform: state
+    entity_id: device_tracker.life360_tori
+    from: home
+  action:
+    - service: light.turn_off
+      entity_id: light.desk_lamp
+      
+
+- alias: Tori arriving Home
+  trigger:
+    platform: state
+    entity_id: device_tracker.life360_tori
+    to: home
+  action:
+    - service: scene.create
+      data:
+        scene_id: office_save
+        snapshot_entities:
+        - light.wled
+        - light.office_lamp
+    - service: light.turn_on
+      entity_id: light.desk_lamp
+    - service: notify.notify_chip
+      data:
+        message: "Tori is home"
+    - service: scene.turn_on
+      entity_id: scene.triumphant_return
+    - service: notify.lg_webos_smart_tv
+      data:
+        message: "Tori is home"
+    - service: timer.start
+      data:
+        entity_id: timer.alert
+    
+      
+- alias: Tori leaving Carowinds
+  trigger:
+    platform: state
+    entity_id: device_tracker.life360_tori
+    from: Carowinds
+  action:
+    - service: notify.notify_chip
+      data:
+        message: "Tori left Carowinds"
+    - service: notify.lg_webos_smart_tv
+      data:
+        message: "Tori left Carowinds"
+
+- alias: Tori leaving CBB
+  trigger:
+    platform: state
+    entity_id: device_tracker.life360_tori
+    from: Cold Blooded and Bizarre
+  action:
+    - service: notify.lg_webos_smart_tv
+      data:
+        message: "Tori left CBB"
+    - service: notify.notify_chip
+      data:
+        message: "Tori left CBB"
+    - service: light.turn_off
+      data:
+        entity_id: light.neopixel_light
+
+- alias: Tori arriving at CBB
+  trigger:
+    platform: state
+    entity_id: device_tracker.life360_tori
+    to: Cold Blooded and Bizarre
+  action:
+    service: light.turn_on
+    data:
+      entity_id: light.neopixel_light
+      brightness: 120
+      rgb_color: [0,255,0]
+      
+
+
+      
+- alias: Cindy arriving Home
+  trigger:
+    platform: state
+    entity_id: device_tracker.life360_cindy
+    to: home
+  action:
+    - service: scene.create
+      data:
+        scene_id: office_save
+        snapshot_entities:
+        - light.wled
+        - light.office_lamp
+    - service: scene.turn_on
+      entity_id: scene.triumphant_return
+    - service: timer.start
+      data:
+        entity_id: timer.alert
+    - service: notify.lg_webos_smart_tv
+      data:
+        message: "Cindy is home"
+
+- alias: turn off triumphant return
+  trigger:
+    platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.alert
+  action:
+    service: scene.turn_on
+    data:
+      entity_id: scene.office_save
+
+
+- alias: Tori arriving Home late
+  trigger:
+    platform: state
+    entity_id: device_tracker.life360_tori
+    to: home
+  condition:
+    condition: and
+    conditions:
+    - condition: state
+      entity_id: sun.sun
+      state:  below_horizon
+    - condition: state
+      entity_id: light.living_room
+      state:  'off'
+  action:
+    - service: scene.turn_on
+      entity_id: scene.livingroom_dim
+    - service: switch.turn_on
+      entity_id: switch.hutch_light
+    - service: timer.start
+      data:
+        entity_id: timer.late_tori
+
+- alias: turn off lights after tori as gotten home late
+  trigger:
+    platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.late_tori
+  action:
+    - service: light.turn_off
+      data:
+        entity_id:
+          - light.living_room
+    - service: switch.turn_off
+      entity_id: switch.hutch_light

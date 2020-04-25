@@ -1,0 +1,44 @@
+##
+## Turn on lights at sunset
+##
+- alias: turn on office lights at sunset
+  trigger:
+    platform: sun
+    event: sunset
+    offset: "-00:30:00"
+  condition:
+    condition: state
+    entity_id: device_tracker.life360_chip
+    state: home
+  action:
+    service: homeassistant.turn_on
+    entity_id: 
+      - light.office_lamp
+      - switch.catroom_lamp
+
+##
+## Turn off lights at midnight
+##
+- alias: turn off office lights at midnight
+  trigger:
+    platform: time
+    at: "00:00:00"
+  action:
+    service: homeassistant.turn_off
+    entity_id: 
+      - light.office_lamp
+      - switch.catroom_lamp
+      - light.wled
+
+
+- alias: turn on desk lights for work
+  trigger:
+    platform: time
+    at: "08:00:00"
+  condition:
+    condition: state
+    entity_id: device_tracker.life360_chip
+    state: home
+  action:
+    service: homeassistant.turn_on
+    entity_id: light.wled

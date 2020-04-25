@@ -1,0 +1,19 @@
+- alias: brrrrrrrrrr
+  trigger:
+    platform: time
+    at: "07:00:00"
+  condition:
+    condition: and
+    conditions:
+      - condition: template
+        value_template: "{{ states('sensor.my_ecobee_temperature')|int < 60 }}"
+      - condition: template
+        value_template: "{{ states('sensor.dark_sky_temperature')|int < 50 }}"
+#      - condition: template
+#        entity_id: climate.my_ecobee
+#        valute_template: '{{ state.attributes.hvac_modes }}'
+#        state:  'Cool'
+  action:
+    - service: notify.notify_chip
+      data:
+        message: "I could have turned the heat on for you"

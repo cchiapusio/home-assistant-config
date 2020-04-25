@@ -1,0 +1,12 @@
+# https://www.home-assistant.io/integrations/media_player/
+#
+# https://www.home-assistant.io/integrations/webostv/
+  - platform: webostv
+    host: 192.168.10.20
+  # https://www.home-assistant.io/integrations/directv/
+  #- platform: directv
+  #  host: 192.168.10.22
+  # https://www.home-assistant.io/integrations/androidtv/
+  - platform: androidtv
+    host: 192.168.10.21
+    name: Living Room SHIELD

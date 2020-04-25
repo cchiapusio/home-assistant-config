@@ -1,0 +1,69 @@
+  - platform: flux_led
+    devices:
+      192.168.10.165:
+        name: ceiling_north
+        mode: rgb
+      192.168.10.166:
+        name: ceiling_south
+        mode: rgb
+
+
+  - platform: group
+    name: ceiling_leds
+    entities:
+      - light.ceiling_north
+      - light.ceiling_south
+
+  - platform: group
+    name: window_frames
+    entities: 
+    - light.window1
+    - light.window2
+    - light.window3
+    - light.window4
+    - light.window4
+    - light.window5
+    - light.window6
+    - light.window7
+    - light.window8
+
+  - platform: group
+    name: Living Room
+    entities: 
+    - light.living_room_lamp_1
+    - light.lrlamp2
+    - light.foyer_lamp
+
+# Example configuration.yaml entry - change all light1 topics to the topic of your device (case sensitive!)
+#  - platform: mqtt
+#    name: "Living Room Lamp 1"
+#    command_topic: "cmnd/LR-Lamp1/POWER"
+#    state_topic: "tele/LR-Lamp1/STATE"
+#    state_value_template: "{{value_json.POWER}}"
+#    availability_topic: "tele/LR-Lamp1/LWT"
+#    brightness_command_topic: "cmnd/LR-Lamp1/Dimmer"
+#    brightness_state_topic: "tele/LR-Lamp1/STATE"
+#    brightness_scale: 100
+#    on_command_type: "last"
+#    brightness_value_template: "{{value_json.Dimmer}}"
+#    color_temp_command_topic: "cmnd/LR-Lamp1/CT"
+#    color_temp_state_topic: "tele/LR-Lamp1/STATE"
+#    color_temp_value_template: "{{value_json.CT}}"
+#    rgb_command_topic: "cmnd/LR-Lamp1/Color2"
+#    rgb_state_topic: "tele/LR-Lamp1/STATE"
+#    rgb_value_template: "{{value_json.Color.split(',')[0:3]|join(',')}}"
+#    effect_command_topic: "cmnd/LR-Lamp1/Scheme"
+#    effect_state_topic: "tele/LR-Lamp1/STATE"
+#    effect_value_template: "{{value_json.Scheme}}"
+#    effect_list:
+#      - 0
+#      - 1
+#      - 2
+#      - 3
+#      - 4
+#    payload_on: "ON"
+#    payload_off: "OFF"
+#    payload_available: "Online"
+#    payload_not_available: "Offline"
+#    qos: 1
+#    retain: false

@@ -1,0 +1,20 @@
+####################################################
+#                                                  #
+#              DEVICE TRACKER - UBIQUITI           #
+#                                                  #
+####################################################
+
+#https://www.home-assistant.io/components/device_tracker.unifi/
+
+#- platform: unifi
+#  host: 192.168.10.24
+#  port: 8443
+#  username: chip-ro
+#  password: !secret unifi_chipro_password
+#  verify_ssl: false
+#  detection_time: 60
+#  ssid_filter:
+#    - 'chip'
+#  new_device_defaults:
+#    track_new_devices: false
+

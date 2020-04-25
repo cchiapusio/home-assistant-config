@@ -1,0 +1,18 @@
+  - platform: darksky
+    api_key: !secret darksky_api
+    latitude: !secret home_lat
+    longitude: !secret home_long
+    monitored_conditions:
+     - apparent_temperature
+     - wind_speed
+     - wind_bearing
+     - cloud_cover
+     - hourly_summary
+     - precip_probability
+     - precip_intensity
+     - temperature
+     - humidity
+     - precip_intensity_max
+     - nearest_storm_distance
+     - nearest_storm_bearing
+     - alerts

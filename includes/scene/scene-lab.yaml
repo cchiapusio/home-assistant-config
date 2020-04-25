@@ -1,0 +1,22 @@
+- name: triumphant_return
+  entities:
+   light.wled:
+     state: true
+     brightness: 255
+     effect: Noise 4
+
+- name: going_fast
+  entities:
+   light.wled:
+     state: true
+     effect: Gradient
+     brightness: 255
+     rgb_color: [255,255,0]
+
+- name: going_too_fast
+  entities:
+   light.wled:
+     state: true
+     effect: Gradient
+     brightness: 255
+     rgb_color: [255,0,0]

@@ -1,0 +1,9 @@
+ - platform: avanza_stock
+   name: FireEye, Inc
+   stock: 434595
+   monitored_conditions:
+     - id
+     - name 
+     - lastPrice
+     - change
+     - changePercent

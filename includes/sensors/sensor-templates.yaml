@@ -1,0 +1,33 @@
+- platform: template
+  sensors:
+    window_ps_lower:
+      value_template: "{{  states('sensor.window1_estimated_current') | int +
+                            states('sensor.window2_estimated_current') | int +
+                           states('sensor.window3_estimated_current') | int +
+                           states('sensor.window4_estimated_current') | int +
+                           states('sensor.window5_estimated_current') | int }} "
+      unit_of_measurement: mA
+      friendly_name: Upper Window Current
+
+- platform: template
+  sensors:
+    window_ps_upper:
+      value_template: "{{  states('sensor.window6_estimated_current') | int +
+                           states('sensor.window7_estimated_current') | int +
+                           states('sensor.window8_estimated_current') | int }} "
+      unit_of_measurement: mA
+      friendly_name: Lower Window Current
+
+- platform: template
+  sensors:
+    feye_change:
+      friendly_name: FEYE Change
+      unit_of_measurement: '%'
+      value_template: "{{ state_attr('sensor.fireeye_inc','changePercent') }}"
+
+- platform: template
+  sensors:
+    feye_currentprice:
+      friendly_name: FEYE Price
+      unit_of_measurement: '$'
+      value_template: "{{ state_attr('sensor.fireeye_inc','lastPrice') }}"

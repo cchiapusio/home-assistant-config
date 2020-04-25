@@ -1,0 +1,43 @@
+- name: Livingroom_Normal
+  entities:
+    light.living_room_lamp_1:
+      state: on
+      brightness: 255
+      color_temp: 454
+    light.lr_lamp2:
+      state: on
+      brightness: 255
+      color_temp: 454
+    light.foyer_lamp:
+      state: on
+      brightness: 255
+      color_temp: 454
+ 
+- name: Livingroom_Dim
+  entities:
+    light.living_room_lamp_1:
+      state: on
+      brightness: 76
+    light.lr_lamp2:
+      state: on
+      brightness: 76
+    light.foyer_lamp:
+      state: on
+      brightness: 76
+
+- name: Packers_playing
+  entities:
+    light.living_room_lamp_1:
+      state: on
+      brightness: 255
+      color_name: green
+    light.lr_lamp2:
+      state: on
+      brightness: 255
+      xy_color:
+      - 0.461
+      - 0.502
+    light.foyer_lamp:
+      state: on
+      brightness: 255
+      color_name: green  

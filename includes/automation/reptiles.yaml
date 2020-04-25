@@ -1,0 +1,21 @@
+- alias: cycle mister
+  trigger:
+    - platform: time_pattern
+      minutes: '/10'
+  action:
+    service: switch.turn_on
+    entity_id: switch.eddies_mister
+
+- alias: turn off mister
+  trigger:
+   - platform: state
+     entity_id: switch.eddies_mister
+     from: 'off'
+     to: 'on'
+     for:
+       hours: 0
+       minutes: 1
+       seconds: 0
+  action:
+    service: homeassistant.turn_off
+    entity_id: switch.eddies_mister

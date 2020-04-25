@@ -1,0 +1,53 @@
+- platform: history_stats
+  name: Quarantine meter Chip
+  entity_id: person.chip
+  state: "home"
+  type: ratio
+  duration:
+    days: 14
+  end: "{{ now() }}"
+
+- platform: history_stats
+  name: Quarantine meter Cindy
+  entity_id: person.cindy
+  state: "home"
+  type: ratio
+  duration:
+    days: 14
+  end: "{{ now() }}"
+
+- platform: history_stats
+  name: Quarantine meter Tori
+  entity_id: person.tori
+  state: "home"
+  type: ratio
+  duration:
+    days: 14
+  end: "{{ now() }}"
+
+- platform: history_stats
+  name: Quarantine meter Chip times left
+  entity_id: person.chip
+  state: "home"
+  type: count
+  duration:
+    days: 14
+  end: "{{ now() }}"
+
+- platform: history_stats
+  name: Quarantine meter Cindy times left
+  entity_id: person.cindy
+  state: "home"
+  type: count
+  duration:
+    days: 14
+  end: "{{ now() }}"
+
+- platform: history_stats
+  name: Quarantine meter Tori times left
+  entity_id: person.tori
+  state: "home"
+  type: count
+  duration:
+    days: 14
+  end: "{{ now() }}"

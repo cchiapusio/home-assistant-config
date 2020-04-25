@@ -1,0 +1,87 @@
+- alias: revive livingroom lamp 1
+  trigger:
+    platform: state
+    entity_id: light.living_room_lamp_1
+    to: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "LR-Lamp1/cmnd/restart"
+        payload: 1
+
+- alias: revive livingroom lamp2
+  trigger:
+    platform: state
+    entity_id: light.lr_lamp2
+    to: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "LR-Lamp2/cmnd/restart"
+        payload: 1
+
+- alias: revive candle light
+  trigger:
+    platform: state
+    entity_id: switch.candle_light
+    to: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "CandleLight/cmnd/restart"
+        payload: on
+
+- alias: revive dining room lamp west
+  trigger:
+    platform: state
+    entity_id: switch.diningroomlampwest
+    to: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "DiningRoomLampWest/cmnd/restart"
+        payload: 1
+
+- alias: revive flood 01
+  trigger:
+    platform: state
+    entity_id: light.flood01
+    to: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "flood01/cmnd/restart"
+        payload: 1
+
+- alias: revive flood 02
+  trigger:
+    platform: state
+    entity_id: light.flood02
+    to: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "flood02/cmnd/restart"
+        payload: 1
+
+- alias: revive foyer lamp
+  trigger:
+    platform: state
+    entity_id: light.foyer_lamp
+    to: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "foyerlamp/cmnd/restart"
+        payload: 1
+
+- alias: revive hutch light
+  trigger:
+    platform: state
+    entity_id: switch.hutch_light
+    to: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "HutchLight/cmnd/restart"
+        payload: 1

@@ -1,0 +1,62 @@
+- alias: xmas_on_at_dusk
+  trigger:
+    platform: sun
+    event: sunset
+    offset: "-00:30:00"
+  action:
+    service: homeassistant.turn_on
+    entity_id: light.window_frames
+
+- alias: xmas_off_at_midnight
+  trigger:
+    platform: time
+    at: "00:00:00"
+  action:
+    service: homeassistant.turn_off
+    entity_id: light.window_frames
+
+
+- alias: xmas_on_before_dawn
+  trigger:
+    platform: time
+    at: "05:00:00"
+  action:
+    service: homeassistant.turn_on
+    entity_id: light.window_frames
+
+- alias: xmas_off_at_dawn
+  trigger:
+    platform: sun
+    event: sunrise
+    offset: "-00:00:00"
+  action:
+    service: homeassistant.turn_off
+    entity_id: light.window_frames
+
+- alias: floods_on_at_dusk
+  trigger:
+    platform: sun
+    event: sunset
+    offset: "-00:30:00"
+  action:
+    - service: light.turn_on
+      data:
+        entity_id: light.flood01
+        kelvin: 2700
+        brightness_pct: 100
+    - service: light.turn_on
+      data:
+        entity_id: light.flood02
+        kelvin: 2700
+        brightness_pct: 100
+
+- alias: floods_off_at_dawn
+  trigger:
+    platform: sun
+    event: sunrise
+    offset: "-00:30:00"
+  action:
+    - service: light.turn_off
+      entity_id: light.flood01
+    - service: light.turn_off
+      entity_id: light.flood02

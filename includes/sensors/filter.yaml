@@ -1,0 +1,21 @@
+- platform: filter
+  name: "Smooth Ecobee temp"
+  entity_id: sensor.my_ecobee_temperature
+  filters:
+    - filter: outlier
+      window_size: 4
+      radius: 4.0
+    - filter: lowpass
+      time_constant: 10
+      precision: 2
+
+- platform: filter
+  name: "Smooth bedroom temp"
+  entity_id: sensor.bedroom_temperature
+  filters:
+    - filter: outlier
+      window_size: 4
+      radius: 4.0
+    - filter: lowpass
+      time_constant: 10
+      precision: 2

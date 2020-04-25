@@ -1,0 +1,6 @@
+persons:
+  name: People
+  entities:
+    - person.chip
+    - person.cindy
+    - person.tori

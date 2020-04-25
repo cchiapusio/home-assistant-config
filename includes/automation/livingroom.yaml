@@ -1,0 +1,202 @@
+##
+## Turn off lights at midnight if the TV is off
+##
+- alias: turn off living room lights at midnight
+  trigger:
+    platform: time
+    at: "00:00:00"
+  condition:
+    condition: state
+    entity_id: media_player.lg_webos_smart_tv
+    state:  'off'
+  action:
+    service: homeassistant.turn_off
+    entity_id: 
+      - switch.curio_cabinets
+      - light.living_room_lamp_1
+      - light.lr_lamp2
+      - light.foyer_lamp
+      - switch.hutch_light
+      - switch.diningroomlampwest
+      - switch.candle_light
+      - switch.curio_cabinet_lamp
+
+##
+## Turn off Lights if TV turns off after midnight
+##
+- alias: turn off lights when done watching TV
+  trigger:
+    platform: state
+    entity_id: media_player.lg_webos_smart_tv
+    to: 'off'
+  condition:
+    condition: and
+    conditions:
+      - condition: time
+        after: "00:00:00"
+        before: "05:00:00"
+      - condition: state
+        entity_id: sun.sun 
+        state: below_horizon
+  action:
+    service: timer.start
+    data:
+      entity_id: timer.5m
+
+- alias: turn off living room lights after timer
+  trigger:
+    platform: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.5m
+  action:
+    service: homeassistant.turn_off
+    entity_id: 
+      - switch.curio_cabinets
+      - light.living_room_lamp_1
+      - light.lr_lamp2
+      - light.foyer_lamp
+      - switch.hutch_light
+      - switch.diningroomlampwest
+      - switch.candle_light
+      - switch.curio_cabinet_lamp
+
+##
+## Turn on lights at sunset
+##
+
+- alias: turn on living room lights at sunset
+  trigger:
+    platform: sun
+    event: sunset
+    offset: "-00:30:00"
+  action:
+    - service: homeassistant.turn_on
+      entity_id: 
+        - switch.curio_cabinets
+        - switch.hutch_light
+        - switch.diningroomlampwest
+        - switch.curio_cabinet_lamp
+    - service: scene.turn_on
+      entity_id: scene.livingroom_normal
+
+
+- alias: turn on living room lights early if cloudy
+  trigger:
+    platform: sun
+    event: sunset
+    offset: "-01:00:00"
+  condition:
+    condition: numeric_state
+    entity_id: sensor.dark_sky_cloud_coverage
+    above: 40
+  action:
+    - service: scene.turn_on
+      entity_id: scene.livingroom_normal
+    - service: homeassistant.turn_on
+      entity_id: 
+        - switch.hutch_light
+        - switch.curio_cabinet_lamp
+
+- alias: turn on living room lights even earlier if 100% cloudy
+  trigger:
+    platform: sun
+    event: sunset
+    offset: "-02:00:00"
+  condition:
+    condition: numeric_state
+    entity_id: sensor.dark_sky_cloud_coverage
+    above: 85
+  action:
+    - service: scene.turn_on
+      entity_id: scene.livingroom_normal
+    - service: homeassistant.turn_on
+      entity_id: 
+        - switch.hutch_light
+        - switch.curio_cabinet_lamp
+
+    
+    
+- alias: Media player paused/stopped
+  trigger:
+    - platform: state
+      entity_id: media_player.living_room_shield
+      from: playing
+#      to: idle
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: below_horizon
+  action:
+    service: scene.turn_on
+    entity_id: scene.livingroom_normal
+
+- alias: Media player playing
+  trigger:
+    - platform: state
+      entity_id: media_player.living_room_shield
+      to: playing
+#      from: idle
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: below_horizon
+  action:
+    service: scene.turn_on
+    entity_id: scene.livingroom_dim
+
+- alias: Packers Playing
+  trigger:   
+  - platform: state
+    entity_id: calendar.green_bay_packers
+    to: "on"
+  action:
+    service: scene.turn_on
+    entity_id: scene.packers_playing
+
+- alias: Packers done Playing
+  trigger:   
+  - platform: state
+    entity_id: calendar.green_bay_packers
+    to: "off"
+  action:
+    service: scene.turn_on
+    entity_id: scene.livingroom_normal
+
+- alias: SBUX work this morning
+  trigger:
+    - platform: time
+      at: '04:30:00'
+  condition:
+    - condition: template
+      value_template: "{{ ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) < 18000) and ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
+  action:
+    - service: scene.turn_on
+      entity_id: scene.livingroom_dim
+    - service: switch.turn_on
+      entity_id: switch.hutch_light
+
+- alias: SBUX Shift started
+  trigger:
+    - platform: state
+      entity_id: device_tracker.life360_tori
+      from: home
+  condition:
+    - condition: time
+      after: '04:30:00'
+      before: '09:00:00'
+  action:
+    service: homeassistant.turn_off
+    entity_id:
+      - switch.hutch_light
+      - light.living_room_lamp_1
+      - light.lr_lamp2
+      - light.foyer_lamp
+
+- alias: turn on candle in the morning
+  trigger:
+    platform: time
+    at: "09:00:00"
+  action:
+    - service: switch.turn_on
+      entity_id: switch.candle_light

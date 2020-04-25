@@ -1,0 +1,37 @@
+- name: Office Normal
+  entities:
+    light.office_lamp:
+      state: on
+      transition: 30
+      brightness_pct: 100
+    light.wled:
+      state: on
+      brightness: 122
+      effect: Solid
+      xy_color:
+        - 0.421
+        - 0.364
+
+- name: Office Dim
+  entities:
+    light.office_lamp:
+      state: on
+      transition: 30
+      brightness_pct: 20
+    light.wled:
+      state: on
+      effect: Solid
+      brightness: 60
+      xy_color:
+        - 0.421
+        - 0.364
+
+- name: Desk Normal
+  entities:
+    light.wled:
+      state: on
+      effect: Solid
+      brightness: 122
+      xy_color:
+        - 0.421
+        - 0.364

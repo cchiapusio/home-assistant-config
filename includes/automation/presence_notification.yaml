@@ -1,0 +1,21 @@
+- alias: Margo is here
+  trigger:
+    platform: state
+    entity_id: device_tracker.galaxy_note10
+    to: home
+  action:
+    service: tts.google_say
+    entity_id: "all"
+    data:
+      message: "Alert, Margo is here"
+
+- alias: Tommy is here
+  trigger:
+    platform: state
+    entity_id: device_tracker.galaxy_note10
+    to: home
+  action:
+    service: tts.google_say
+    entity_id: "all"
+    data:
+      message: "Alert, Tommy is here"

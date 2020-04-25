@@ -1,0 +1,292 @@
+####################################################
+#                                                  #
+#                 HOME ASSISTANT                   #
+#                                                  #
+####################################################
+
+# https://home-assistant.io/docs/configuration/basic/
+homeassistant:
+  name: Home
+  latitude: !secret home_lat
+  longitude: !secret home_long
+  elevation: 1227
+  unit_system: imperial
+  time_zone: America/New_York
+  auth_providers:
+   - type: legacy_api_password
+     api_password: !secret api_password
+   - type: trusted_networks
+     trusted_networks:
+     - 172.17.0.0/24
+     - 192.168.10.0/24
+   - type: homeassistant
+  customize:
+    person.chip:
+      entity_picture: !secret profile_photo_chip
+    person.cindy:
+      entity_picture: !secret profile_photo_cindy
+    person.tori:
+      entity_picture: !secret profile_photo_tori
+
+####################################################
+#                                                  #
+#                     GENERAL                      #
+#                                                  #
+####################################################
+
+# https://home-assistant.io/components/config/
+config:
+
+#https://www.home-assistant.io/components/mobile_app/
+mobile_app:
+
+# https://www.home-assistant.io/hassio/
+#hassio:
+
+# https://home-assistant.io/components/history/
+history:
+
+# https://www.home-assistant.io/integrations/recorder/
+recorder:
+  purge_keep_days: 21
+  exclude:
+    entities:
+      - sun.sun
+      - sensor.last_boot
+    
+
+# https://home-assistant.io/components/http/
+http:
+  # Secrets are defined in the file secrets.yaml
+  # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
+  base_url: !secret base_url_secret
+  ip_ban_enabled: true
+  login_attempts_threshold: 2
+
+# https://home-assistant.io/components/logger/
+logger:
+  default: info
+#  logs:
+#    aiounifi: debug
+#    homeassistant.components.unifi: debug
+#    homeassistant.components.device_tracker.unifi: debug
+#    homeassistant.components.switch.unifi: debug
+
+# https://home-assistant.io/components/sun/
+sun:
+
+# https://www.home-assistant.io/components/system_health/
+system_health:
+
+####################################################
+#                                                  #
+#      LINKS TO INDIVUAL CONFIGURATION FILES       #
+#                                                  #
+####################################################
+
+# https://home-assistant.io/docs/configuration/splitting_configuration/
+zone: !include includes/zones.yaml
+device_tracker: !include device_tracker.yaml
+group: !include groups.yaml
+script: !include scripts.yaml
+automation: !include_dir_merge_list includes/automation
+scene: !include_dir_merge_list includes/scene
+notify: !include notification.yaml
+light: !include lights.yaml
+sensor: !include_dir_merge_list includes/sensors
+binary_sensor: !include binary_sensor.yaml
+media_player: !include media_player.yaml
+person: !include includes/person.yaml
+# https://www.home-assistant.io/integrations/stream
+stream:
+
+# https://www.home-assistant.io/integrations/camera/
+camera: !include camera.yaml
+
+# https://www.home-assistant.io/integrations/webostv/
+webostv:
+  host: 192.168.10.20
+
+# https://www.home-assistant.io/integrations/directv/
+directv:
+    host: 192.168.10.22
+
+# https://www.home-assistant.io/integrations/influxdb/
+influxdb:
+  host: 192.168.10.4
+  database: home_assistant
+  username: root
+  password: root
+  ssl: false
+
+# https://www.home-assistant.io/integrations/frontend/
+frontend: 
+  javascript_version: latest
+  themes: !include_dir_merge_named themes
+
+# https://www.home-assistant.io/integrations/cloud/
+cloud:
+
+# https://www.home-assistant.io/integrations/google_assistant/
+google_assistant:
+  project_id: home-assistant-integrati-72eed
+#  api_key: !secret google_assistant_api
+  exposed_domains:
+    - switch
+    - light
+    - cover
+    - group
+    - scene
+  expose_by_default: true
+  
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  include_used_components: true
+
+# Discover some devices automatically
+discovery:
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+
+
+# https://www.home-assistant.io/components/tts/Text to speech
+tts:
+  - platform: google_translate
+    service_name: google_say
+
+#https://www.home-assistant.io/components/mqtt/
+mqtt:
+  broker: 192.168.10.4
+  username: hass
+  password: !secret mqtt_password
+  discovery: true
+  discovery_prefix: homeassistant
+
+#https://www.home-assistant.io/components/tplink/
+tplink:
+ discovery: true
+
+ light:
+  - host: 192.168.10.205 # office-lamp
+  - host: 192.168.10.201 # desk-lamp
+
+ switch:
+  - host: 192.168.10.203 # desk-lights
+  - host: 192.168.10.204 # curio-cabinets
+  - host: 192.168.10.206 # catroom-lamp
+  - host: 192.168.10.207 # gecko-lights1
+  - host: 192.168.10.208 # eddies-mister
+
+#https://www.home-assistant.io/components/eufy/
+eufy:
+  username: !secret eufy_username
+  password: !secret eufy_password
+  devices:
+    - address: 192.168.10.202
+      access_token: !secret eufy_access_token
+      type: T1201
+      name: Tommy AC Unit
+
+
+#https://www.home-assistant.io/components/panel_iframe/
+#https://community.home-assistant.io/t/node-red-flow-examples/83644
+panel_iframe:
+ nodered:
+   title: 'Node-Red'
+   icon: 'mdi:shuffle-variant'
+   url: 'http://192.168.10.4:1880/'
+ tasmoadmin:
+   title: 'TasmoAdmin'
+   icon: mdi:lightbulb-on
+   url: http://192.168.10.4:9541
+
+#https://community.home-assistant.io/t/custom-component-hacs/121727
+hacs:
+  token: !secret github_token
+  theme: true
+
+#https://www.home-assistant.io/components/life360/
+life360:
+  accounts:
+      username: !secret life360_username
+      password: !secret life360_password
+  show_as_state: [driving, moving]
+
+#https://www.home-assistant.io/integrations/unifi/
+unifi:
+  controllers:
+    - host: 192.168.10.24 
+      site: Chiapusio Home 
+      ssid_filter:
+        - 'chip'
+
+timer:
+  alert:
+    duration: '00:00:10'
+  5m:
+    duration: '00:05:00'
+  late_tori:
+    duration: '00:15:00'
+
+####################################################
+#                                                  #
+#                   SPEETEST                       #
+#                                                  #
+####################################################
+
+#https://www.home-assistant.io/components/speedtestdotnet/
+#speedtestdotnet:
+#  scan_interval:
+#    minutes: 60
+#  monitored_conditions:
+#    - ping
+#    - download
+#    - upload
+#  server_id: 5028
+
+##
+## https://www.home-assistant.io/integrations/calendar.google/
+##
+google:
+  client_id: !secret google_oauth_user
+  client_secret: !secret google_oauth_pass
+
+# https://github.com/joshjcarrier/homeassistant-litter-robot
+litter_robot:
+  username: !secret litter_robot_user
+  password: !secret litter_robot_pass
+
+# https://www.home-assistant.io/integrations/weather.darksky/
+weather:
+  - platform: darksky
+    api_key: !secret darksky_api2
+    latitude: !secret home_lat
+    longitude: !secret home_long
+
+# https://github.com/bruxy70/Garbage-Collection
+garbage_collection:
+  sensors:
+  - name: garbage
+    frequency: weekly
+    verbose_state: True
+    verbose_format: "{days} days"
+    move_country_holidays: US
+    collection_days:
+    - wed
+  - name: recycling
+    frequency: every-n-weeks
+    verbose_state: True
+    verbose_format: "{days} days"
+    period: 2
+    first_week: 2
+    move_country_holidays: US
+    collection_days:
+    - wed
+
+# https://www.home-assistant.io/integrations/spotify/
+spotify:
+  client_id: !secret spotify_client_id
+  client_secret: !secret spotify_client_secret
