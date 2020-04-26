@@ -115,8 +115,8 @@ directv:
 influxdb:
   host: 192.168.10.4
   database: home_assistant
-  username: root
-  password: root
+  username: !secret influx_user
+  password: !secret influx_pass
   ssl: false
 
 # https://www.home-assistant.io/integrations/frontend/
