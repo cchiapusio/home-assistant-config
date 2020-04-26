@@ -1,3 +1,20 @@
+- alias: "Recover LRLamp1 on startup"
+  trigger:
+    platform: homeassistant
+    event: start
+  condition: 
+    condition: state
+    entity_id: light.living_room_lamp_1
+    state: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "LR-Lamp1/cmnd/restart"
+        payload: 1
+    - service: notify.notify_chip
+      data:
+        message: "LRLamp1 not available, yo"
+
 - alias: revive livingroom lamp 1
   trigger:
     platform: state
@@ -8,6 +25,23 @@
       data:
         topic: "LR-Lamp1/cmnd/restart"
         payload: 1
+
+- alias: "Recover LRLamp2 on startup"
+  trigger:
+    platform: homeassistant
+    event: start
+  condition: 
+    condition: state
+    entity_id: light.lr_lamp2
+    state: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "LR-Lamp2/cmnd/restart"
+        payload: 1
+    - service: notify.notify_chip
+      data:
+        message: "LRLamp2 not available, yo"
 
 - alias: revive livingroom lamp2
   trigger:
@@ -20,6 +54,23 @@
         topic: "LR-Lamp2/cmnd/restart"
         payload: 1
 
+- alias: "Recover Candle on startup"
+  trigger:
+    platform: homeassistant
+    event: start
+  condition: 
+    condition: state
+    entity_id: switch.candle_light
+    state: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "CandleLight/cmnd/restart"
+        payload: 1
+    - service: notify.notify_chip
+      data:
+        message: "CandleLight not available, yo"
+
 - alias: revive candle light
   trigger:
     platform: state
@@ -30,6 +81,23 @@
       data:
         topic: "CandleLight/cmnd/restart"
         payload: on
+
+- alias: "Recover Diring Room Lamp on startup"
+  trigger:
+    platform: homeassistant
+    event: start
+  condition: 
+    condition: state
+    entity_id: switch.diningroomlampwest
+    state: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "DiningRoomLampWest/cmnd/restart"
+        payload: 1
+    - service: notify.notify_chip
+      data:
+        message: "Dining Room Lamp West not available, yo"
 
 - alias: revive dining room lamp west
   trigger:
@@ -42,6 +110,23 @@
         topic: "DiningRoomLampWest/cmnd/restart"
         payload: 1
 
+- alias: "Recover Flood1 on startup"
+  trigger:
+    platform: homeassistant
+    event: start
+  condition: 
+    condition: state
+    entity_id: light.flood01
+    state: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "flood01/cmnd/restart"
+        payload: 1
+    - service: notify.notify_chip
+      data:
+        message: "Flood1 not available, yo"
+
 - alias: revive flood 01
   trigger:
     platform: state
@@ -52,6 +137,23 @@
       data:
         topic: "flood01/cmnd/restart"
         payload: 1
+
+- alias: "Recover Flood2 on startup"
+  trigger:
+    platform: homeassistant
+    event: start
+  condition: 
+    condition: state
+    entity_id: light.flood02
+    state: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "flood02/cmnd/restart"
+        payload: 1
+    - service: notify.notify_chip
+      data:
+        message: "Flood2 not available, yo"
 
 - alias: revive flood 02
   trigger:
@@ -64,6 +166,23 @@
         topic: "flood02/cmnd/restart"
         payload: 1
 
+- alias: "Recover FoyerLamp on startup"
+  trigger:
+    platform: homeassistant
+    event: start
+  condition: 
+    condition: state
+    entity_id: light.foyer_lamp
+    state: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "foyerlamp/cmnd/restart"
+        payload: 1
+    - service: notify.notify_chip
+      data:
+        message: "Foyer Lamp not available, yo"
+
 - alias: revive foyer lamp
   trigger:
     platform: state
@@ -74,6 +193,23 @@
       data:
         topic: "foyerlamp/cmnd/restart"
         payload: 1
+
+- alias: "Recover Hutch Light on startup"
+  trigger:
+    platform: homeassistant
+    event: start
+  condition: 
+    condition: state
+    entity_id: switch.hutch_light
+    state: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "HutchLight/cmnd/restart"
+        payload: 1
+    - service: notify.notify_chip
+      data:
+        message: "Hutch Light not available, yo"
 
 - alias: revive hutch light
   trigger:
