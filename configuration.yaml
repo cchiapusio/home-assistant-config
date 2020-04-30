@@ -216,12 +216,12 @@ life360:
   show_as_state: [driving, moving]
 
 #https://www.home-assistant.io/integrations/unifi/
-unifi:
-  controllers:
-    - host: 192.168.10.24 
-      site: Chiapusio Home 
-      ssid_filter:
-        - 'chip'
+#unifi:
+#  controllers:
+#    - host: 192.168.10.24 
+#      site: Chiapusio Home 
+#      ssid_filter:
+#        - 'chip'
 
 timer:
   alert:
