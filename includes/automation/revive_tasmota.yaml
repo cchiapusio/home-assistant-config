@@ -82,7 +82,7 @@
         topic: "CandleLight/cmnd/restart"
         payload: on
 
-- alias: "Recover Diring Room Lamp on startup"
+- alias: "Recover Dining Room Lamp on startup"
   trigger:
     platform: homeassistant
     event: start
@@ -220,4 +220,32 @@
     - service: mqtt.publish
       data:
         topic: "HutchLight/cmnd/restart"
+        payload: 1
+
+- alias: "Recover Curio Cabinet Light on startup"
+  trigger:
+    platform: homeassistant
+    event: start
+  condition: 
+    condition: state
+    entity_id: switch.curio_cabinet_lamp
+    state: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "Curio_Cabinet_Lamp/cmnd/restart"
+        payload: 1
+    - service: notify.notify_chip
+      data:
+        message: "Curio Cabinet Light not available, yo"
+
+- alias: revive Curio Cabinet light
+  trigger:
+    platform: state
+    entity_id: switch.curio_cabinet_lamp
+    to: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "Curio_Cabinet_Lamp/cmnd/restart"
         payload: 1
