@@ -168,8 +168,13 @@
     - platform: time
       at: '04:30:00'
   condition:
-    - condition: template
-      value_template: "{{ ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) < 18000) and ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
+    condition: and
+    conditions:
+      - condition: template
+        value_template: "{{ ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) < 14400) and ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
+      - condition: state
+        entity_id: person.tori
+        state: home
   action:
     - service: scene.turn_on
       entity_id: scene.livingroom_dim
@@ -179,7 +184,7 @@
 - alias: SBUX Shift started
   trigger:
     - platform: state
-      entity_id: device_tracker.life360_tori
+      entity_id: person.tori
       from: home
   condition:
     - condition: time
