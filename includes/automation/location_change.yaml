@@ -27,12 +27,12 @@
         message: "Tori is home"
     - service: scene.turn_on
       entity_id: scene.triumphant_return
-    - service: notify.lg_webos_smart_tv
-      data:
-        message: "Tori is home"
     - service: timer.start
       data:
         entity_id: timer.alert
+    - service: notify.lg_webos_smart_tv
+      data:
+        message: "Tori is home"
     
       
 - alias: Tori leaving Carowinds
