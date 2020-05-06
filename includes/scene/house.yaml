@@ -1,0 +1,28 @@
+- name: All Indoor lights on
+  entities:
+    light.living_room_lamp_1:
+      state: on
+      brightness: 255
+      color_temp: 454
+    light.lr_lamp2:
+      state: on
+      brightness: 255
+      color_temp: 454
+    light.foyer_lamp:
+      state: on
+      brightness: 255
+      color_temp: 454
+    light.office_lamp:
+      state: on
+    switch.catroom_lamp:
+      state: on
+    light.wled:
+      state: on
+    switch.hutch_light:
+      state: on
+    light.desk_lamp:
+      state: on
+    switch.curio_cabinet_lamp:
+      state: on
+    switch.diningroomlampwest:
+      state: on
