@@ -18,3 +18,15 @@
 #  new_device_defaults:
 #    track_new_devices: false
 
+#####################################################################
+#
+# https://www.home-assistant.io/integrations/device_tracker.mqtt/
+#
+#####################################################################
+
+- platform: mqtt
+  devices:
+    V30_mqtt: 'room-assistant/device_tracker/bluetooth-classic-00-3d-e8-40-78-67-tracker/state'
+  payload_home: 'online'
+  payload_not_home: 'offline'
+  source_type: bluetooth

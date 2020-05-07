@@ -1,0 +1,3 @@
+- platform: mqtt_room
+  device_id: v30_mqtt
+  state_topic: "room-assistant/sensor/bluetooth-classic-00-3d-e8-40-78-67"
