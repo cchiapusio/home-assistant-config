@@ -10,16 +10,8 @@
     entity_id: media_player.lg_webos_smart_tv
     state:  'off'
   action:
-    service: homeassistant.turn_off
-    entity_id: 
-      - switch.curio_cabinets
-      - light.living_room_lamp_1
-      - light.lr_lamp2
-      - light.foyer_lamp
-      - switch.hutch_light
-      - switch.diningroomlampwest
-      - switch.candle_light
-      - switch.curio_cabinet_lamp
+    service: scene.turn_on
+    entity_id: scene.good_night_lights
 
 ##
 ## Turn off Lights if TV turns off after midnight
@@ -50,16 +42,8 @@
     event_data:
       entity_id: timer.5m
   action:
-    service: homeassistant.turn_off
-    entity_id: 
-      - switch.curio_cabinets
-      - light.living_room_lamp_1
-      - light.lr_lamp2
-      - light.foyer_lamp
-      - switch.hutch_light
-      - switch.diningroomlampwest
-      - switch.candle_light
-      - switch.curio_cabinet_lamp
+    service: scene.turn_on
+    entity_id: scene.good_night_lights
 
 ##
 ## Turn on lights at sunset

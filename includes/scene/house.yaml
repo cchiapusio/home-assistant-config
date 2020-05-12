@@ -26,3 +26,30 @@
       state: on
     switch.diningroomlampwest:
       state: on
+    switch.catroom_lamp:
+      state: on
+
+- name: good night lights
+  entities:
+    light.living_room_lamp_1:
+      state: off
+    light.lr_lamp2:
+      state: off
+    light.foyer_lamp:
+      state: off
+    light.office_lamp:
+      state: off
+    switch.catroom_lamp:
+      state: off
+    light.wled:
+      state: off
+    switch.hutch_light:
+      state: off
+    light.desk_lamp:
+      state: off
+    switch.curio_cabinet_lamp:
+      state: off
+    switch.diningroomlampwest:
+      state: off
+    switch.catroom_lamp:
+      state: off
