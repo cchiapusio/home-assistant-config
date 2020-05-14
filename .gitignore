@@ -29,6 +29,7 @@ secrets.yaml
 google_calendars.yaml
 includes/zones.yaml
 .configuration.yaml.un~
+.ps4-games.json
 
 # Ignore files created by IDE's
 .vscode

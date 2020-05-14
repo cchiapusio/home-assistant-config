@@ -1,0 +1,17 @@
+- alias: limit PS4 time
+  trigger:
+  - platform: time_pattern
+    minutes: "/5"
+    seconds: 04
+  condition:
+    condition: and
+    conditions:
+    - condition: state
+      entity_id: media_player.playstation_4
+      state: 'playing'
+    - condition: template
+      value_template: '{{ states("sensor.playstation_game_time_today") |float > 2.1 }}'
+  action:
+    - service: notify.notify_chip
+      data:
+        message: "PS4 2h time limit reached"
