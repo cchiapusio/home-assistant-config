@@ -26,8 +26,6 @@
       state: on
     switch.diningroomlampwest:
       state: on
-    switch.catroom_lamp:
-      state: on
 
 - name: good night lights
   entities:
@@ -50,6 +48,4 @@
     switch.curio_cabinet_lamp:
       state: off
     switch.diningroomlampwest:
-      state: off
-    switch.catroom_lamp:
       state: off
