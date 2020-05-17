@@ -49,3 +49,5 @@
       state: off
     switch.diningroomlampwest:
       state: off
+    switch.candle_light:
+      state: off
