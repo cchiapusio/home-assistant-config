@@ -15,6 +15,8 @@
       state: on
       brightness: 127
       color_temp: 423
+    switch.desk_lights:
+      state: off
 
 - name: Office Dim
   entities:
@@ -33,6 +35,8 @@
       state: on
       brightness: 107
       color_temp: 423
+    switch.desk_lights:
+      state: off
 
 - name: Desk Normal
   entities:
@@ -43,3 +47,22 @@
       xy_color:
         - 0.421
         - 0.364
+
+- name: Office Videoconf
+  entities:
+    light.office_lamp:
+      state: off
+      transition: 30
+    light.wled:
+      state: on
+      brightness: 255
+      effect: Solid
+      xy_color:
+        - 0.328
+        - 0.333
+    light.monitor_backlight:
+      state: on
+      brightness: 255
+      color_temp: 153
+    switch.desk_lights:
+      state: on
