@@ -19,4 +19,4 @@
     value_template: "{{  ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) < 14400) and ((as_timestamp(states.calendar.maids_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
   action:
     service: scene.turn_on
-    entity_id: scene.all_indoor_lights_on
+    entity_id: scene.housecleaners_coming

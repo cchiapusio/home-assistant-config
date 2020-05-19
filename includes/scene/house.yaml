@@ -51,3 +51,59 @@
       state: off
     switch.candle_light:
       state: off
+
+- name: Housecleaners coming
+  entities:
+    light.living_room_lamp_1:
+      state: on
+      brightness: 255
+      color_temp: 454
+    light.lr_lamp2:
+      state: on
+      brightness: 255
+      color_temp: 454
+    light.foyer_lamp:
+      state: on
+      brightness: 255
+      color_temp: 454
+    light.office_lamp:
+      state: on
+    switch.catroom_lamp:
+      state: on
+    light.wled:
+      state: on
+    switch.hutch_light:
+      state: on
+    switch.curio_cabinet_lamp:
+      state: on
+    light.desk_lamp:
+      state: on
+    light.monitor_backlight:
+      state: on
+      brightness: 255
+      color_temp: 153
+    switch.desk_lights:
+      state: on
+    switch.curio_cabinets:
+      state: on
+
+- name: Housecleaners gone
+  entities:
+    light.living_room_lamp_1:
+      state: off
+    light.lr_lamp2:
+      state: off
+    light.foyer_lamp:
+      state: off
+    switch.catroom_lamp:
+      state: off
+    switch.hutch_light:
+      state: off
+    switch.curio_cabinet_lamp:
+      state: off
+    light.desk_lamp:
+      state: off
+    switch.desk_lights:
+      state: off
+    switch.curio_cabinets:
+      state: off
