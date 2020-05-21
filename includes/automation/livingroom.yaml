@@ -51,9 +51,10 @@
 
 - alias: turn on living room lights at sunset
   trigger:
-    platform: sun
-    event: sunset
-    offset: "-00:30:00"
+    platform: numeric_state
+    entity_id: sun.sun
+    value_template: '{{ state.attributes.elevation }}'
+    below: 15
   action:
     - service: homeassistant.turn_on
       entity_id: 
@@ -67,9 +68,10 @@
 
 - alias: turn on living room lights early if cloudy
   trigger:
-    platform: sun
-    event: sunset
-    offset: "-01:00:00"
+    platform: numeric_state
+    entity_id: sun.sun
+    value_template: '{{ state.attributes.elevation }}'
+    below: 40
   condition:
     condition: numeric_state
     entity_id: sensor.dark_sky_cloud_coverage
@@ -81,16 +83,21 @@
       entity_id: 
         - switch.hutch_light
         - switch.curio_cabinet_lamp
+        - switch.diningroomlampwest
+        - switch.curio_cabinets
 
 - alias: turn on living room lights even earlier if 100% cloudy
   trigger:
-    platform: sun
-    event: sunset
-    offset: "-02:00:00"
-  condition:
-    condition: numeric_state
+    platform: numeric_state
     entity_id: sensor.dark_sky_cloud_coverage
     above: 85
+  condition:
+    condition: and
+    conditions:
+      - condition: template
+        value_template: '{{ state_attr("sun.sun", "elevation") < 40 }}'
+      - condition: template
+        value_template: '{{ state_attr("sun.sun", "rising") == "false" }}'
   action:
     - service: scene.turn_on
       entity_id: scene.livingroom_normal
@@ -98,9 +105,9 @@
       entity_id: 
         - switch.hutch_light
         - switch.curio_cabinet_lamp
+        - switch.diningroomlampwest
+        - switch.curio_cabinets
 
-    
-    
 - alias: Media player paused/stopped
   trigger:
     - platform: state

@@ -3,9 +3,10 @@
 ##
 - alias: turn on office lights at sunset
   trigger:
-    platform: sun
-    event: sunset
-    offset: "-00:30:00"
+    platform: numeric_state
+    entity_id: sun.sun
+    value_template: '{{ state.attributes.elevation }}'
+    below: 15
   condition:
     condition: state
     entity_id: device_tracker.life360_chip
@@ -29,6 +30,8 @@
       - light.office_lamp
       - switch.catroom_lamp
       - light.wled
+      - light.monitor_backlight
+      - switch.desk_lights
 
 
 - alias: turn on desk lights for work
@@ -41,4 +44,6 @@
     state: home
   action:
     service: homeassistant.turn_on
-    entity_id: light.wled
+    entity_id: 
+      - light.wled
+      - light.monitor_backlight

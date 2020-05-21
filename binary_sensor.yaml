@@ -27,3 +27,17 @@
       - '2020-04-15'
       - '2020-04-16'
       - '2020-04-17'
+
+###
+### Not currently using these elevation sensors but they make a great logging tool to see
+### when they would be in effect for these settings, historically
+###
+  - platform: threshold
+    name: "sun elevation"
+    upper: 15
+    entity_id: sensor.sun_elevation
+
+  - platform: threshold
+    name: "sun elevation weather check"
+    upper: 40
+    entity_id: sensor.sun_elevation

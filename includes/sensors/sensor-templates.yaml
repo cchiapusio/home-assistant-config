@@ -31,3 +31,17 @@
       friendly_name: FEYE Price
       unit_of_measurement: '$'
       value_template: "{{ state_attr('sensor.fireeye_inc','lastPrice') }}"
+
+- platform: template
+  sensors:
+    sun_elevation:
+      friendly_name: "Sun Elevation"
+      unit_of_measurement: 'degrees'
+      value_template: "{{ state_attr('sun.sun', 'elevation') }}"
+
+- platform: template
+  sensors:
+    sun_azimuth:
+      friendly_name: "Sun Azimuth"
+      unit_of_measurement: 'degrees'
+      value_template: "{{ state_attr('sun.sun', 'azimuth') }}"
