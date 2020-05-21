@@ -51,6 +51,8 @@
       state: off
     switch.candle_light:
       state: off
+    switch.curio_cabinets:
+      state: off
 
 - name: Housecleaners coming
   entities:
