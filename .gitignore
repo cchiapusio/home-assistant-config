@@ -14,6 +14,7 @@ deps
 tts
 LAB
 SAMPLES
+custom_components/auto_backup/*
 
 # Specific file ignores
 .google.token

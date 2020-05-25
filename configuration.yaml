@@ -188,7 +188,7 @@ eufy:
     - address: 192.168.10.202
       access_token: !secret eufy_access_token
       type: T1201
-      name: Tommy AC Unit
+      name: AC Unit
 
 
 #https://www.home-assistant.io/components/panel_iframe/

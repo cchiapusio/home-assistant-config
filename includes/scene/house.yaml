@@ -88,6 +88,8 @@
       state: on
     switch.curio_cabinets:
       state: on
+    switch.diningroomlampwest:
+      state: on
 
 - name: Housecleaners gone
   entities:
@@ -108,4 +110,6 @@
     switch.desk_lights:
       state: off
     switch.curio_cabinets:
+      state: off
+    switch.diningroomlampwest:
       state: off

@@ -108,6 +108,28 @@
         - switch.diningroomlampwest
         - switch.curio_cabinets
 
+- alias: turn on living room lights when there is an afternoon storm
+  trigger:
+    platform: numeric_state
+    entity_id: sensor.dark_sky_precip_intensity
+    above: 0.6
+  condition:
+    condition: and
+    conditions:
+      - condition: numeric_state
+        entity_id: sensor.dark_sky_precip_probability
+        above: 80
+      - condition: template
+        value_template: '{{ state_attr("sun.sun", "rising") == "false" }}'
+  action:
+    - service: scene.turn_on
+      entity_id: scene.livingroom_normal
+    - service: homeassistant.turn_on
+      entity_id: 
+        - switch.hutch_light
+        - switch.curio_cabinet_lamp
+        - switch.diningroomlampwest
+
 - alias: Media player paused/stopped
   trigger:
     - platform: state
