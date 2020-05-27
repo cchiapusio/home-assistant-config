@@ -249,3 +249,32 @@
       data:
         topic: "Curio_Cabinet_Lamp/cmnd/restart"
         payload: 1
+
+
+- alias: "Recover monitor backlight on startup"
+  trigger:
+    platform: homeassistant
+    event: start
+  condition: 
+    condition: state
+    entity_id: light.monitor_backlight
+    state: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "monitor_backlight/cmnd/restart"
+        payload: 1
+    - service: notify.notify_chip
+      data:
+        message: "monitor backlight not available, yo"
+
+- alias: revive Curio Cabinet light
+  trigger:
+    platform: state
+    entity_id: light.monitor_backlight
+    to: unavailable
+  action:
+    - service: mqtt.publish
+      data:
+        topic: "monitor_backlight/cmnd/restart"
+        payload: 1
