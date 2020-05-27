@@ -178,16 +178,21 @@
 
 - alias: SBUX work this morning
   trigger:
-    - platform: time
-      at: '04:30:00'
+    - platform: time_pattern
+      minutes: '/5'
   condition:
     condition: and
     conditions:
+      - condition: time
+        after: "04:30:00"
+        before: "09:00:00"
       - condition: template
-        value_template: "{{ ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) < 14400) and ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
+        value_template: "{{ ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) < 1800) and ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
       - condition: state
         entity_id: person.tori
         state: home
+      - condition: template
+        value_template: '{{ state_attr("sun.sun", "elevation") < 15 }}'
   action:
     - service: scene.turn_on
       entity_id: scene.livingroom_dim
