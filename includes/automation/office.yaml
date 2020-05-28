@@ -9,7 +9,7 @@
     below: 15
   condition:
     condition: state
-    entity_id: device_tracker.life360_chip
+    entity_id: person.chip
     state: home
   action:
     service: homeassistant.turn_on
@@ -40,7 +40,7 @@
     at: "08:00:00"
   condition:
     condition: state
-    entity_id: device_tracker.life360_chip
+    entity_id: person.chip
     state: home
   action:
     service: homeassistant.turn_on

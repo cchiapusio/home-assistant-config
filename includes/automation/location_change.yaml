@@ -1,17 +1,18 @@
 - alias: Tori Leaving Home
   trigger:
     platform: state
-    entity_id: device_tracker.life360_tori
+    entity_id: person.tori
     from: home
   action:
     - service: light.turn_off
-      entity_id: light.desk_lamp
+      entity_id: 
+        - light.desk_lamp
+        - light.ceiling_leds
       
-
 - alias: Tori arriving Home
   trigger:
     platform: state
-    entity_id: device_tracker.life360_tori
+    entity_id: person.tori
     to: home
   action:
     - service: scene.create
@@ -38,7 +39,7 @@
 - alias: Tori leaving Carowinds
   trigger:
     platform: state
-    entity_id: device_tracker.life360_tori
+    entity_id: person.tori
     from: Carowinds
   action:
     - service: notify.notify_chip
@@ -51,7 +52,7 @@
 - alias: Tori leaving CBB
   trigger:
     platform: state
-    entity_id: device_tracker.life360_tori
+    entity_id: person.tori
     from: Cold Blooded and Bizarre
   action:
     - service: notify.lg_webos_smart_tv
@@ -67,7 +68,7 @@
 - alias: Tori arriving at CBB
   trigger:
     platform: state
-    entity_id: device_tracker.life360_tori
+    entity_id: person.tori
     to: Cold Blooded and Bizarre
   action:
     service: light.turn_on
@@ -82,7 +83,7 @@
 - alias: Cindy arriving Home
   trigger:
     platform: state
-    entity_id: device_tracker.life360_cindy
+    entity_id: person.cindy
     to: home
   action:
     - service: scene.create
@@ -115,7 +116,7 @@
 - alias: Tori arriving Home late
   trigger:
     platform: state
-    entity_id: device_tracker.life360_tori
+    entity_id: person.tori
     to: home
   condition:
     condition: and
