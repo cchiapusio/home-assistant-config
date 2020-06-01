@@ -8,9 +8,8 @@
     value_template: '{{ state.attributes.elevation }}'
     below: 15
   condition:
-    condition: state
-    entity_id: person.chip
-    state: home
+    condition: template
+    value_template: '{{ state_attr("sun.sun", "rising") == "false" }}'
   action:
     service: homeassistant.turn_on
     entity_id: 

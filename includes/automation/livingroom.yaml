@@ -55,6 +55,9 @@
     entity_id: sun.sun
     value_template: '{{ state.attributes.elevation }}'
     below: 15
+  condition:
+    condition: template
+    value_template: '{{ state_attr("sun.sun", "rising") == "false" }}'
   action:
     - service: homeassistant.turn_on
       entity_id: 
@@ -193,6 +196,9 @@
         state: home
       - condition: template
         value_template: '{{ state_attr("sun.sun", "elevation") < 15 }}'
+      - condition: state
+        entity_id: switch.hutch_light
+        state: 'off'
   action:
     - service: scene.turn_on
       entity_id: scene.livingroom_dim

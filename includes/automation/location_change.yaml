@@ -49,21 +49,15 @@
       data:
         message: "Tori left Carowinds"
 
-- alias: Tori leaving CBB
+- alias: Tori leaving SBUX
   trigger:
     platform: state
     entity_id: person.tori
-    from: Cold Blooded and Bizarre
+    from: SBUX Stonecrest
   action:
-    - service: notify.lg_webos_smart_tv
-      data:
-        message: "Tori left CBB"
     - service: notify.notify_chip
       data:
-        message: "Tori left CBB"
-    - service: light.turn_off
-      data:
-        entity_id: light.neopixel_light
+        message: "Tori left SBUX"
 
 - alias: Tori arriving at CBB
   trigger:
