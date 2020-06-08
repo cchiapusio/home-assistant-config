@@ -76,9 +76,13 @@
     value_template: '{{ state.attributes.elevation }}'
     below: 40
   condition:
-    condition: numeric_state
-    entity_id: sensor.dark_sky_cloud_coverage
-    above: 40
+    condition: and
+    conditions:
+      - condition: numeric_state
+        entity_id: sensor.dark_sky_cloud_coverage
+        above: 40
+      - condition: template
+        value_template: '{{ is_state_attr("sun.sun", "rising", false) }}'
   action:
     - service: scene.turn_on
       entity_id: scene.livingroom_normal
