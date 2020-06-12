@@ -19,18 +19,18 @@
 ##
 ## Turn off lights at midnight
 ##
-- alias: turn off office lights at midnight
-  trigger:
-    platform: time
-    at: "00:00:00"
-  action:
-    service: homeassistant.turn_off
-    entity_id: 
-      - light.office_lamp
-      - switch.catroom_lamp
-      - light.wled
-      - light.monitor_backlight
-      - switch.desk_lights
+#- alias: turn off office lights at midnight
+#  trigger:
+#    platform: time
+#    at: "00:00:00"
+#  action:
+#    service: homeassistant.turn_off
+#    entity_id: 
+#      - light.office_lamp
+#      - switch.catroom_lamp
+#      - light.wled
+#      - light.monitor_backlight
+#      - switch.desk_lights
 
 
 - alias: turn on desk lights for work
