@@ -12,11 +12,19 @@
 
 - alias: Turn on lights for maids
   trigger:
-    platform: time
-    at: '09:00:00'
+    - platform: time_pattern
+      minutes: '/5'
   condition:
-    condition: template
-    value_template: "{{  ((as_timestamp(states.calendar.starbucks_today.attributes.start_time) - as_timestamp(now())) < 14400) and ((as_timestamp(states.calendar.maids_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
+    condition: and
+    conditions:
+      - condition: time
+        after: "08:00:00"
+        before: "11:00:00"
+      - condition: template
+        value_template: "{{ ((as_timestamp(states.calendar.maids_today.attributes.start_time) - as_timestamp(now())) < 1800) and ((as_timestamp(states.calendar.maids_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
   action:
-    service: scene.turn_on
-    entity_id: scene.housecleaners_coming
+    - service: scene.turn_on
+      entity_id: scene.housecleaners_coming
+    - service: notify.notify_chip
+      data:
+        message: "Prepare the house for the Maids"

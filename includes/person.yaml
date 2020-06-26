@@ -3,13 +3,14 @@
   user_id: !secret userid_chip
   device_trackers:
     - device_tracker.life360_chip
-    - device_tracker.lg_h931
+    - device_tracker.v30_mqtt
     - device_tracker.lg_v30
 - name: Tori
   id: tori2399
   device_trackers:
     - device_tracker.life360_tori
-    - device_tracker.victoriasiphone
+    - device_tracker.toris_iphone
+    - device_tracker.tori_iphone_mqtt
 - name: Cindy
   id: cindy9371
   user_id: !secret userid_cindy

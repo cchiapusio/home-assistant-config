@@ -53,6 +53,8 @@
       state: off
     switch.curio_cabinets:
       state: off
+    light.monitor_backlight:
+      state: off
 
 - name: Housecleaners coming
   entities:

@@ -39,3 +39,4 @@ includes/zones.yaml
 
 # Specific keeps
 !.gitkeep
+.HA_VERSION

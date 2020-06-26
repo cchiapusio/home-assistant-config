@@ -1,3 +1,9 @@
 - platform: mqtt_room
+  name: chip_room_presence
   device_id: v30_mqtt
   state_topic: "room-assistant/sensor/bluetooth-classic-00-3d-e8-40-78-67"
+
+- platform: mqtt_room
+  name: tori_room_presence
+  device_id: tori_iphone_mqtt
+  state_topic: "room-assistant/sensor/bluetooth-classic-b8-41-a4-cc-07-22"
