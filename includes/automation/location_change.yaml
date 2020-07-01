@@ -49,15 +49,21 @@
       data:
         message: "Tori left Carowinds"
 
-- alias: Tori leaving SBUX
+- alias: Tori leaving waterbean
   trigger:
-    platform: state
-    entity_id: person.tori
-    from: SBUX Stonecrest
+    - platform: state
+      entity_id: person.tori
+      from: Waterbean Whitehall
+    - platform: state
+      entity_id: person.tori
+      from: Waterbean Metro
+    - platform: state
+      entity_id: person.tori
+      from: Waterbean Park
   action:
     - service: notify.notify_chip
       data:
-        message: "Tori left SBUX"
+        message: "Tori left Waterbean"
 
 - alias: Tori arriving at CBB
   trigger:
