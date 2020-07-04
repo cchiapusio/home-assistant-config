@@ -52,10 +52,6 @@ RESET_DRAWER_SCHEMA = vol.Schema(
     {vol.Optional('litter_robot_id'): cv.string}
 )
 
-RESET_DRAWER_SCHEMA = vol.Schema(
-    {vol.Optional('litter_robot_id'): cv.string}
-)
-
 
 async def async_setup(hass: HomeAssistant, config: Config):
     """Set up the Litter-Robot component."""

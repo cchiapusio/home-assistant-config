@@ -1,0 +1,9 @@
+  - platform: template
+    switches:
+      litter_robot_reset_drawer:
+        friendly_name: "LitterBot 5000 reset drawer"
+        value_template: "{{ is_state('sensor.litter_robot_litterbot_5000_status', 'Clean Cycling') }}"
+        icon_template: "mdi:repeat"
+        turn_on:
+          service: litter_robot.reset_drawer
+        turn_off:

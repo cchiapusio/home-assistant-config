@@ -17,7 +17,7 @@ homeassistant:
      api_password: !secret api_password
    - type: trusted_networks
      trusted_networks:
-     - 172.17.0.0/24
+     - 172.17.0.0/16
      - 192.168.10.0/24
    - type: homeassistant
   customize:
@@ -97,6 +97,7 @@ sensor: !include_dir_merge_list includes/sensors
 binary_sensor: !include binary_sensor.yaml
 media_player: !include media_player.yaml
 person: !include includes/person.yaml
+switch: !include includes/switch.yaml
 # https://www.home-assistant.io/integrations/stream
 stream:
 
@@ -258,6 +259,7 @@ google:
 litter_robot:
   username: !secret litter_robot_user
   password: !secret litter_robot_pass
+  scan_interval: 120
 
 # https://www.home-assistant.io/integrations/weather.darksky/
 weather:

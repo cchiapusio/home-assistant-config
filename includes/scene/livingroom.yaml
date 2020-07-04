@@ -41,3 +41,8 @@
       state: on
       brightness: 255
       color_name: green  
+
+- name: litter bot reset scene
+  entities:
+    switch.litter_robot_reset_drawer:
+      state: on
