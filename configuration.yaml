@@ -12,6 +12,8 @@ homeassistant:
   elevation: 1227
   unit_system: imperial
   time_zone: America/New_York
+  external_url: !secret base_url_secret
+  internal_url: !secret internal_url
   auth_providers:
    - type: legacy_api_password
      api_password: !secret api_password
@@ -59,7 +61,7 @@ recorder:
 http:
   # Secrets are defined in the file secrets.yaml
   # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
-  base_url: !secret base_url_secret
+#  base_url: !secret base_url_secret
   ip_ban_enabled: true
   login_attempts_threshold: 5
 
@@ -206,9 +208,9 @@ panel_iframe:
    url: http://192.168.10.4:9541
 
 #https://community.home-assistant.io/t/custom-component-hacs/121727
-hacs:
-  token: !secret github_token
-  theme: true
+#hacs:
+#  token: !secret github_token
+#  theme: true
 
 #https://www.home-assistant.io/components/life360/
 life360:

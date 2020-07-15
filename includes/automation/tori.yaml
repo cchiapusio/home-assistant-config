@@ -1,7 +1,7 @@
 - alias: manage toris lights
   trigger:
     platform: time
-    at: "08:01:00"
+    at: "08:02:00"
   condition:
     condition: state
     entity_id: person.tori
