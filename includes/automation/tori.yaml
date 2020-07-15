@@ -1,0 +1,11 @@
+- alias: manage toris lights
+  trigger:
+    platform: time
+    at: "08:01:00"
+  condition:
+    condition: state
+    entity_id: person.tori
+    state: 'not_home'
+  action:
+    service: homeassistant.turn_off
+    entity_id: switch.gecko
