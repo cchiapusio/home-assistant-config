@@ -5,11 +5,21 @@
     vapid_prv_key: !secret gcm_privkey
     vapid_email: !secret vapid_username
     # https://www.home-assistant.io/components/pushover/
+
   - platform: pushover
     name: notify_chip
     api_key: !secret pushover_apikey
     user_key: !secret pushover_userkey
     # https://www.home-assistant.io/components/nfandroidtv
+
   - platform: nfandroidtv
     name: shield_lr
     host: 192.168.10.104
+
+  - platform: smtp
+    name: notify_cindy
+    server: 192.168.10.8
+    port: 25
+    sender: chris@chiapusio.org
+    sender_name: Home Assistant
+    recipient: 9542059371@cingularme.com
