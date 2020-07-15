@@ -20,17 +20,17 @@
 
 - platform: template
   sensors:
-    feye_change:
-      friendly_name: FEYE Change
+    wfc_change:
+      friendly_name: WFC Change
       unit_of_measurement: '%'
-      value_template: "{{ state_attr('sensor.fireeye_inc','changePercent') }}"
+      value_template: "{{ state_attr('sensor.wells_fargo_co','changePercent') }}"
 
 - platform: template
   sensors:
-    feye_currentprice:
-      friendly_name: FEYE Price
+    wfc_currentprice:
+      friendly_name: WFC Price
       unit_of_measurement: '$'
-      value_template: "{{ state_attr('sensor.fireeye_inc','lastPrice') }}"
+      value_template: "{{ state_attr('sensor.wells_fargo_co','lastPrice') }}"
 
 - platform: template
   sensors:
@@ -45,3 +45,9 @@
       friendly_name: "Sun Azimuth"
       unit_of_measurement: 'degrees'
       value_template: "{{ state_attr('sun.sun', 'azimuth') }}"
+
+- platform: template
+  sensors:
+    tori_work_destination:
+      friendly_name: "Toris work destination"
+      value_template: "{{ state_attr('calendar.waterbean_today', 'location') }}"
