@@ -17,8 +17,8 @@ homeassistant:
      api_password: !secret api_password
    - type: trusted_networks
      trusted_networks:
-     - 172.17.0.0/16
-     - 192.168.10.0/24
+       - 172.17.0.0/16
+       - 192.168.10.0/24
    - type: homeassistant
   customize:
     person.chip:
@@ -61,7 +61,7 @@ http:
   # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
   base_url: !secret base_url_secret
   ip_ban_enabled: true
-  login_attempts_threshold: 2
+  login_attempts_threshold: 5
 
 # https://home-assistant.io/components/logger/
 logger:
@@ -113,12 +113,12 @@ directv:
     host: 192.168.10.22
 
 # https://www.home-assistant.io/integrations/influxdb/
-influxdb:
-  host: 192.168.10.4
-  database: home_assistant
-  username: !secret influx_user
-  password: !secret influx_pass
-  ssl: false
+#influxdb:
+#  host: 192.168.10.4
+#  database: home_assistant
+#  username: !secret influx_user
+#  password: !secret influx_pass
+#  ssl: false
 
 # https://www.home-assistant.io/integrations/frontend/
 frontend: 
@@ -157,6 +157,7 @@ conversation:
 tts:
   - platform: google_translate
     service_name: google_say
+    base_url: http://192.168.10.4:8123
 
 #https://www.home-assistant.io/components/mqtt/
 mqtt:
