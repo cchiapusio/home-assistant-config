@@ -42,7 +42,5 @@
     entity_id: person.chip
     state: home
   action:
-    service: homeassistant.turn_on
-    entity_id: 
-      - light.wled
-      - light.monitor_backlight
+    service: scene.turn_on
+    entity_id: scene.desk_normal
