@@ -15,6 +15,8 @@ tts
 LAB
 SAMPLES
 custom_components/auto_backup/*
+images/mail_and_packages/*
+www/mail_and_packages/*
 
 # Specific file ignores
 .google.token
