@@ -1,11 +1,11 @@
-  - platform: flux_led
-    devices:
-      192.168.10.165:
-        name: ceiling_north
-        mode: rgb
-      192.168.10.166:
-        name: ceiling_south
-        mode: rgb
+#  - platform: flux_led
+#    devices:
+#      192.168.10.165:
+#        name: ceiling_north
+#        mode: rgb
+#      192.168.10.166:
+#        name: ceiling_south
+#        mode: rgb
 
 
   - platform: group
@@ -33,6 +33,12 @@
     - light.living_room_lamp_1
     - light.lrlamp2
     - light.foyer_lamp
+
+  - platform: group
+    name: nightstand lights
+    entities: 
+    - light.mbr_lamp_east_light
+    - light.mbr_lamp_west_light
 
 # Example configuration.yaml entry - change all light1 topics to the topic of your device (case sensitive!)
 #  - platform: mqtt
