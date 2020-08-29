@@ -36,11 +36,13 @@ homeassistant:
 #                                                  #
 ####################################################
 
+default_config:
+
 # https://home-assistant.io/components/config/
 config:
 
 #https://www.home-assistant.io/components/mobile_app/
-mobile_app:
+#mobile_app:
 
 # https://www.home-assistant.io/hassio/
 #hassio:
@@ -64,6 +66,10 @@ http:
 #  base_url: !secret base_url_secret
   ip_ban_enabled: true
   login_attempts_threshold: 5
+  use_x_forwarded_for: true
+  trusted_proxies:
+    - 172.17.0.22
+    - 172.17.0.21
 
 # https://home-assistant.io/components/logger/
 logger:
@@ -108,7 +114,11 @@ camera: !include camera.yaml
 
 # https://www.home-assistant.io/integrations/webostv/
 webostv:
-  host: 192.168.10.20
+  - name: Living Room TV
+    host: 192.168.10.20
+  - name: Master Bedroom TV
+    host: 192.168.10.25
+    
 
 # https://www.home-assistant.io/integrations/directv/
 directv:
@@ -196,16 +206,15 @@ eufy:
 
 
 #https://www.home-assistant.io/components/panel_iframe/
-#https://community.home-assistant.io/t/node-red-flow-examples/83644
-panel_iframe:
- nodered:
-   title: 'Node-Red'
-   icon: 'mdi:shuffle-variant'
-   url: 'http://192.168.10.4:1880/'
- tasmoadmin:
-   title: 'TasmoAdmin'
-   icon: mdi:lightbulb-on
-   url: http://192.168.10.4:9541
+#panel_iframe:
+# nodered:
+#   title: 'Node-Red'
+#   icon: 'mdi:shuffle-variant'
+#   url: 'http://192.168.10.4:1880/'
+# tasmoadmin:
+#   title: 'TasmoAdmin'
+#   icon: mdi:lightbulb-on
+#   url: http://192.168.10.4:9541
 
 #https://community.home-assistant.io/t/custom-component-hacs/121727
 #hacs:
@@ -295,3 +304,11 @@ garbage_collection:
 spotify:
   client_id: !secret spotify_client_id
   client_secret: !secret spotify_client_secret
+
+pi_hole:
+  - host: 192.168.10.10
+    name: 'pi-hole raspi1'
+    api_key: !secret piholeraspi_api
+  - host: 192.168.10.9
+    name: 'pi-hole VM'
+    api_key: !secret piholevm_api
