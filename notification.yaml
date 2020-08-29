@@ -20,6 +20,7 @@
     name: notify_cindy
     server: 192.168.10.8
     port: 25
-    sender: chris@chiapusio.org
+    encryption: none
+    sender: !secret sender_email
     sender_name: Home Assistant
-    recipient: 9542059371@cingularme.com
+    recipient: !secret cindy_mobile_email_gateway
