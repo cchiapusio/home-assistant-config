@@ -4,7 +4,7 @@
 - alias: turn off living room lights at midnight
   trigger:
     platform: time
-    at: "00:00:00"
+    at: "23:00:00"
   condition:
     condition: state
     entity_id: media_player.lg_webos_smart_tv
@@ -25,7 +25,7 @@
     condition: and
     conditions:
       - condition: time
-        after: "00:00:00"
+        after: "23:00:00"
         before: "05:00:00"
       - condition: state
         entity_id: sun.sun 
@@ -237,3 +237,16 @@
   action:
     - service: switch.turn_on
       entity_id: switch.candle_light
+
+# turn on hyperion wled lights when TV turns on
+#
+- alias: turn on ambilight when TV turns on
+  trigger:
+    platform: state
+    entity_id: media_player.lg_webos_smart_tv
+    to: 'on'
+  action:
+    - service: light.turn_on
+      data:
+        entity_id: light.lg75_wled
+        brightness: 255
