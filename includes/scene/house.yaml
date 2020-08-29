@@ -55,6 +55,8 @@
       state: off
     light.monitor_backlight:
       state: off
+    light.lg75_wled:
+      state: off
 
 - name: Housecleaners coming
   entities:
