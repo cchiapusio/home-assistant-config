@@ -18,6 +18,14 @@
     name: Kitchen
     input: !secret Camera_kitchen
 
+  - platform: ffmpeg
+    name: Kitchen
+    input: !secret Camera_frontyardlow
+
+  - platform: ffmpeg
+    name: Kitchen
+    input: !secret Camera_skeleton
+
   - platform: local_file
     file_path: /config/www/mail_and_packages/mail_today.gif
     name: mail_usps
