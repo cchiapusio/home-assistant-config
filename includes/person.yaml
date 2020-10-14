@@ -4,12 +4,13 @@
   device_trackers:
     - device_tracker.life360_chip
 #    - device_tracker.v30_mqtt
-    - device_tracker.lg_v30
+#    - device_tracker.lg_v30
+    - device_tracker.sm_n986u
 
 - name: Tori
   id: tori2399
   device_trackers:
-    - device_tracker.life360_tori
+#    - device_tracker.life360_tori
     - device_tracker.toris_iphone
 #    - device_tracker.tori_iphone_mqtt
 
