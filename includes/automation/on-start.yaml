@@ -6,3 +6,21 @@
     - delay: '00:00:30'
     - service: homeassistant.turn_off
       entity_id: switch.eddies_mister
+
+- alias: Sync Tasmota states
+  id: Sync Tasmota states
+  initial_state: true
+  trigger:
+    platform: homeassistant
+    event: start
+  action:
+  # sync state for devices with default fulltopics
+  - service: mqtt.publish
+    data:
+      topic: cmnd/tasmotas/state
+      payload: ''
+  # sync state for pre8.2 autodiscovery devices
+  - service: mqtt.publish
+    data:
+      topic: tasmotas/cmnd/state
+      payload: ''
