@@ -1,4 +1,5 @@
 # Generic ignores
+*.sqlite
 *.log
 *.db
 *.db-shm
@@ -33,6 +34,8 @@ google_calendars.yaml
 includes/zones.yaml
 .configuration.yaml.un~
 .ps4-games.json
+OZW_Log.txt
+.HA_VERSION
 
 # Ignore files created by IDE's
 .vscode
@@ -41,4 +44,5 @@ includes/zones.yaml
 
 # Specific keeps
 !.gitkeep
-.HA_VERSION
+zwscene.xml
+options.xml
