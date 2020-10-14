@@ -1,10 +1,10 @@
 # Falcon Player MQTT Status Updates
-- platform: mqtt
-  name: "FPP Repeat Status"
-  state_topic: "fpp/falcon/player/fppdeb/playlist/repeat/status"
-- platform: mqtt
-  name: "FPP Status"
-  state_topic: "fpp/falcon/player/fppdeb/status"
-- platform: mqtt
-  name: "FPP Version"
-  state_topic: "fpp/falcon/player/fppdeb/version"
+#- platform: mqtt
+#  name: "FPP Repeat Status"
+#  state_topic: "fpp/falcon/player/fppdeb/playlist/repeat/status"
+#- platform: mqtt
+#  name: "FPP Status"
+#  state_topic: "fpp/falcon/player/fppdeb/status"
+#- platform: mqtt
+#  name: "FPP Version"
+#  state_topic: "fpp/falcon/player/fppdeb/version"

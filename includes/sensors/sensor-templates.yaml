@@ -1,22 +1,22 @@
-- platform: template
-  sensors:
-    window_ps_lower:
-      value_template: "{{  states('sensor.window1_estimated_current') | int +
-                            states('sensor.window2_estimated_current') | int +
-                           states('sensor.window3_estimated_current') | int +
-                           states('sensor.window4_estimated_current') | int +
-                           states('sensor.window5_estimated_current') | int }} "
-      unit_of_measurement: mA
-      friendly_name: Upper Window Current
+#- platform: template
+#  sensors:
+#    window_ps_lower:
+#      value_template: "{{  states('sensor.window1_estimated_current') | int +
+#                            states('sensor.window2_estimated_current') | int +
+#                           states('sensor.window3_estimated_current') | int +
+#                           states('sensor.window4_estimated_current') | int +
+#                           states('sensor.window5_estimated_current') | int }} "
+#      unit_of_measurement: mA
+#      friendly_name: Upper Window Current
 
-- platform: template
-  sensors:
-    window_ps_upper:
-      value_template: "{{  states('sensor.window6_estimated_current') | int +
-                           states('sensor.window7_estimated_current') | int +
-                           states('sensor.window8_estimated_current') | int }} "
-      unit_of_measurement: mA
-      friendly_name: Lower Window Current
+#- platform: template
+#  sensors:
+#    window_ps_upper:
+#      value_template: "{{  states('sensor.window6_estimated_current') | int +
+#                           states('sensor.window7_estimated_current') | int +
+#                           states('sensor.window8_estimated_current') | int }} "
+#      unit_of_measurement: mA
+#      friendly_name: Lower Window Current
 
 - platform: template
   sensors:
@@ -50,4 +50,7 @@
   sensors:
     tori_work_destination:
       friendly_name: "Toris work destination"
-      value_template: "{{ state_attr('calendar.waterbean_today', 'location') }}"
+      value_template: >
+        {% set x = state_attr('calendar.waterbean_today', 'location') %}
+        {{ x if x is ne '' else '1111 Metropolitan Ave #160 Charlotte, NC 28204' }}
+#      value_template: "{{ state_attr('calendar.waterbean_today', 'location') }}"
