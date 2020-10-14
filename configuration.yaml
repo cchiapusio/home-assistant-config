@@ -52,12 +52,41 @@ history:
 
 # https://www.home-assistant.io/integrations/recorder/
 recorder:
-  purge_keep_days: 21
+  purge_keep_days: 8
   exclude:
+    domains:
+      - switch
+      - light
+      - media_player
+      - device_tracker
+      - automation
+      - updater
     entities:
       - sun.sun
       - sensor.last_boot
-    
+      - sensor.date
+    entity_globs:
+      - sensor.weather_*
+    event_types:
+      - call_service
+  include:
+    domains:
+      - sensor
+      - binary_sensor
+      - calendar
+      - person
+    entities:
+      - device_tracker.galaxy_note10
+      - device_tracker.lg_h931
+      - device_tracker.lg_v30
+      - device_tracker.samsung_sm_n950u
+      - device_tracker.sm_n950u
+      - device_tracker.toris_iphone
+      - media_player.lg_webos_smart_tv
+      - media_player.plex_shield_android_tv
+      - media_player.living_room_shield
+    entity_globs:
+      - device_tracker.life_360*        
 
 # https://home-assistant.io/components/http/
 http:
@@ -68,8 +97,8 @@ http:
   login_attempts_threshold: 5
   use_x_forwarded_for: true
   trusted_proxies:
-    - 172.17.0.22
-    - 172.17.0.21
+    - 172.17.0.0/24
+    - 192.168.10.0/24
 
 # https://home-assistant.io/components/logger/
 logger:
@@ -106,6 +135,7 @@ binary_sensor: !include binary_sensor.yaml
 media_player: !include media_player.yaml
 person: !include includes/person.yaml
 switch: !include includes/switch.yaml
+input_select: !include input_select.yaml
 # https://www.home-assistant.io/integrations/stream
 stream:
 
