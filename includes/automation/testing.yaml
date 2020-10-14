@@ -1,9 +1,9 @@
-  - alias: commute alert
-    trigger:   
-      platform: sun
-      event:  sunrise
-    action:
-      - service: tts.google_say
-        entity_id: media_player.office_display
-        data_template:
-          message: 'Good morning Tori.  Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
+- alias: commute alert
+  trigger:   
+    platform: sun
+    event:  sunrise
+  action:
+    - service: tts.google_say
+      entity_id: media_player.office_display
+      data_template:
+        message: 'Good morning Tori.  Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
