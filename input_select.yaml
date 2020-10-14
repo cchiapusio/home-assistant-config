@@ -1,0 +1,9 @@
+
+outdoor_light_scene:
+  name: Outdoor Light Scene
+  options:
+    - Normal
+    - Halloween
+    - Christmas
+    - St Patricks
+  icon: mdi:string-lights

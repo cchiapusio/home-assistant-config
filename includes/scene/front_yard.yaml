@@ -1,0 +1,53 @@
+- name: yard_light_normal
+  entities:
+    light.flood01:
+      state: on
+      kelvin: 2700
+      brightness_pct: 100
+    light.flood02:
+      state: on
+      kelvin: 2700
+      brightness_pct: 100
+
+- name: yard_light_halloween
+  entities:
+    light.flood01:
+      state: on
+      brightness_pct: 100
+      xy_color: [0.216, 0.077]
+    light.flood02:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.701, 0.299]
+    switch.outdoor_plug_2_outdoor_plug_2:
+      state: on
+    switch.outdoor_plug_1_outdoor_plug_1:
+      state: on
+    switch.outdoor_switch_3_1:
+      state: on
+    switch.outdoor_switch_3_2:
+      state: on
+    switch.outdoor_switch_4_1:
+      state: on
+
+- name: yard_light_christmas
+  entities:
+    light.flood01:
+      state: on
+      brightness_pct: 100
+      xy_color: [0.216, 0.077]
+    light.flood02:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.701, 0.299]
+
+- name: yard_light_stpatricks
+  entities:
+    light.flood01:
+      state: on
+      brightness_pct: 100
+      xy_color: [0.216, 0.077]
+    light.flood02:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.701, 0.299]

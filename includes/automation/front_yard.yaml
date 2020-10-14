@@ -1,54 +1,54 @@
-- alias: xmas_on_at_dusk
+- alias: front yard scene
   trigger:
     platform: sun
     event: sunset
     offset: "-00:30:00"
+  condition:
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: 'input_select.outdoor_light_scene'
+        state: 'Normal'
+      - condition: state
+        entity_id: 'input_select.outdoor_light_scene'
+        state: 'Halloween'
+      - condition: state
+        entity_id: 'input_select.outdoor_light_scene'
+        state: 'Christmas'
+      - condition: state
+        entity_id: 'input_select.outdoor_light_scene'
+        state: 'St Patricks'
   action:
-    service: homeassistant.turn_on
-    entity_id: light.window_frames
+    - service: scene.turn_on
+      data_template:
+        entity_id: >
+          {% if is_state( "input_select.outdoor_light_scene", "Normal" ) %}
+            scene.yard_light_normal
+          {% elif is_state( "input_select.outdoor_light_scene", "Halloween" ) %}
+            scene.yard_light_halloween
+          {% elif is_state( "input_select.outdoor_light_scene", "Christmas" ) %}
+            scene.yard_light_christmas
+          {% elif is_state( "input_select.outdoor_light_scene", "St Patricks" ) %}
+            scene.yard_light_stpatricks
+          {% endif %}
 
-- alias: xmas_off_at_midnight
-  trigger:
-    platform: time
-    at: "00:00:00"
-  action:
-    service: homeassistant.turn_off
-    entity_id: light.window_frames
 
-
-- alias: xmas_on_before_dawn
-  trigger:
-    platform: time
-    at: "05:00:00"
-  action:
-    service: homeassistant.turn_on
-    entity_id: light.window_frames
-
-- alias: xmas_off_at_dawn
-  trigger:
-    platform: sun
-    event: sunrise
-    offset: "-00:00:00"
-  action:
-    service: homeassistant.turn_off
-    entity_id: light.window_frames
-
-- alias: floods_on_at_dusk
-  trigger:
-    platform: sun
-    event: sunset
-    offset: "-00:30:00"
-  action:
-    - service: light.turn_on
-      data:
-        entity_id: light.flood01
-        kelvin: 2700
-        brightness_pct: 100
-    - service: light.turn_on
-      data:
-        entity_id: light.flood02
-        kelvin: 2700
-        brightness_pct: 100
+#- alias: floods_on_at_dusk
+#  trigger:
+#    platform: sun
+#    event: sunset
+#    offset: "-00:30:00"
+#  action:
+#    - service: light.turn_on
+#      data:
+#        entity_id: light.flood01
+#        kelvin: 2700
+#        brightness_pct: 100
+#    - service: light.turn_on
+#      data:
+#        entity_id: light.flood02
+#        kelvin: 2700
+#        brightness_pct: 100
 
 - alias: floods_off_at_dawn
   trigger:
@@ -60,3 +60,65 @@
       entity_id: light.flood01
     - service: light.turn_off
       entity_id: light.flood02
+
+- alias: turn off halloween props at midnight
+  trigger:
+    platform: time
+    at: "00:00:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Halloween'
+  action:
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_plug_1_outdoor_plug_1
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_3_1
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_3_2
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_4_1
+
+- alias: turn off halloween props at mid-morning
+  trigger:
+    platform: time
+    at: "09:00:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Halloween'
+  action:
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_plug_1_outdoor_plug_1
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_plug_2_outdoor_plug_2
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_3_1
+
+- alias: turn on halloween props for morning commute
+  trigger:
+    platform: time
+    at: "06:00:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Halloween'
+  action:
+    - service: switch.turn_on
+      entity_id: switch.outdoor_plug_1_outdoor_plug_1
+    - service: switch.turn_on
+      entity_id: switch.outdoor_switch_3_1
+
+- alias: turn on halloween props for early evening
+  trigger:
+    platform: time
+    at: "17:00:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Halloween'
+  action:
+    - service: switch.turn_on
+      entity_id: switch.outdoor_plug_1_outdoor_plug_1
+    - service: switch.turn_on
+      entity_id: switch.outdoor_switch_3_1
