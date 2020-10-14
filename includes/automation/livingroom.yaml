@@ -33,6 +33,8 @@
   action:
     - service: scene.turn_on
       entity_id: scene.livingroom_dim
+    - service: scene.turn_on
+      entity_id: scene.dining_room_dim
     - service: switch.turn_off
       entity_id: switch.curio_cabinet_lamp
     - service: timer.start
@@ -67,10 +69,11 @@
       entity_id: 
         - switch.curio_cabinets
         - switch.hutch_light
-        - switch.diningroomlampwest
         - switch.curio_cabinet_lamp
     - service: scene.turn_on
       entity_id: scene.livingroom_normal
+    - service: scene.turn_on
+      entity_id: scene.dining_room_normal
 
 
 - alias: turn on living room lights early if cloudy
@@ -90,11 +93,12 @@
   action:
     - service: scene.turn_on
       entity_id: scene.livingroom_normal
+    - service: scene.turn_on
+      entity_id: scene.dining_room_normal
     - service: homeassistant.turn_on
       entity_id: 
         - switch.hutch_light
         - switch.curio_cabinet_lamp
-        - switch.diningroomlampwest
         - switch.curio_cabinets
 
 - alias: turn on living room lights even earlier if 100% cloudy
@@ -112,11 +116,12 @@
   action:
     - service: scene.turn_on
       entity_id: scene.livingroom_normal
+    - service: scene.turn_on
+      entity_id: scene.dining_room_normal
     - service: homeassistant.turn_on
       entity_id: 
         - switch.hutch_light
         - switch.curio_cabinet_lamp
-        - switch.diningroomlampwest
         - switch.curio_cabinets
 
 - alias: turn on living room lights when there is an afternoon storm
@@ -135,11 +140,12 @@
   action:
     - service: scene.turn_on
       entity_id: scene.livingroom_normal
+    - service: scene.turn_on
+      entity_id: scene.dining_room_normal
     - service: homeassistant.turn_on
       entity_id: 
         - switch.hutch_light
         - switch.curio_cabinet_lamp
-        - switch.diningroomlampwest
 
 - alias: Media player paused/stopped
   trigger:

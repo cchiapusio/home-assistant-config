@@ -1,0 +1,19 @@
+- name: Dining Room Normal
+  entities:
+    light.dining_room_lamp_east_light:
+      state: on
+      brightness: 212
+      color_temp: 454
+    light.dining_room_lamp_west_light:
+      state: on
+      brightness: 212
+      color_temp: 454
+ 
+- name: Dining Room Dim
+  entities:
+    light.dining_room_lamp_east_light:
+      state: on
+      brightness: 76
+    light.dining_room_lamp_west_light:
+      state: on
+      brightness: 76
