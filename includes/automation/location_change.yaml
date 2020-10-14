@@ -7,7 +7,6 @@
     - service: light.turn_off
       entity_id: 
         - light.desk_lamp
-        - light.ceiling_leds
       
 - alias: Tori arriving Home
   trigger:
