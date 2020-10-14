@@ -1,0 +1,7 @@
+startupalltasmota:
+  alias: Tasmota Restore State at Startup
+  sequence:
+  - data:
+      payload: ''
+      topic: sonoffs/cmnd/state
+    service: mqtt.publish
