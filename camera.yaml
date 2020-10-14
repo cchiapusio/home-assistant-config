@@ -19,11 +19,11 @@
     input: !secret Camera_kitchen
 
   - platform: ffmpeg
-    name: Kitchen
+    name: Front Yard
     input: !secret Camera_frontyardlow
 
   - platform: ffmpeg
-    name: Kitchen
+    name: Graveyard
     input: !secret Camera_skeleton
 
   - platform: local_file
