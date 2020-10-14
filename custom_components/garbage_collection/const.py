@@ -1,21 +1,26 @@
-import voluptuous as vol
-from .config_singularity import config_singularity
-from datetime import datetime, date
+"""Define constants used in garbage_collection."""
+
+from datetime import datetime
+from typing import Any
+
 import homeassistant.helpers.config_validation as cv
-from homeassistant.const import CONF_NAME, WEEKDAYS, CONF_ENTITIES, ATTR_HIDDEN
+import voluptuous as vol
+from homeassistant.const import ATTR_HIDDEN, CONF_ENTITIES, CONF_NAME, WEEKDAYS
+
+from .config_singularity import config_singularity
 
 """Constants for garbage_collection."""
 # Base component constants
 DOMAIN = "garbage_collection"
 CALENDAR_NAME = "Garbage Collection"
-VERSION = "3.03"
 SENSOR_PLATFORM = "sensor"
 CALENDAR_PLATFORM = "calendar"
-ISSUE_URL = "https://github.com/bruxy70/Garbage-Collection/issues"
 ATTRIBUTION = "Data from this is provided by garbage_collection."
 
 ATTR_NEXT_DATE = "next_date"
 ATTR_DAYS = "days"
+ATTR_LAST_COLLECTION = "last_collection"
+ATTR_LAST_UPDATED = "last_updated"
 
 # Device classes
 BINARY_SENSOR_DEVICE_CLASS = "connectivity"
@@ -42,6 +47,8 @@ CONF_EXCLUDE_DATES = "exclude_dates"
 CONF_INCLUDE_DATES = "include_dates"
 CONF_MOVE_COUNTRY_HOLIDAYS = "move_country_holidays"
 CONF_HOLIDAY_IN_WEEK_MOVE = "holiday_in_week_move"
+CONF_HOLIDAY_POP_NAMED = "holiday_pop_named"
+CONF_HOLIDAY_MOVE_OFFSET = "holiday_move_offset"
 CONF_PROV = "prov"
 CONF_STATE = "state"
 CONF_OBSERVED = "observed"
@@ -170,8 +177,8 @@ COUNTRY_CODES = [
 ]
 
 
-def date_text(value):
-    """Have to store date as text - datetime is not JSON serialisable"""
+def date_text(value: Any) -> str:
+    """Have to store date as text - datetime is not JSON serialisable."""
     if value is None or value == "":
         return ""
     try:
@@ -180,8 +187,8 @@ def date_text(value):
         raise vol.Invalid(f"Invalid date: {value}")
 
 
-def time_text(value):
-    """Have to store time as text - datetime is not JSON serialisable"""
+def time_text(value: Any) -> str:
+    """Have to store time as text - datetime is not JSON serialisable."""
     if value is None or value == "":
         return ""
     try:
@@ -190,7 +197,8 @@ def time_text(value):
         raise vol.Invalid(f"Invalid date: {value}")
 
 
-def month_day_text(value):
+def month_day_text(value: Any) -> str:
+    """Validate format month/day."""
     if value is None or value == "":
         return ""
     try:
@@ -200,10 +208,11 @@ def month_day_text(value):
 
 
 class configuration(config_singularity):
-    """
-    Type and validation seems duplicare, but I cannot use custom validators in ShowForm
+    """Store validation schema for garbage_collection configuration.
+
+    Type and validation seems duplicate, but I cannot use custom validators in ShowForm
     It calls convert from voluptuous-serialize that does not accept them
-    so I pass it twice - once the type, then the validator :( )
+    so I pass it twice - once the type, then the validator.
     """
 
     options = {
@@ -377,8 +386,24 @@ class configuration(config_singularity):
             "method": vol.Optional,
             "type": vol.In(COUNTRY_CODES),
         },
+        CONF_HOLIDAY_MOVE_OFFSET: {
+            "step": 4,
+            "valid_for": lambda f: f in EXCEPT_ANNUAL_GROUP,
+            "default": 1,
+            "method": vol.Optional,
+            "type": int,
+            "validator": vol.All(vol.Coerce(int), vol.Range(min=-7, max=7)),
+        },
+        CONF_HOLIDAY_POP_NAMED: {
+            "step": 4,
+            "valid_for": lambda f: f in EXCEPT_ANNUAL_GROUP,
+            "method": vol.Optional,
+            "type": str,
+            "validator": vol.All(cv.ensure_list, [str]),
+        },
         CONF_HOLIDAY_IN_WEEK_MOVE: {
             "step": 4,
+            "valid_for": lambda f: f in EXCEPT_ANNUAL_GROUP,
             "method": vol.Optional,
             "default": DEFAULT_HOLIDAY_IN_WEEK_MOVE,
             "type": bool,
@@ -418,16 +443,3 @@ extra_options = {
         "validator": cv.boolean,
     }
 }
-
-config_definition = configuration()
-
-SENSOR_SCHEMA = vol.Schema(config_definition.compile_schema())
-
-CONFIG_SCHEMA = vol.Schema(
-    {
-        DOMAIN: vol.Schema(
-            {vol.Optional(CONF_SENSORS): vol.All(cv.ensure_list, [SENSOR_SCHEMA])}
-        )
-    },
-    extra=vol.ALLOW_EXTRA,
-)
