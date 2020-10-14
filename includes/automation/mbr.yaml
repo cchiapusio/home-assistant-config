@@ -1,0 +1,40 @@
+- alias: bed motion floor light
+  id: 'mbr bed motion'
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.mbr_bed_ias_zone
+      from: 'off'
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.mbr_bed_2_ias_zone
+      from: 'off'
+      to: 'on'
+  condition:
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: light.nightstand_lights
+        state: 'off'
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+  action:
+    service: light.turn_on
+    entity_id: light.mbr_bed_leds
+
+- alias: bed nomotion floor light off
+  id: 'mbr bed nomotion'
+  initial_state: true
+  trigger:
+    platform: state
+    entity_id: binary_sensor.mbr_bed_ias_zone
+    from: 'on'
+    to: 'off'
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+  action:
+    service: light.turn_off
+    entity_id: light.mbr_bed_leds
