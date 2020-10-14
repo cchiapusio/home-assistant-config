@@ -2,8 +2,7 @@
   entities:
     light.office_lamp:
       state: on
-      transition: 30
-      brightness_pct: 100
+      brightness: 255
     light.wled:
       state: on
       brightness: 122
@@ -22,8 +21,7 @@
   entities:
     light.office_lamp:
       state: on
-      transition: 30
-      brightness_pct: 20
+      brightness: 51
     light.wled:
       state: on
       effect: Solid
@@ -56,7 +54,6 @@
   entities:
     light.office_lamp:
       state: off
-      transition: 30
     light.wled:
       state: on
       brightness: 255
