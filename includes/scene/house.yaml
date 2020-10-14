@@ -24,8 +24,14 @@
       state: on
     switch.curio_cabinet_lamp:
       state: on
-    switch.diningroomlampwest:
+    light.dining_room_lamp_east_light:
       state: on
+      brightness: 255
+      color_temp: 454
+    light.dining_room_lamp_west_light:
+      state: on
+      brightness: 255
+      color_temp: 454
 
 - name: good night lights
   entities:
@@ -47,7 +53,9 @@
       state: off
     switch.curio_cabinet_lamp:
       state: off
-    switch.diningroomlampwest:
+    light.dining_room_lamp_east_light:
+      state: off
+    light.dining_room_lamp_west_light:
       state: off
     switch.candle_light:
       state: off
@@ -92,8 +100,14 @@
       state: on
     switch.curio_cabinets:
       state: on
-    switch.diningroomlampwest:
+    light.dining_room_lamp_east_light:
       state: on
+      brightness: 255
+      color_temp: 454
+    light.dining_room_lamp_west_light:
+      state: on
+      brightness: 255
+      color_temp: 454
 
 - name: Housecleaners gone
   entities:
@@ -109,11 +123,23 @@
       state: off
     switch.curio_cabinet_lamp:
       state: off
-    light.desk_lamp:
-      state: off
-    switch.desk_lights:
-      state: off
     switch.curio_cabinets:
       state: off
-    switch.diningroomlampwest:
+    light.dining_room_lamp_east_light:
       state: off
+    light.dining_room_lamp_west_light:
+      state: off
+    light.wled:
+      state: on
+      effect: Solid
+      brightness: 122
+      xy_color:
+        - 0.421
+        - 0.364
+    light.monitor_backlight:
+      state: on
+      brightness: 107
+      color_temp: 423
+    light.office_lamp:
+      state: on
+      brightness: 255
