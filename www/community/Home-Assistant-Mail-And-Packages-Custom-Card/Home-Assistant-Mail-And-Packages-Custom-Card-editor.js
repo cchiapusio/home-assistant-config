@@ -18,7 +18,9 @@ if (
     customElements.define("ha-switch", customElements.get("paper-toggle-button"));
 }
 
-const LitElement = Object.getPrototypeOf(customElements.get("hui-view"));
+const LitElement = customElements.get("hui-masonry-view")
+  ? Object.getPrototypeOf(customElements.get("hui-masonry-view"))
+  : Object.getPrototypeOf(customElements.get("hui-view"));
 const html = LitElement.prototype.html;
 const css = LitElement.prototype.css;
 
@@ -65,6 +67,10 @@ export class MailAndPackagesCardEditor extends LitElement {
     get _usps_packages() {
         return this._config.usps_packages || "";
     }
+
+  get _amazon_packages() {
+    return this._config.amazon_packages || "";
+  }
 
     get _usps_mail() {
         return this._config.usps_mail || "";
@@ -120,6 +126,7 @@ export class MailAndPackagesCardEditor extends LitElement {
           ${customElements.get("ha-entity-picker")
             ? html`
                 <ha-entity-picker
+                label="Mail Updated Sensor"
                   .hass="${this.hass}"
                   .value="${this._updated}"
                   .configValue=${"updated"}
@@ -149,6 +156,7 @@ export class MailAndPackagesCardEditor extends LitElement {
           ${customElements.get("ha-entity-picker")
             ? html`
                 <ha-entity-picker
+                label="Delivery Message Sensor"
                   .hass="${this.hass}"
                   .value="${this._deliveries_message}"
                   .configValue=${"deliveries_message"}
@@ -178,6 +186,7 @@ export class MailAndPackagesCardEditor extends LitElement {
          ${customElements.get("ha-entity-picker")
             ? html`
                 <ha-entity-picker
+                label="Packages Delivered Sensor"
                   .hass="${this.hass}"
                   .value="${this._packages_delivered}"
                   .configValue=${"packages_delivered"}
@@ -207,6 +216,7 @@ export class MailAndPackagesCardEditor extends LitElement {
           ${customElements.get("ha-entity-picker")
             ? html`
                 <ha-entity-picker
+                label="Packages In Transit Sensor"
                   .hass="${this.hass}"
                   .value="${this._packages_in_transit}"
                   .configValue=${"packages_in_transit"}
@@ -236,6 +246,7 @@ export class MailAndPackagesCardEditor extends LitElement {
               ${customElements.get("ha-entity-picker")
             ? html`
                 <ha-entity-picker
+                label="FedEx Package Sensor"
                   .hass="${this.hass}"
                   .value="${this._fedex_packages}"
                   .configValue=${"fedex_packages"}
@@ -265,6 +276,7 @@ export class MailAndPackagesCardEditor extends LitElement {
               ${customElements.get("ha-entity-picker")
             ? html`
                 <ha-entity-picker
+                label="UPS Package Sensor"
                   .hass="${this.hass}"
                   .value="${this._ups_packages}"
                   .configValue=${"ups_packages"}
@@ -294,6 +306,7 @@ export class MailAndPackagesCardEditor extends LitElement {
               ${customElements.get("ha-entity-picker")
             ? html`
                 <ha-entity-picker
+                label="USPS Package Sensor"
                   .hass="${this.hass}"
                   .value="${this._usps_packages}"
                   .configValue=${"usps_packages"}
@@ -323,6 +336,37 @@ export class MailAndPackagesCardEditor extends LitElement {
               ${customElements.get("ha-entity-picker")
             ? html`
                 <ha-entity-picker
+                label="Amazon Package Sensor"
+                .hass="${this.hass}"
+                .value="${this._amazon_packages}"
+                .configValue=${"amazon_packages"}
+                domain-filter="sensor"
+                @change="${this._valueChanged}"
+                allow-custom-entity
+              ></ha-entity-picker>
+            `
+          : html`
+              <paper-dropdown-menu
+                label="Amazon Package Sensor"
+                @value-changed="${this._valueChanged}"
+                .configValue="${"amazon_packages"}"
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  .selected="${entities.indexOf(this._amazon_packages)}"
+                >
+                  ${entities.map((amazon_packages) => {
+                    return html`
+                      <paper-item>${amazon_packages}</paper-item>
+                    `;
+                  })}
+                </paper-listbox>
+              </paper-dropdown-menu>
+            `}
+            ${customElements.get("ha-entity-picker")
+          ? html`
+              <ha-entity-picker
+                label="USPS Mail Sensor"
                   .hass="${this.hass}"
                   .value="${this._usps_mail}"
                   .configValue=${"usps_mail"}
@@ -370,6 +414,7 @@ export class MailAndPackagesCardEditor extends LitElement {
         ${customElements.get("ha-entity-picker")
             ? html`
                 <ha-entity-picker
+                label="Camera Entity"
                   .hass="${this.hass}"
                   .value="${this._camera_entity}"
                   .configValue=${"camera_entity"}
