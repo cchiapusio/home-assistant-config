@@ -19,9 +19,9 @@
       state: on
       brightness_pct: 100 
       xy_color: [0.701, 0.299]
-    switch.outdoor_plug_2_outdoor_plug_2:
+    switch.outdoor_plug_2:
       state: on
-    switch.outdoor_plug_1_outdoor_plug_1:
+    switch.outdoor_plug_1:
       state: on
     switch.outdoor_switch_3_1:
       state: on
@@ -29,14 +29,26 @@
       state: on
     switch.outdoor_switch_4_1:
       state: on
+    switch.outdoor_switch_4_2:
+      state: on
+    switch.tommys_ac:
+      state: on
 
 - name: yard_light_christmas
   entities:
     light.flood01:
       state: on
       brightness_pct: 100
-      xy_color: [0.216, 0.077]
+      xy_color: [0.172, 0.747]
     light.flood02:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.701, 0.299]
+    light.flood04:
+      state: on
+      brightness_pct: 100
+      xy_color: [0.172, 0.747]
+    light.flood03:
       state: on
       brightness_pct: 100 
       xy_color: [0.701, 0.299]
@@ -46,7 +58,26 @@
     light.flood01:
       state: on
       brightness_pct: 100
-      xy_color: [0.216, 0.077]
+      xy_color: [0.172, 0.747]
+    light.flood02:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.172, 0.747]
+    light.flood03:
+      state: on
+      brightness_pct: 100
+      xy_color: [0.172, 0.747]
+    light.flood04:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.172, 0.747]
+
+- name: yard_light_independence
+  entities:
+    light.flood01:
+      state: on
+      brightness_pct: 100
+      xy_color: [0.126, 0.04]
     light.flood02:
       state: on
       brightness_pct: 100 

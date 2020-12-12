@@ -11,7 +11,7 @@
     name: Living Room
     entities: 
     - light.living_room_lamp_1
-    - light.lrlamp2
+    - light.living_room_lamp_2
     - light.foyer_lamp
 
   - platform: group
@@ -32,36 +32,6 @@
       - light.flood01
       - light.flood02
 
-# Example configuration.yaml entry - change all light1 topics to the topic of your device (case sensitive!)
-#  - platform: mqtt
-#    name: "Living Room Lamp 1"
-#    command_topic: "cmnd/LR-Lamp1/POWER"
-#    state_topic: "tele/LR-Lamp1/STATE"
-#    state_value_template: "{{value_json.POWER}}"
-#    availability_topic: "tele/LR-Lamp1/LWT"
-#    brightness_command_topic: "cmnd/LR-Lamp1/Dimmer"
-#    brightness_state_topic: "tele/LR-Lamp1/STATE"
-#    brightness_scale: 100
-#    on_command_type: "last"
-#    brightness_value_template: "{{value_json.Dimmer}}"
-#    color_temp_command_topic: "cmnd/LR-Lamp1/CT"
-#    color_temp_state_topic: "tele/LR-Lamp1/STATE"
-#    color_temp_value_template: "{{value_json.CT}}"
-#    rgb_command_topic: "cmnd/LR-Lamp1/Color2"
-#    rgb_state_topic: "tele/LR-Lamp1/STATE"
-#    rgb_value_template: "{{value_json.Color.split(',')[0:3]|join(',')}}"
-#    effect_command_topic: "cmnd/LR-Lamp1/Scheme"
-#    effect_state_topic: "tele/LR-Lamp1/STATE"
-#    effect_value_template: "{{value_json.Scheme}}"
-#    effect_list:
-#      - 0
-#      - 1
-#      - 2
-#      - 3
-#      - 4
-#    payload_on: "ON"
-#    payload_off: "OFF"
-#    payload_available: "Online"
-#    payload_not_available: "Offline"
-#    qos: 1
-#    retain: false
+  - platform: hyperion
+    host: 192.168.10.24
+    name: living room ambilight

@@ -4,7 +4,7 @@
       state: on
       brightness: 255
       color_temp: 454
-    light.lr_lamp2:
+    light.living_room_lamp_2:
       state: on
       brightness: 255
       color_temp: 454
@@ -37,7 +37,7 @@
   entities:
     light.living_room_lamp_1:
       state: off
-    light.lr_lamp2:
+    light.living_room_lamp_2:
       state: off
     light.foyer_lamp:
       state: off
@@ -72,7 +72,7 @@
       state: on
       brightness: 255
       color_temp: 454
-    light.lr_lamp2:
+    light.living_room_lamp_2:
       state: on
       brightness: 255
       color_temp: 454
@@ -113,7 +113,7 @@
   entities:
     light.living_room_lamp_1:
       state: off
-    light.lr_lamp2:
+    light.living_room_lamp_2:
       state: off
     light.foyer_lamp:
       state: off

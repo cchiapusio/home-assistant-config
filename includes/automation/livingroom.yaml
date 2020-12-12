@@ -233,7 +233,7 @@
     entity_id:
       - switch.hutch_light
       - light.living_room_lamp_1
-      - light.lr_lamp2
+      - light.living_room_lamp_2
       - light.foyer_lamp
 
 - alias: turn on candle in the morning
