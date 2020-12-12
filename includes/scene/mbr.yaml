@@ -1,0 +1,12 @@
+- name: mood lighting
+  entities:
+    light.mbr_lamp_east_light:
+      state: off
+    light.mbr_lamp_west_light:
+      state: off
+    light.mbr_lamp_mirror:
+      state: off
+    switch.cinderella_lamp_on_off:
+      state: off
+    switch.fairy_lights:
+      state: on
