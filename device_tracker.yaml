@@ -24,10 +24,11 @@
 #
 #####################################################################
 
-- platform: mqtt
-  devices:
-    V30_mqtt: 'room-assistant/device_tracker/bluetooth-classic-00-3d-e8-40-78-67-tracker/state'
-    tori_iphone_mqtt: 'room-assistant/device_tracker/bluetooth-classic-b8-41-a4-cc-07-22-tracker/state'
-  payload_home: 'online'
-  payload_not_home: 'offline'
-  source_type: bluetooth
+#- platform: mqtt
+#  devices:
+#    V30_mqtt: 'room-assistant/device_tracker/bluetooth-classic-00-3d-e8-40-78-67-tracker/state'
+#    tori_iphone_mqtt: 'room-assistant/device_tracker/bluetooth-classic-b8-41-a4-cc-07-22-tracker/state'
+#  payload_home: 'online'
+#  payload_not_home: 'offline'
+#  source_type: bluetooth
+#
