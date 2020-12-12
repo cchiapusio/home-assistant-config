@@ -22,7 +22,7 @@
         - light.office_lamp
     - service: light.turn_on
       entity_id: light.desk_lamp
-    - service: notify.notify_chip
+    - service: notify.mobile_app_sm_n986u
       data:
         message: "Tori is home"
     - service: scene.turn_on
