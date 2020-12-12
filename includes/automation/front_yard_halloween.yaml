@@ -1,0 +1,74 @@
+- alias: turn off halloween props at midnight
+  trigger:
+    platform: time
+    at: "00:00:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Halloween'
+  action:
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_plug_1_outdoor_plug_1
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_3_1
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_3_2
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_4_1
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_4_2
+
+- alias: turn off halloween props at mid-morning
+  trigger:
+    platform: time
+    at: "09:00:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Halloween'
+  action:
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_plug_1_outdoor_plug_1
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_plug_2_outdoor_plug_2
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_3_1
+
+- alias: turn on halloween props for morning commute
+  trigger:
+    platform: time
+    at: "06:00:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Halloween'
+  action:
+    - service: switch.turn_on
+      entity_id: switch.outdoor_plug_1_outdoor_plug_1
+    - service: switch.turn_on
+      entity_id: switch.outdoor_switch_3_1
+
+- alias: turn on halloween props for early evening
+  trigger:
+    platform: time
+    at: "17:00:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Halloween'
+  action:
+    - service: switch.turn_on
+      entity_id: switch.outdoor_plug_1_outdoor_plug_1
+    - service: switch.turn_on
+      entity_id: switch.outdoor_switch_3_1
+
+- alias: notify projector turned on
+  trigger:
+    - platform: state
+      entity_id: switch.tommys_ac
+      from: 'off'
+      to: 'on'
+  action:
+    - service: notify.notify_chip
+      data:
+        message: "start the projector"

@@ -6,4 +6,6 @@ outdoor_light_scene:
     - Halloween
     - Christmas
     - St Patricks
+    - Independence Day
+    - Memorial Day
   icon: mdi:string-lights
