@@ -7,3 +7,4 @@
         turn_on:
           service: litter_robot.reset_drawer
         turn_off:
+          service: litter_robot.reset_drawer
