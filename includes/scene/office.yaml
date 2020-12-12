@@ -3,6 +3,7 @@
     light.office_lamp:
       state: on
       brightness: 255
+      color_temp: 423
     light.wled:
       state: on
       brightness: 122
@@ -14,14 +15,15 @@
       state: on
       brightness: 127
       color_temp: 423
-    switch.desk_lights:
+    light.torch_lamp:
       state: off
 
 - name: Office Dim
   entities:
     light.office_lamp:
       state: on
-      brightness: 51
+      brightness: 61
+      color_temp: 423
     light.wled:
       state: on
       effect: Solid
@@ -33,7 +35,7 @@
       state: on
       brightness: 107
       color_temp: 423
-    switch.desk_lights:
+    light.torch_lamp:
       state: off
 
 - name: Desk Normal
@@ -65,5 +67,7 @@
       state: on
       brightness: 255
       color_temp: 153
-    switch.desk_lights:
+    light.torch_lamp:
       state: on
+      brightness: 255
+      color_temp: 153
