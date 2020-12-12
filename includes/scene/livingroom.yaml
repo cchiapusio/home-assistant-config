@@ -4,7 +4,7 @@
       state: on
       brightness: 255
       color_temp: 454
-    light.lr_lamp2:
+    light.living_room_lamp_2:
       state: on
       brightness: 255
       color_temp: 454
@@ -12,13 +12,16 @@
       state: on
       brightness: 255
       color_temp: 454
+    light.living_room_ambilight:
+      state: on
+      effect: "Full color mood blobs"
  
 - name: Livingroom_Dim
   entities:
     light.living_room_lamp_1:
       state: on
       brightness: 76
-    light.lr_lamp2:
+    light.living_room_lamp_2:
       state: on
       brightness: 76
     light.foyer_lamp:
@@ -31,7 +34,7 @@
       state: on
       brightness: 255
       color_name: green
-    light.lr_lamp2:
+    light.living_room_lamp_2:
       state: on
       brightness: 255
       xy_color:
@@ -41,6 +44,10 @@
       state: on
       brightness: 255
       color_name: green  
+    light.living_room_ambilight:
+      state: on
+      effect: "Green mood blobs"
+
 
 - name: litter bot reset scene
   entities:
