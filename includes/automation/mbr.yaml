@@ -22,19 +22,31 @@
   action:
     service: light.turn_on
     entity_id: light.mbr_bed_leds
+    data:
+      rgb_color: [255,0,0]
+      brightness: 70
 
 - alias: bed nomotion floor light off
   id: 'mbr bed nomotion'
   initial_state: true
   trigger:
-    platform: state
-    entity_id: binary_sensor.mbr_bed_ias_zone
-    from: 'on'
-    to: 'off'
+    - platform: state
+      entity_id: binary_sensor.mbr_bed_ias_zone
+      from: 'on'
+      to: 'off'
+    - platform: state
+      entity_id: binary_sensor.mbr_bed_2_ias_zone
+      from: 'on'
+      to: 'off'
   condition:
+    condition: and
+    conditions:
     - condition: state
-      entity_id: sun.sun
-      state: 'below_horizon'
+      entity_id: binary_sensor.mbr_bed_ias_zone
+      state: 'off'
+    - condition: state
+      entity_id: binary_sensor.mbr_bed_2_ias_zone
+      state: 'off'
   action:
     service: light.turn_off
     entity_id: light.mbr_bed_leds
