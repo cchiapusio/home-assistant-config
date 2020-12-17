@@ -17,9 +17,9 @@
   condition:
     condition: and
     conditions:
-      - condition: time
-        after: "08:00:00"
-        before: "11:00:00"
+      - condition: state
+        entity_id: light.living_room
+        state: 'off'
       - condition: template
         value_template: "{{ ((as_timestamp(states.calendar.maids_today.attributes.start_time) - as_timestamp(now())) < 1800) and ((as_timestamp(states.calendar.maids_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
   action:
