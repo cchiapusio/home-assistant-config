@@ -143,3 +143,27 @@
     light.office_lamp:
       state: on
       brightness: 255
+- name: cold_case
+  entities:
+    light.wled:
+      state: on
+      effect: Solid
+      xy_color: [0.126, 0.04] # blue
+    light.office_lamp:
+      state: on
+      xy_color: [0.126, 0.04] # blue
+    light.dining_room_lamp_east_light:
+      state: on
+      xy_color: [0.126, 0.04] # blue
+    light.dining_room_lamp_west_light:
+      state: on
+      xy_color: [0.126, 0.04] # blue
+    light.living_room_lamp_1:
+      state: on
+      xy_color: [0.126, 0.04] # blue
+    light.living_room_lamp_2:
+      state: on
+      xy_color: [0.126, 0.04] # blue
+    light.foyer_lamp:
+      state: on
+      xy_color: [0.126, 0.04] # blue

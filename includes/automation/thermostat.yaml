@@ -17,3 +17,32 @@
     - service: notify.notify_chip
       data:
         message: "I could have turned the heat on for you"
+
+- alias: Im still cold
+  trigger:
+  - platform: state
+    entity_id: climate.my_ecobee
+    from:  'heat'
+    to:  'cool'
+  condition: 
+    - condition: time
+      after: "09:00:00"
+      before: "23:00:00"
+  action:
+    - service: scene.create
+      data:
+        scene_id: cold_case_save
+        snapshot_entities:
+        - light.wled
+        - light.office_lamp
+        - light.dining_room_lamp_east_light
+        - light.dining_room_lamp_west_light
+        - light.living_room_lamp_1
+        - light.living_room_lamp_2
+        - light.foyer_lamp
+    - service: scene.turn_on
+      entity_id: scene.cold_case
+    - delay:
+        second: 10
+    - service: scene.turn_on
+      entity_id: scene.cold_case_save
