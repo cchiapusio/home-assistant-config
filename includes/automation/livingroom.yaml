@@ -193,7 +193,7 @@
     service: scene.turn_on
     entity_id: scene.livingroom_normal
 
-- alias: Waterbean work this morning
+- alias: Tori scheduled for work this morning
   trigger:
     - platform: time_pattern
       minutes: '/5'
@@ -219,7 +219,7 @@
     - service: switch.turn_on
       entity_id: switch.hutch_light
 
-- alias: Tori left for Waterbean Shift
+- alias: Tori left for work
   trigger:
     - platform: state
       entity_id: person.tori
