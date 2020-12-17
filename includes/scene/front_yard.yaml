@@ -14,11 +14,11 @@
     light.flood01:
       state: on
       brightness_pct: 100
-      xy_color: [0.216, 0.077]
+      xy_color: [0.216, 0.077] # purple
     light.flood02:
       state: on
       brightness_pct: 100 
-      xy_color: [0.701, 0.299]
+      xy_color: [0.701, 0.299] # red
     switch.outdoor_plug_2:
       state: on
     switch.outdoor_plug_1:
@@ -39,46 +39,46 @@
     light.flood01:
       state: on
       brightness_pct: 100
-      xy_color: [0.172, 0.747]
+      xy_color: [0.172, 0.747] # green
     light.flood02:
       state: on
       brightness_pct: 100 
-      xy_color: [0.701, 0.299]
+      xy_color: [0.701, 0.299] # red
     light.flood04:
       state: on
       brightness_pct: 100
-      xy_color: [0.172, 0.747]
+      xy_color: [0.172, 0.747] # green
     light.flood03:
       state: on
       brightness_pct: 100 
-      xy_color: [0.701, 0.299]
+      xy_color: [0.701, 0.299] # red
 
 - name: yard_light_stpatricks
   entities:
     light.flood01:
       state: on
       brightness_pct: 100
-      xy_color: [0.172, 0.747]
+      xy_color: [0.172, 0.747] # green
     light.flood02:
       state: on
       brightness_pct: 100 
-      xy_color: [0.172, 0.747]
+      xy_color: [0.172, 0.747] # green
     light.flood03:
       state: on
       brightness_pct: 100
-      xy_color: [0.172, 0.747]
+      xy_color: [0.172, 0.747] # green
     light.flood04:
       state: on
       brightness_pct: 100 
-      xy_color: [0.172, 0.747]
+      xy_color: [0.172, 0.747] # green
 
 - name: yard_light_independence
   entities:
     light.flood01:
       state: on
       brightness_pct: 100
-      xy_color: [0.126, 0.04]
+      xy_color: [0.126, 0.04] # blue
     light.flood02:
       state: on
       brightness_pct: 100 
-      xy_color: [0.701, 0.299]
+      xy_color: [0.701, 0.299] # red
