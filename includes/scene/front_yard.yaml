@@ -8,6 +8,14 @@
       state: on
       kelvin: 2700
       brightness_pct: 100
+    light.flood03:
+      state: on
+      kelvin: 2700
+      brightness_pct: 25
+    light.flood04:
+      state: on
+      kelvin: 2700
+      brightness_pct: 25
 
 - name: yard_light_halloween
   entities:

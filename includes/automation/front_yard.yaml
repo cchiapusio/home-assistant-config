@@ -52,3 +52,13 @@
       entity_id: light.flood01
     - service: light.turn_off
       entity_id: light.flood02
+
+- alias: turn off house floods at midnight
+  trigger:
+    platform: time
+    at: "00:00:00"
+  action:
+    - service: homeassistant.turn_off
+      entity_id: light.flood03
+    - service: homeassistant.turn_off
+      entity_id: light.flood04
