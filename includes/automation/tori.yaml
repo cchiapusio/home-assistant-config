@@ -18,3 +18,16 @@
     - service: homeassistant.turn_off
       entity_id: light.desk_lamp
    
+- alias: tori wake up light
+  trigger:
+    - platform: time
+      at: "08:00:00"
+  condition:
+    condition: state
+    entity_id: person.tori
+    state: home
+  action:
+    service: light.turn_on
+    data:
+      entity_id: light.desk_lamp
+      brightness: 255
