@@ -25,14 +25,20 @@
     - service: notify.mobile_app_sm_n986u
       data:
         message: "Tori is home"
-    - service: scene.turn_on
-      entity_id: scene.triumphant_return
-    - service: timer.start
-      data:
-        entity_id: timer.alert
     - service: notify.lg_webos_smart_tv
       data:
         message: "Tori is home"
+    - service: scene.create
+      data:
+        scene_id: tori_is_home_save
+        snapshot_entities:
+        - light.wled
+    - service: scene.turn_on
+      entity_id: scene.triumphant_return
+    - delay:
+        seconds: 10
+    - service: scene.turn_on
+      entity_id: scene.tori_is_home_save
     
       
 - alias: Tori leaving Carowinds
@@ -48,7 +54,7 @@
       data:
         message: "Tori left Carowinds"
 
-- alias: Tori leaving waterbean
+- alias: Tori leaving work
   trigger:
     - platform: state
       entity_id: person.tori
@@ -59,10 +65,23 @@
     - platform: state
       entity_id: person.tori
       from: Waterbean Park
+    - platform: state
+      entity_id: person.tori
+      from: Chilis Crowne Point
   action:
-    - service: notify.notify_chip
+    - service: notify.mobile_app_sm_n986u
       data:
-        message: "Tori left Waterbean"
+        message: "Tori left Work"
+
+- alias: Tori leaving Camerons
+  trigger:
+    - platform: state
+      entity_id: person.tori
+      from: Camerons House
+  action:
+    - service: notify.mobile_app_sm_n986u
+      data:
+        message: "Tori left Camerons"
 
 - alias: Tori arriving at CBB
   trigger:
