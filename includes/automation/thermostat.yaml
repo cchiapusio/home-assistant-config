@@ -43,6 +43,35 @@
     - service: scene.turn_on
       entity_id: scene.cold_case
     - delay:
-        second: 10
+        seconds: 10
     - service: scene.turn_on
       entity_id: scene.cold_case_save
+
+- alias: Things are Warming Up
+  trigger:
+  - platform: state
+    entity_id: climate.my_ecobee
+    from:  'cool'
+    to:  'heat'
+  condition: 
+    - condition: time
+      after: "09:00:00"
+      before: "23:00:00"
+  action:
+    - service: scene.create
+      data:
+        scene_id: warm_up_save
+        snapshot_entities:
+        - light.wled
+        - light.office_lamp
+        - light.dining_room_lamp_east_light
+        - light.dining_room_lamp_west_light
+        - light.living_room_lamp_1
+        - light.living_room_lamp_2
+        - light.foyer_lamp
+    - service: scene.turn_on
+      entity_id: scene.warm_up
+    - delay:
+        seconds: 10
+    - service: scene.turn_on
+      entity_id: scene.warm_up_save
