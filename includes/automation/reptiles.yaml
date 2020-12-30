@@ -13,9 +13,7 @@
      from: 'off'
      to: 'on'
      for:
-       hours: 0
        minutes: 1
-       seconds: 0
   action:
     service: homeassistant.turn_off
     entity_id: switch.eddies_mister
