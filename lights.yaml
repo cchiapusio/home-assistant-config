@@ -31,7 +31,9 @@
     entities:
       - light.flood01
       - light.flood02
+      - light.flood03
+      - light.flood04
 
-  - platform: hyperion
-    host: 192.168.10.24
-    name: living room ambilight
+#  - platform: hyperion
+#    host: 192.168.10.24
+#    name: living room ambilight
