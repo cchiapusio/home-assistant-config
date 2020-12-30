@@ -55,8 +55,6 @@ recorder:
   purge_keep_days: 8
   exclude:
     domains:
-      - switch
-      - light
       - media_player
       - device_tracker
       - automation
@@ -71,10 +69,13 @@ recorder:
       - call_service
   include:
     domains:
+      - switch
+      - light
       - sensor
       - binary_sensor
       - calendar
       - person
+      - climate
     entities:
       - device_tracker.galaxy_note10
       - device_tracker.lg_h931
@@ -85,6 +86,7 @@ recorder:
       - media_player.plex_shield_android_tv
       - media_player.living_room_shield
       - media_player.toris_bedroom_tv
+      - media_player.plex_linus3006_plex_for_lg_lg_55un7300aud
       - device_tracker.toris_iphone_2
       - device_tracker.toris_iphone
       - device_tracker.galaxy_note20_ultra_5
@@ -158,8 +160,8 @@ webostv:
     
 
 # https://www.home-assistant.io/integrations/directv/
-directv:
-    host: 192.168.10.22
+#directv:
+#    host: 192.168.10.22
 
 # https://www.home-assistant.io/integrations/influxdb/
 #influxdb:
@@ -181,6 +183,7 @@ cloud:
 google_assistant:
   project_id: home-assistant-integrati-72eed
 #  api_key: !secret google_assistant_api
+#  report_state: true
   exposed_domains:
     - switch
     - light
