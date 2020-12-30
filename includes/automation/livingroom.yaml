@@ -204,7 +204,7 @@
         after: "04:30:00"
         before: "09:00:00"
       - condition: template
-        value_template: "{{ ((as_timestamp(states.calendar.waterbean_today.attributes.start_time) - as_timestamp(now())) < 2700) and ((as_timestamp(states.calendar.waterbean_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
+        value_template: "{{ ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) < 2700) and ((as_timestamp(states.calendar.waterbean_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
       - condition: state
         entity_id: person.tori
         state: home
@@ -243,6 +243,8 @@
   action:
     - service: switch.turn_on
       entity_id: switch.candle_light
+    - service: light.turn_on
+      entity_id: light.crystal_castle_1
 
 # turn on hyperion wled lights when TV turns on
 #

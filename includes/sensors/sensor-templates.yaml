@@ -51,6 +51,6 @@
     tori_work_destination:
       friendly_name: "Toris work destination"
       value_template: >
-        {% set x = state_attr('calendar.waterbean_today', 'location') %}
-        {{ x if x is ne '' else '1111 Metropolitan Ave #160 Charlotte, NC 28204' }}
-#      value_template: "{{ state_attr('calendar.waterbean_today', 'location') }}"
+        {% set x = state_attr('calendar.work_today', 'location') %}
+        {{ x if x is ne '' else '2521 Sardis Rd N Charlotte, NC 28227' }}
+#      value_template: "{{ state_attr('calendar.work_today', 'location') }}"

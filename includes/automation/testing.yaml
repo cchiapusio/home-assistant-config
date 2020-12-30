@@ -1,9 +1,15 @@
 - alias: commute alert
   trigger:   
-    platform: sun
-    event:  sunrise
+    platform: template
+    value_template: "{{ ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) < 3600) and ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) > 3500 )}}"
   action:
     - service: tts.google_say
-      entity_id: media_player.office_display
+      entity_id: media_player.toris_room_speaker
       data_template:
-        message: 'Good morning Tori.  Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
+        message: 'Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
+    - service: notify.toris_bedroom_tv
+      data:
+        message: 'Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
+    - service: notify.mobile_app_toris_iphone
+      data:
+        message: 'Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
