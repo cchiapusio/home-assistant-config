@@ -47,6 +47,9 @@
     - condition: state
       entity_id: binary_sensor.mbr_bed_2_ias_zone
       state: 'off'
+    - condition: state
+      entity_id: light.mbr_bed_leds
+      state: 'on'
   action:
     service: light.turn_off
     entity_id: light.mbr_bed_leds

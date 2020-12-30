@@ -10,3 +10,24 @@
       state: off
     switch.fairy_lights:
       state: on
+    light.crystal_castle_1:
+      state: on
+
+
+- name: restore bedroom lights
+  entities:
+    light.mbr_lamp_east_light:
+      state: on
+      brightness: 125
+      color_temp: 460
+      white_value: 125
+    light.mbr_lamp_west_light:
+      state: on
+      brightness: 125
+      color_temp: 460
+      white_value: 125
+    light.mbr_lamp_mirror:
+      state: on
+      brightness: 125
+      color_temp: 428
+      white_value: 125
