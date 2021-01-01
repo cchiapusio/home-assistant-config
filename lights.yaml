@@ -23,8 +23,8 @@
   - platform: group
     name: dining room lights
     entities: 
-    - light.dining_room_lamp_east_light
-    - light.dining_room_lamp_west_light
+    - light.dining_room_lamp_east
+    - light.dining_room_lamp_west
 
   - platform: group
     name: Front Yard Floods

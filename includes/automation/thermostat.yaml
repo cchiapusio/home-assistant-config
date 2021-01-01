@@ -35,8 +35,8 @@
         snapshot_entities:
         - light.wled
         - light.office_lamp
-        - light.dining_room_lamp_east_light
-        - light.dining_room_lamp_west_light
+        - light.dining_room_lamp_east
+        - light.dining_room_lamp_west
         - light.living_room_lamp_1
         - light.living_room_lamp_2
         - light.foyer_lamp
@@ -64,8 +64,8 @@
         snapshot_entities:
         - light.wled
         - light.office_lamp
-        - light.dining_room_lamp_east_light
-        - light.dining_room_lamp_west_light
+        - light.dining_room_lamp_east
+        - light.dining_room_lamp_west
         - light.living_room_lamp_1
         - light.living_room_lamp_2
         - light.foyer_lamp
