@@ -1,0 +1,23 @@
+- alias: turn off indoor christmas lights in the morning
+  trigger:
+    platform: time
+    at: "00:09:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Christmas'
+  action:
+    - service: switch.turn_on
+      entity_id: switch.ewelink_sa_003_zigbee_on_off
+
+- alias: turn off indoor christmas lights at midnight
+  trigger:
+    platform: time
+    at: "00:00:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Christmas'
+  action:
+    - service: homeassistant.turn_off
+      entity_id: switch.ewelink_sa_003_zigbee_on_off
