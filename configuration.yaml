@@ -14,6 +14,9 @@ homeassistant:
   time_zone: America/New_York
   external_url: !secret base_url_secret
   internal_url: !secret internal_url
+  allowlist_external_dirs:
+    - /config/faces/
+    - /config/www/
   auth_providers:
    - type: legacy_api_password
      api_password: !secret api_password
@@ -29,6 +32,24 @@ homeassistant:
       entity_picture: !secret profile_photo_cindy
     person.tori:
       entity_picture: !secret profile_photo_tori
+    binary_sensor.mbr_bed_2_ias_zone:
+      device_class: motion
+    sensor.download_speed_mean:
+      friendly_name: 'Speedtest Download Average'
+      icon: mdi:speedometer
+    sensor.upload_speed_mean:
+      friendly_name: 'Spedtest Upload Average'
+      icon: mdi:speedometer
+    sensor.ping_time_mean:
+      friendly_name: 'Speedtest Ping Average'
+      icon: mdi:clock-fast
+    sensor.wan_traffic_in_mean:
+      friendly_name: 'WAN Download Average'
+      icon: mdi:download
+    sensor.wan_traffic_out_mean:
+      friendly_name: 'WAN Upload Average'
+      icon: mdi:upload
+
 
 ####################################################
 #                                                  #
@@ -36,10 +57,11 @@ homeassistant:
 #                                                  #
 ####################################################
 
-default_config:
-
 # https://home-assistant.io/components/config/
 config:
+
+# https://www.home-assistant.io/integrations/my/
+my:
 
 #https://www.home-assistant.io/components/mobile_app/
 #mobile_app:
@@ -52,7 +74,8 @@ history:
 
 # https://www.home-assistant.io/integrations/recorder/
 recorder:
-  purge_keep_days: 8
+  db_url: !secret hass_db_string
+  purge_keep_days: 15
   exclude:
     domains:
       - media_player
@@ -77,23 +100,24 @@ recorder:
       - person
       - climate
     entities:
-      - device_tracker.galaxy_note10
+      - device_tracker.galaxy_note10 # unifi
       - device_tracker.lg_h931
       - device_tracker.lg_v30
-      - device_tracker.samsung_sm_n950u
-      - device_tracker.sm_n950u
+      - device_tracker.samsung_sm_n950u # unifi
+      - device_tracker.sm_n950u # HA App
       - media_player.lg_webos_smart_tv
       - media_player.plex_shield_android_tv
       - media_player.living_room_shield
       - media_player.toris_bedroom_tv
       - media_player.plex_linus3006_plex_for_lg_lg_55un7300aud
-      - device_tracker.toris_iphone_2
-      - device_tracker.toris_iphone
-      - device_tracker.galaxy_note20_ultra_5
-      - device_tracker.sm_n986u
-      - device_tracker.life360_tori
-      - device_tracker.life360_cindy
-      - device_tracker.life360_chip
+      - device_tracker.toris_iphone_2 # unifi
+      - device_tracker.toris_iphone # HA App
+      - device_tracker.galaxy_note20_ultra_5 # unifi 
+      - device_tracker.sm_n986u # HA App
+      - device_tracker.wled_jeep # unifi
+#      - device_tracker.life360_tori
+#      - device_tracker.life360_cindy
+#      - device_tracker.life360_chip
 
 # https://home-assistant.io/components/http/
 http:
@@ -109,12 +133,24 @@ http:
 
 # https://home-assistant.io/components/logger/
 logger:
-  default: info
+  default: warning
 #  logs:
+#    homeassistant.components.zha: debug
+#    bellows.ezsp: debug
+#    bellows.uart: debug
+#    zigpy.zdo: debug
+#    zigpy.application: debug
+
 #    aiounifi: debug
 #    homeassistant.components.unifi: debug
 #    homeassistant.components.device_tracker.unifi: debug
 #    homeassistant.components.switch.unifi: debug
+
+# https://www.home-assistant.io/integrations/manual
+alarm_control_panel:
+  - platform: manual
+    name: Home Alarm
+    code: '1234'
 
 # https://home-assistant.io/components/sun/
 sun:
@@ -143,6 +179,8 @@ media_player: !include media_player.yaml
 person: !include includes/person.yaml
 switch: !include includes/switch.yaml
 input_select: !include input_select.yaml
+input_number: !include input_number.yaml
+image_processing: !include image_processing.yaml
 # https://www.home-assistant.io/integrations/stream
 stream:
 
@@ -173,7 +211,7 @@ webostv:
 
 # https://www.home-assistant.io/integrations/frontend/
 frontend: 
-  javascript_version: latest
+#  javascript_version: latest
   themes: !include_dir_merge_named themes
 
 # https://www.home-assistant.io/integrations/cloud/
@@ -203,6 +241,9 @@ discovery:
 # Allows you to issue voice commands from the frontend in enabled browsers
 conversation:
 
+# https://www.home-assistant.io/integrations/python_script
+python_script:
+
 
 
 # https://www.home-assistant.io/components/tts/Text to speech
@@ -223,15 +264,15 @@ mqtt:
 tplink:
  discovery: true
 
- light:
-  - host: 192.168.10.205 # office-lamp
-  - host: 192.168.10.201 # desk-lamp
+# light:
+#  - host: 192.168.10.205 # office-lamp
+#  - host: 192.168.10.201 # desk-lamp
 
  switch:
   - host: 192.168.10.203 # desk-lights
   - host: 192.168.10.204 # curio-cabinets
   - host: 192.168.10.206 # catroom-lamp
-  - host: 192.168.10.207 # gecko-lights1
+#  - host: 192.168.10.207 # gecko-lights1
   - host: 192.168.10.208 # eddies-mister
 
 #https://www.home-assistant.io/components/eufy/
@@ -242,7 +283,7 @@ eufy:
     - address: 192.168.10.202
       access_token: !secret eufy_access_token
       type: T1201
-      name: AC Unit
+      name: Eufy Switch
 
 
 #https://www.home-assistant.io/components/panel_iframe/
@@ -262,20 +303,11 @@ eufy:
 #  theme: true
 
 #https://www.home-assistant.io/components/life360/
-life360:
-  accounts:
-      username: !secret life360_username
-      password: !secret life360_password
-  show_as_state: [driving, moving]
-
-#https://www.home-assistant.io/integrations/unifi/
-# Moved to Integration WebUI setup
-#unifi:
-#  controllers:
-#    - host: 192.168.10.24 
-#      site: Chiapusio Home 
-#      ssid_filter:
-#        - 'chip'
+#life360:
+#  accounts:
+#      username: !secret life360_username
+#      password: !secret life360_password
+#  show_as_state: [driving, moving]
 
 timer:
   alert:
@@ -290,16 +322,6 @@ timer:
 #                   SPEETEST                       #
 #                                                  #
 ####################################################
-
-#https://www.home-assistant.io/components/speedtestdotnet/
-#speedtestdotnet:
-#  scan_interval:
-#    minutes: 60
-#  monitored_conditions:
-#    - ping
-#    - download
-#    - upload
-#  server_id: 5028
 
 ##
 ## https://www.home-assistant.io/integrations/calendar.google/
@@ -336,7 +358,7 @@ garbage_collection:
     verbose_state: True
     verbose_format: "{days} days"
     period: 2
-    first_week: 2
+    first_week: 1
     move_country_holidays: US
     collection_days:
     - wed

@@ -18,6 +18,8 @@ SAMPLES
 custom_components/auto_backup/*
 images/mail_and_packages/*
 www/mail_and_packages/*
+www/ds/*
+www/alerts/*
 
 # Specific file ignores
 .google.token
