@@ -8,4 +8,28 @@ outdoor_light_scene:
     - St Patricks
     - Independence Day
     - Memorial Day
+    - Green Bay Packers
   icon: mdi:string-lights
+
+camera_dropdown:
+  name: Cast camera
+  options:
+    - Back Door
+    - Front Yard
+    - Kitchen
+    - Cat Room
+    - Cycle Cameras
+    - All Cameras
+  initial: All Cameras
+  icon: mdi:camera
+
+cast_to_screen_dropdown:
+  name: To Screen
+  options:
+    - Office Display
+    - Office Chromecast
+    - MBR Display
+    - MBR Chromecast
+    - Living Room TV
+  initial: Office Display
+  icon: mdi:cast
