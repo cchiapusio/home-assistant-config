@@ -90,3 +90,22 @@
       state: on
       brightness_pct: 100 
       xy_color: [0.701, 0.299] # red
+
+- name: yard_light_greenbay
+  entities:
+    light.flood01:
+      state: on
+      brightness: 255
+      xy_color: [0.172, 0.747] # green
+    light.flood02:
+      state: on
+      brightness: 255
+      xy_color: [0.461, 0.502] # Yellow
+    light.flood03:
+      state: on
+      brightness: 255
+      xy_color: [0.172, 0.747] # green
+    light.flood04:
+      state: on
+      brightness: 255
+      xy_color: [0.461, 0.502] # Yellow

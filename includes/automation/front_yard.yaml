@@ -24,6 +24,9 @@
       - condition: state
         entity_id: 'input_select.outdoor_light_scene'
         state: 'Memorial Day'
+      - condition: state
+        entity_id: 'input_select.outdoor_light_scene'
+        state: 'Green Bay Packers'
   action:
     - service: scene.turn_on
       data_template:
@@ -40,6 +43,8 @@
             scene.yard_light_independence
           {% elif is_state( "input_select.outdoor_light_scene", "Memorial Day" ) %}
             scene.yard_light_independence
+          {% elif is_state( "input_select.outdoor_light_scene", "Green Bay Packers" ) %}
+            scene.yard_light_greenbay
           {% endif %}
 
 - alias: floods_off_at_dawn
