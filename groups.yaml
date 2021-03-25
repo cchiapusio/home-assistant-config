@@ -4,3 +4,17 @@ persons:
     - person.chip
     - person.cindy
     - person.tori
+
+LitterBot 5000:
+  entities:
+    - sensor.litter_robot_litterbot_5000_nightlight
+    - sensor.litter_robot_litterbot_5000_status
+    - sensor.litter_robot_litterbot_5000_waste
+    - switch.litter_robot_reset_drawer
+    - switch.litter_robot_nightlight
+
+Cast_Cameras_Group:
+  entities:
+    - input_select.camera_dropdown
+    - input_select.cast_to_screen_dropdown
+    - script.execute_cast_dropdown
