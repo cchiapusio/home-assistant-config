@@ -10,9 +10,10 @@
 - name: Tori
   id: tori2399
   device_trackers:
-#    - device_tracker.toris_iphone
-    - device_tracker.toris_iphone_2
-    - device_tracker.life360_tori
+#    - device_tracker.toris_iphone # mobile_app
+#    - device_tracker.toris_iphone_3 # unifi
+    - device_tracker.toris_iphone_2 # unifi
+#    - device_tracker.life360_tori
 #    - device_tracker.tori_iphone_mqtt
 
 - name: Cindy
