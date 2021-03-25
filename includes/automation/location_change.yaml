@@ -7,6 +7,7 @@
     - service: light.turn_off
       entity_id: 
         - light.desk_lamp
+        - light.dresser_lamp
       
 - alias: Tori arriving Home
   trigger:
@@ -14,20 +15,6 @@
     entity_id: person.tori
     to: home
   action:
-    - service: scene.create
-      data:
-        scene_id: office_save
-        snapshot_entities:
-        - light.wled
-        - light.office_lamp
-    - service: light.turn_on
-      entity_id: light.desk_lamp
-    - service: notify.mobile_app_sm_n986u
-      data:
-        message: "Tori is home"
-    - service: notify.lg_webos_smart_tv
-      data:
-        message: "Tori is home"
     - service: scene.create
       data:
         scene_id: tori_is_home_save
@@ -39,64 +26,32 @@
         seconds: 10
     - service: scene.turn_on
       entity_id: scene.tori_is_home_save
+    - service: light.turn_on
+      entity_id: 
+        - light.desk_lamp
+        - light.dresser_lamp
     
-      
-- alias: Tori leaving Carowinds
+- alias: Notify when someone enters or leaves a zone
+  description: ''
   trigger:
     platform: state
     entity_id: person.tori
-    from: Carowinds
-  action:
-    - service: notify.notify_chip
-      data:
-        message: "Tori left Carowinds"
-    - service: notify.lg_webos_smart_tv
-      data:
-        message: "Tori left Carowinds"
-
-- alias: Tori leaving work
-  trigger:
-    - platform: state
-      entity_id: person.tori
-      from: Waterbean Whitehall
-    - platform: state
-      entity_id: person.tori
-      from: Waterbean Metro
-    - platform: state
-      entity_id: person.tori
-      from: Waterbean Park
-    - platform: state
-      entity_id: person.tori
-      from: Chilis Crowne Point
+  condition:
+    condition: template
+    value_template: "{{ trigger.from_state.state != trigger.to_state.state }}"
   action:
     - service: notify.mobile_app_sm_n986u
-      data:
-        message: "Tori left Work"
-
-- alias: Tori leaving Camerons
-  trigger:
-    - platform: state
-      entity_id: person.tori
-      from: Camerons House
-  action:
-    - service: notify.mobile_app_sm_n986u
-      data:
-        message: "Tori left Camerons"
-
-- alias: Tori arriving at CBB
-  trigger:
-    platform: state
-    entity_id: person.tori
-    to: Cold Blooded and Bizarre
-  action:
-    service: light.turn_on
-    data:
-      entity_id: light.neopixel_light
-      brightness: 120
-      rgb_color: [0,255,0]
-      
-
-
+      data_template:
+        title: 'Location update {{ states.sensor.time.state }}'
+        message: "{{ trigger.to_state.attributes.friendly_name }} {% if trigger.to_state.state == 'not_home' %}has left {{ trigger.from_state.state }}{% endif %}{% if trigger.from_state.state == 'not_home' %}arrived at {{ trigger.to_state.state }}{% endif %}"
+    - service: notify.mobile_app_sm_n950u
+      data_template:
+        title: 'Location update {{ states.sensor.time.state }}'
+        message: "{{ trigger.to_state.attributes.friendly_name }} {% if trigger.to_state.state == 'not_home' %}has left {{ trigger.from_state.state }}{% endif %}{% if trigger.from_state.state == 'not_home' %}arrived at {{ trigger.to_state.state }}{% endif %}"
+    - service: notify.living_room_tv
+      data_template:
+        title: 'Location update {{ states.sensor.time.state }}'
+        message: "{{ trigger.to_state.attributes.friendly_name }} {% if trigger.to_state.state == 'not_home' %}has left {{ trigger.from_state.state }}{% endif %}{% if trigger.from_state.state == 'not_home' %}arrived at {{ trigger.to_state.state }}{% endif %}"
       
 - alias: Cindy arriving Home
   trigger:
