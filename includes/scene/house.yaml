@@ -24,11 +24,11 @@
       state: on
     switch.curio_cabinet_lamp:
       state: on
-    light.dining_room_lamp_east_light:
+    light.dining_room_lamp_east:
       state: on
       brightness: 255
       color_temp: 454
-    light.dining_room_lamp_west_light:
+    light.dining_room_lamp_west:
       state: on
       brightness: 255
       color_temp: 454
@@ -53,9 +53,9 @@
       state: off
     switch.curio_cabinet_lamp:
       state: off
-    light.dining_room_lamp_east_light:
+    light.dining_room_lamp_east:
       state: off
-    light.dining_room_lamp_west_light:
+    light.dining_room_lamp_west:
       state: off
     switch.candle_light:
       state: off
@@ -64,6 +64,10 @@
     light.monitor_backlight:
       state: off
     light.lg75_wled:
+      state: off 
+    switch.shelly_2_5_e8db84d2729c_relay_1:
+      state: off
+    switch.shelly_2_5_8caab55f9707_relay_0:
       state: off
 
 - name: Housecleaners coming
@@ -90,21 +94,17 @@
       state: on
     switch.curio_cabinet_lamp:
       state: on
-    light.desk_lamp:
-      state: on
     light.monitor_backlight:
       state: on
       brightness: 255
       color_temp: 153
-    switch.desk_lights:
-      state: on
     switch.curio_cabinets:
       state: on
-    light.dining_room_lamp_east_light:
+    light.dining_room_lamp_east:
       state: on
       brightness: 255
       color_temp: 454
-    light.dining_room_lamp_west_light:
+    light.dining_room_lamp_west:
       state: on
       brightness: 255
       color_temp: 454
@@ -125,9 +125,9 @@
       state: off
     switch.curio_cabinets:
       state: off
-    light.dining_room_lamp_east_light:
+    light.dining_room_lamp_east:
       state: off
-    light.dining_room_lamp_west_light:
+    light.dining_room_lamp_west:
       state: off
     light.wled:
       state: on
@@ -150,24 +150,18 @@
       state: on
       effect: Solid
       xy_color: [0.126, 0.04] # blue
-    light.office_lamp:
-      state: on
-      xy_color: [0.126, 0.04] # blue
-    light.dining_room_lamp_east_light:
-      state: on
-      xy_color: [0.126, 0.04] # blue
-    light.dining_room_lamp_west_light:
-      state: on
-      xy_color: [0.126, 0.04] # blue
-    light.living_room_lamp_1:
-      state: on
-      xy_color: [0.126, 0.04] # blue
-    light.living_room_lamp_2:
-      state: on
-      xy_color: [0.126, 0.04] # blue
-    light.foyer_lamp:
-      state: on
-      xy_color: [0.126, 0.04] # blue
+#    light.office_lamp:
+#      state: on
+#      xy_color: [0.126, 0.04] # blue
+#    light.living_room_lamp_1:
+#      state: on
+#      xy_color: [0.126, 0.04] # blue
+#    light.living_room_lamp_2:
+#      state: on
+#      xy_color: [0.126, 0.04] # blue
+#    light.foyer_lamp:
+#      state: on
+#      xy_color: [0.126, 0.04] # blue
 
 - name: warm_up
   entities:
@@ -175,21 +169,15 @@
       state: on
       effect: Solid
       xy_color: [0.701, 0.299] # red
-    light.office_lamp:
-      state: on
-      xy_color: [0.701, 0.299] # red
-    light.dining_room_lamp_east_light:
-      state: on
-      xy_color: [0.701, 0.299] # red
-    light.dining_room_lamp_west_light:
-      state: on
-      xy_color: [0.701, 0.299] # red
-    light.living_room_lamp_1:
-      state: on
-      xy_color: [0.701, 0.299] # red
-    light.living_room_lamp_2:
-      state: on
-      xy_color: [0.701, 0.299] # red
-    light.foyer_lamp:
-      state: on
-      xy_color: [0.701, 0.299] # red
+#    light.office_lamp:
+#      state: on
+#      xy_color: [0.701, 0.299] # red
+#    light.living_room_lamp_1:
+#      state: on
+#      xy_color: [0.701, 0.299] # red
+#    light.living_room_lamp_2:
+#      state: on
+#      xy_color: [0.701, 0.299] # red
+#    light.foyer_lamp:
+#      state: on
+#      xy_color: [0.701, 0.299] # red
