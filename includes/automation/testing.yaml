@@ -10,6 +10,3 @@
     - service: notify.toris_bedroom_tv
       data:
         message: 'Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
-    - service: notify.mobile_app_toris_iphone
-      data:
-        message: 'Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
