@@ -10,11 +10,22 @@ from datetime import datetime, timedelta
 import homeassistant.helpers.config_validation as cv
 import pyavanza
 import voluptuous as vol
+from homeassistant.components.sensor import PLATFORM_SCHEMA
+from homeassistant.const import (
+    CONF_CURRENCY,
+    CONF_ID,
+    CONF_MONITORED_CONDITIONS,
+    CONF_NAME,
+)
+from homeassistant.helpers.aiohttp_client import async_create_clientsession
+from homeassistant.helpers.entity import Entity
+
 from custom_components.avanza_stock.const import (
     CHANGE_PERCENT_PRICE_MAPPING,
     CHANGE_PRICE_MAPPING,
     CONF_CONVERSION_CURRENCY,
     CONF_INVERT_CONVERSION_CURRENCY,
+    CONF_PURCHASE_DATE,
     CONF_PURCHASE_PRICE,
     CONF_SHARES,
     CONF_STOCK,
@@ -27,15 +38,6 @@ from custom_components.avanza_stock.const import (
     MONITORED_CONDITIONS_KEYRATIOS,
     TOTAL_CHANGE_PRICE_MAPPING,
 )
-from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import (
-    CONF_CURRENCY,
-    CONF_ID,
-    CONF_MONITORED_CONDITIONS,
-    CONF_NAME,
-)
-from homeassistant.helpers.aiohttp_client import async_create_clientsession
-from homeassistant.helpers.entity import Entity
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -46,6 +48,7 @@ STOCK_SCHEMA = vol.Schema(
         vol.Required(CONF_ID): cv.positive_int,
         vol.Optional(CONF_NAME): cv.string,
         vol.Optional(CONF_SHARES): vol.Coerce(float),
+        vol.Optional(CONF_PURCHASE_DATE): cv.string,
         vol.Optional(CONF_PURCHASE_PRICE): vol.Coerce(float),
         vol.Optional(CONF_CONVERSION_CURRENCY): cv.positive_int,
         vol.Optional(CONF_INVERT_CONVERSION_CURRENCY, default=False): cv.boolean,
@@ -60,6 +63,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         ),
         vol.Optional(CONF_NAME): cv.string,
         vol.Optional(CONF_SHARES): vol.Coerce(float),
+        vol.Optional(CONF_PURCHASE_DATE): cv.string,
         vol.Optional(CONF_PURCHASE_PRICE): vol.Coerce(float),
         vol.Optional(CONF_CONVERSION_CURRENCY): cv.positive_int,
         vol.Optional(CONF_INVERT_CONVERSION_CURRENCY, default=False): cv.boolean,
@@ -80,6 +84,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     if isinstance(stock, int):
         name = config.get(CONF_NAME)
         shares = config.get(CONF_SHARES)
+        purchase_date = config.get(CONF_PURCHASE_DATE)
         purchase_price = config.get(CONF_PURCHASE_PRICE)
         conversion_currency = config.get(CONF_CONVERSION_CURRENCY)
         invert_conversion_currency = config.get(CONF_INVERT_CONVERSION_CURRENCY)
@@ -92,6 +97,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                 stock,
                 name,
                 shares,
+                purchase_date,
                 purchase_price,
                 conversion_currency,
                 invert_conversion_currency,
@@ -108,6 +114,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             if name is None:
                 name = DEFAULT_NAME + " " + str(id)
             shares = s.get(CONF_SHARES)
+            purchase_date = s.get(CONF_PURCHASE_DATE)
             purchase_price = s.get(CONF_PURCHASE_PRICE)
             conversion_currency = s.get(CONF_CONVERSION_CURRENCY)
             invert_conversion_currency = s.get(CONF_INVERT_CONVERSION_CURRENCY)
@@ -118,6 +125,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
                     id,
                     name,
                     shares,
+                    purchase_date,
                     purchase_price,
                     conversion_currency,
                     invert_conversion_currency,
@@ -139,6 +147,7 @@ class AvanzaStockSensor(Entity):
         stock,
         name,
         shares,
+        purchase_date,
         purchase_price,
         conversion_currency,
         invert_conversion_currency,
@@ -151,6 +160,7 @@ class AvanzaStockSensor(Entity):
         self._stock = stock
         self._name = name
         self._shares = shares
+        self._purchase_date = purchase_date
         self._purchase_price = purchase_price
         self._conversion_currency = conversion_currency
         self._invert_conversion_currency = invert_conversion_currency
@@ -268,6 +278,8 @@ class AvanzaStockSensor(Entity):
         self._state_attributes[attr] = company.get(attr, None)
 
     def _update_profit_loss(self, price):
+        if self._purchase_date is not None:
+            self._state_attributes["purchaseDate"] = self._purchase_date
         if self._purchase_price is not None:
             self._state_attributes["purchasePrice"] = self._purchase_price
             self._state_attributes["profitLoss"] = round(
@@ -300,11 +312,15 @@ class AvanzaStockSensor(Entity):
                 self._state_attributes[attribute] = round(
                     self._state_attributes[attribute] * rate, 2
                 )
+        self._update_profit_loss(self._state)
 
     def _update_dividends(self, data):
         dividends = data.get("dividends", [])
         # Create empty dividend attributes, will be overwritten with valid
         # data if information is available
+        for key in self._state_attributes:
+            if key.startswith("dividend"):
+                self._state_attributes.pop(key)
         for dividend_condition in MONITORED_CONDITIONS_DIVIDENDS:
             attribute = "dividend0_{}".format(dividend_condition)
             self._state_attributes[attribute] = "unknown"

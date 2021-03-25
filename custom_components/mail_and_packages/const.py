@@ -1,49 +1,62 @@
 DOMAIN = "mail_and_packages"
 DOMAIN_DATA = "{}_data".format(DOMAIN)
-VERSION = "0.3.0-b12"
+VERSION = "0.3.2-b3"
 ISSUE_URL = "http://github.com/moralmunky/Home-Assistant-Mail-And-Packages"
 PLATFORM = "sensor"
+PLATFORMS = ["camera", "sensor"]
 DATA = "data"
 COORDINATOR = "coordinator_mail"
 OVERLAY = ["overlay.png", "vignette.png", "white.png"]
+SERVICE_UPDATE_FILE_PATH = "update_file_path"
+CAMERA = "cameras"
 
 # Attributes
+ATTR_AMAZON_IMAGE = "amazon_image"
 ATTR_COUNT = "count"
 ATTR_CODE = "code"
 ATTR_ORDER = "order"
 ATTR_TRACKING = "tracking"
 ATTR_TRACKING_NUM = "tracking_#"
 ATTR_IMAGE = "image"
+ATTR_IMAGE_PATH = "image_path"
 ATTR_SERVER = "server"
 ATTR_IMAGE_NAME = "image_name"
 ATTR_EMAIL = "email"
 ATTR_SUBJECT = "subject"
 ATTR_BODY = "body"
 ATTR_PATTERN = "pattern"
+ATTR_USPS_MAIL = "usps_mail"
 
 # Configuration Properties
+CONF_ALLOW_EXTERNAL = "allow_external"
+CONF_CAMERA_NAME = "camera_name"
 CONF_FOLDER = "folder"
 CONF_PATH = "image_path"
 CONF_DURATION = "gif_duration"
 CONF_SCAN_INTERVAL = "scan_interval"
 CONF_IMAGE_SECURITY = "image_security"
+CONF_IMAP_TIMEOUT = "imap_timeout"
 CONF_GENERATE_MP4 = "generate_mp4"
 CONF_AMAZON_FWDS = "amazon_fwds"
 
 # Defaults
+DEFAULT_CAMERA_NAME = "Mail USPS Camera"
 DEFAULT_NAME = "Mail And Packages"
 DEFAULT_PORT = "993"
 DEFAULT_FOLDER = '"INBOX"'
-DEFAULT_PATH = "/images/mail_and_packages/"
+DEFAULT_PATH = "custom_components/mail_and_packages/images/"
 DEFAULT_IMAGE_SECURITY = True
+DEFAULT_IMAP_TIMEOUT = 30
 DEFAULT_GIF_DURATION = 5
 DEFAULT_SCAN_INTERVAL = 5
 DEFAULT_GIF_FILE_NAME = "mail_today.gif"
 DEFAULT_AMAZON_FWDS = '""'
+DEFAULT_ALLOW_EXTERNAL = False
 
 # Amazon
-Amazon_Domains = "amazon.com,amazon.ca,amazon.co.uk,amazon.in,amazon.de"
-AMAZON_Delivered_Subject = "Delivered: Your"
+Amazon_Domains = "amazon.com,amazon.ca,amazon.co.uk,amazon.in,amazon.de,amazon.it"
+AMAZON_Delivered_Subject = ["Delivered: Your", "Consegna effettuata:"]
+AMAZON_SHIPMENT_TRACKING = ["shipment-tracking", "conferma-spedizione"]
 AMAZON_Email = "order-update@"
 AMAZON_PACKAGES = "amazon_packages"
 AMAZON_ORDER = "amazon_order"
@@ -55,9 +68,7 @@ AMAZON_HUB = "amazon_hub"
 AMAZON_HUB_CODE = "amazon_hub_code"
 AMAZON_HUB_EMAIL = "thehub@amazon.com"
 AMAZON_HUB_SUBJECT = "(You have a package to pick up)(.*)- (\\d{6})"
-AMAZON_TIME_PATTERN = (
-    "will arrive:,estimated delivery date is:,guaranteed delivery date is:"
-)
+AMAZON_TIME_PATTERN = "will arrive:,estimated delivery date is:,guaranteed delivery date is:,Arriving:,Arriver:"
 
 # Sensor Data
 SENSOR_DATA = {
@@ -70,10 +81,17 @@ SENSOR_DATA = {
         "subject": ["Expected Delivery on"],
         "body": ["Your item is out for delivery"],
     },
+    "usps_exception": {
+        "email": ["auto-reply@usps.com"],
+        "subject": ["Delivery Exception"],
+    },
     "usps_packages": {},
-    "usps_tracking": {"pattern": ["9[234]\\d{15,22}"]},
+    "usps_tracking": {"pattern": ["9[2345]\\d{15,22}"]},
     "usps_mail": {
-        "email": ["mcinfo@ups.com"],
+        "email": [
+            "USPSInformedDelivery@usps.gov",
+            "USPSInformeddelivery@informeddelivery.usps.com",
+        ],
         "subject": ["Your Daily Digest"],
     },
     "ups_delivered": {
@@ -82,6 +100,7 @@ SENSOR_DATA = {
             "Your UPS Package was delivered",
             "Your UPS Packages were delivered",
         ],
+        "body": ["Tracking Number"],
     },
     "ups_delivering": {
         "email": ["mcinfo@ups.com"],
@@ -111,7 +130,7 @@ SENSOR_DATA = {
         ],
     },
     "fedex_packages": {},
-    "fedex_tracking": {"pattern": ["\\d{12,14,20,34}"]},
+    "fedex_tracking": {"pattern": ["\\d{12,14}"]},
     "capost_delivered": {
         "email": ["donotreply@canadapost.postescanada.ca"],
         "subject": [
@@ -153,8 +172,8 @@ SENSOR_DATA = {
         "subject": ["has been delivered"],
     },
     "royal_delivering": {
-        "email": ["donotreply@myhermes.co.uk"],
-        "subject": ["is on its way"],
+        "email": ["no-reply@royalmail.com"],
+        "subject": ["is on its way", "to be delivered today"],
     },
     "royal_packages": {},
     "royal_tracking": {"pattern": ["[A-Za-z]{2}[0-9]{9}GB"]},
@@ -171,6 +190,7 @@ SENSOR_TYPES = {
         "mdi:package-variant-closed",
     ],
     "usps_delivering": ["Mail USPS Delivering", "package(s)", "mdi:truck-delivery"],
+    "usps_exception": ["Mail USPS Exception", "package(s)", "mdi:archive-alert"],
     "usps_packages": [
         "Mail USPS Packages",
         "package(s)",
@@ -262,6 +282,26 @@ SENSOR_TYPES = {
         "package(s)",
         "mdi:truck-delivery",
     ],
+}
+
+# Name, unit of measure, icon
+IMAGE_SENSORS = {
+    "usps_mail_image_system_path": [
+        "Mail Image System Path",
+        None,
+        "mdi:folder-multiple-image",
+    ],
+    "usps_mail_image_url": [
+        "Mail Image URL",
+        None,
+        "mdi:link-variant",
+    ],
+}
+
+# Name
+CAMERA_DATA = {
+    "usps_camera": ["Mail USPS Camera"],
+    "amazon_camera": ["Mail Amazon Delivery Camera"],
 }
 
 # Sensor Index

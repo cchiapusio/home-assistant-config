@@ -1,7 +1,7 @@
 """Adds config flow for Mail and Packages."""
 
 import logging
-from collections import OrderedDict
+from typing import Any
 
 import homeassistant.helpers.config_validation as cv
 import voluptuous as vol
@@ -16,28 +16,32 @@ from homeassistant.const import (
 from homeassistant.core import callback
 
 from .const import (
+    CONF_ALLOW_EXTERNAL,
     CONF_AMAZON_FWDS,
     CONF_DURATION,
     CONF_FOLDER,
     CONF_GENERATE_MP4,
     CONF_IMAGE_SECURITY,
+    CONF_IMAP_TIMEOUT,
     CONF_PATH,
     CONF_SCAN_INTERVAL,
+    DEFAULT_ALLOW_EXTERNAL,
     DEFAULT_AMAZON_FWDS,
     DEFAULT_FOLDER,
     DEFAULT_GIF_DURATION,
     DEFAULT_IMAGE_SECURITY,
+    DEFAULT_IMAP_TIMEOUT,
     DEFAULT_PATH,
     DEFAULT_PORT,
     DEFAULT_SCAN_INTERVAL,
     DOMAIN,
 )
-from .helpers import _check_ffmpeg, _test_login, _validate_path, get_resources, login
+from .helpers import _check_ffmpeg, _test_login, get_resources, login
 
 _LOGGER = logging.getLogger(__name__)
 
 
-def _get_mailboxes(host, port, user, pwd):
+def _get_mailboxes(host: str, port: int, user: str, pwd: str) -> list:
     account = login(host, port, user, pwd)
 
     status, folderlist = account.list()
@@ -61,7 +65,7 @@ def _get_mailboxes(host, port, user, pwd):
     return mailboxes
 
 
-def _get_schema_step_1(hass, user_input, default_dict):
+def _get_schema_step_1(hass: Any, user_input: list, default_dict: list) -> Any:
     """Gets a schema using the default_dict as a backup."""
     if user_input is None:
         user_input = {}
@@ -80,7 +84,9 @@ def _get_schema_step_1(hass, user_input, default_dict):
     )
 
 
-def _get_schema_step_2(hass, data, user_input, default_dict):
+def _get_schema_step_2(
+    hass: Any, data: list, user_input: list, default_dict: list
+) -> Any:
     """Gets a schema using the default_dict as a backup."""
     if user_input is None:
         user_input = {}
@@ -105,16 +111,18 @@ def _get_schema_step_2(hass, data, user_input, default_dict):
             vol.Optional(CONF_AMAZON_FWDS, default=_get_default(CONF_AMAZON_FWDS)): str,
             vol.Optional(
                 CONF_SCAN_INTERVAL, default=_get_default(CONF_SCAN_INTERVAL)
-            ): vol.Coerce(int),
-            vol.Optional(CONF_PATH, default=_get_default(CONF_PATH)): str,
+            ): vol.All(vol.Coerce(int), vol.Range(min=5)),
+            vol.Optional(
+                CONF_IMAP_TIMEOUT, default=_get_default(CONF_IMAP_TIMEOUT)
+            ): vol.All(vol.Coerce(int), vol.Range(min=10)),
             vol.Optional(
                 CONF_DURATION, default=_get_default(CONF_DURATION)
             ): vol.Coerce(int),
             vol.Optional(
-                CONF_IMAGE_SECURITY, default=_get_default(CONF_IMAGE_SECURITY)
+                CONF_GENERATE_MP4, default=_get_default(CONF_GENERATE_MP4)
             ): bool,
             vol.Optional(
-                CONF_GENERATE_MP4, default=_get_default(CONF_GENERATE_MP4)
+                CONF_ALLOW_EXTERNAL, default=_get_default(CONF_ALLOW_EXTERNAL)
             ): bool,
         }
     )
@@ -124,7 +132,7 @@ def _get_schema_step_2(hass, data, user_input, default_dict):
 class MailAndPackagesFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     """Config flow for Mail and Packages."""
 
-    VERSION = 1
+    VERSION = 3
     CONNECTION_CLASS = config_entries.CONN_CLASS_CLOUD_POLL
 
     def __init__(self):
@@ -170,26 +178,19 @@ class MailAndPackagesFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     async def async_step_config_2(self, user_input=None):
         self._errors = {}
         if user_input is not None:
+            user_input[CONF_AMAZON_FWDS] = user_input[CONF_AMAZON_FWDS].split(",")
             self._data.update(user_input)
-            valid = await _validate_path(user_input[CONF_PATH])
-            if valid:
-                if user_input[CONF_GENERATE_MP4]:
-                    valid = await _check_ffmpeg()
-                else:
-                    valid = True
-
-                if valid:
-                    if user_input[CONF_FOLDER] is not None:
-                        if not user_input[CONF_PATH].endswith("/"):
-                            user_input[CONF_PATH] += "/"
-                            self._data.update(user_input)
-                    return self.async_create_entry(
-                        title=self._data[CONF_HOST], data=self._data
-                    )
-                else:
-                    self._errors["base"] = "ffmpeg_not_found"
+            if user_input[CONF_GENERATE_MP4]:
+                valid = await _check_ffmpeg()
             else:
-                self._errors["base"] = "invalid_path"
+                valid = True
+
+            if valid:
+                return self.async_create_entry(
+                    title=self._data[CONF_HOST], data=self._data
+                )
+            else:
+                self._errors["base"] = "ffmpeg_not_found"
 
             return await self._show_config_2(user_input)
 
@@ -205,7 +206,10 @@ class MailAndPackagesFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
             CONF_PATH: self.hass.config.path() + DEFAULT_PATH,
             CONF_DURATION: DEFAULT_GIF_DURATION,
             CONF_IMAGE_SECURITY: DEFAULT_IMAGE_SECURITY,
+            CONF_IMAP_TIMEOUT: DEFAULT_IMAP_TIMEOUT,
             CONF_AMAZON_FWDS: DEFAULT_AMAZON_FWDS,
+            CONF_GENERATE_MP4: False,
+            CONF_ALLOW_EXTERNAL: DEFAULT_ALLOW_EXTERNAL,
         }
 
         return self.async_show_form(
@@ -261,26 +265,18 @@ class MailAndPackagesOptionsFlow(config_entries.OptionsFlow):
     async def async_step_options_2(self, user_input=None):
         self._errors = {}
         if user_input is not None:
+            user_input[CONF_AMAZON_FWDS] = user_input[CONF_AMAZON_FWDS].split(",")
             self._data.update(user_input)
-            valid = await _validate_path(user_input[CONF_PATH])
+
+            if user_input[CONF_GENERATE_MP4]:
+                valid = await _check_ffmpeg()
+            else:
+                valid = True
 
             if valid:
-                if user_input[CONF_GENERATE_MP4]:
-                    valid = await _check_ffmpeg()
-                else:
-                    valid = True
-
-                if valid:
-                    if user_input[CONF_FOLDER] is not None:
-                        if not user_input[CONF_PATH].endswith("/"):
-                            user_input[CONF_PATH] += "/"
-                            self._data.update(user_input)
-
-                    return self.async_create_entry(title="", data=self._data)
-                else:
-                    self._errors["base"] = "ffmpeg_not_found"
+                return self.async_create_entry(title="", data=self._data)
             else:
-                self._errors["base"] = "invalid_path"
+                self._errors["base"] = "ffmpeg_not_found"
 
             return await self._show_step_options_2(user_input)
 
@@ -289,10 +285,23 @@ class MailAndPackagesOptionsFlow(config_entries.OptionsFlow):
     async def _show_step_options_2(self, user_input):
         """Step 2 of options."""
 
+        # Defaults
+        defaults = {
+            CONF_FOLDER: self._data.get(CONF_FOLDER),
+            CONF_SCAN_INTERVAL: self._data.get(CONF_SCAN_INTERVAL),
+            CONF_PATH: self._data.get(CONF_PATH),
+            CONF_DURATION: self._data.get(CONF_DURATION),
+            CONF_IMAGE_SECURITY: self._data.get(CONF_IMAGE_SECURITY),
+            CONF_IMAP_TIMEOUT: self._data.get(CONF_IMAP_TIMEOUT)
+            or DEFAULT_IMAP_TIMEOUT,
+            CONF_AMAZON_FWDS: self._data.get(CONF_AMAZON_FWDS) or DEFAULT_AMAZON_FWDS,
+            CONF_GENERATE_MP4: self._data.get(CONF_GENERATE_MP4),
+            CONF_ALLOW_EXTERNAL: self._data.get(CONF_ALLOW_EXTERNAL),
+            CONF_RESOURCES: self._data.get(CONF_RESOURCES),
+        }
+
         return self.async_show_form(
             step_id="options_2",
-            data_schema=_get_schema_step_2(
-                self.hass, self._data, user_input, self._data
-            ),
+            data_schema=_get_schema_step_2(self.hass, self._data, user_input, defaults),
             errors=self._errors,
         )

@@ -1,7 +1,8 @@
-""" Functions for Mail and Packages """
+""" Helper functions for Mail and Packages """
 
 import datetime
 import email
+import hashlib
 import imaplib
 import logging
 import os
@@ -9,10 +10,13 @@ import quopri
 import re
 import subprocess
 import uuid
-from shutil import copyfile, which
+from email.header import decode_header
+from shutil import copyfile, copytree, which
+from typing import Any, List, Optional, Type, Union
 
 import aiohttp
 import imageio as io
+from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     CONF_HOST,
     CONF_PASSWORD,
@@ -20,6 +24,7 @@ from homeassistant.const import (
     CONF_RESOURCES,
     CONF_USERNAME,
 )
+from homeassistant.core import HomeAssistant
 from PIL import Image
 from resizeimage import resizeimage
 
@@ -30,7 +35,7 @@ _LOGGER = logging.getLogger(__name__)
 # Config Flow Helpers
 
 
-def get_resources():
+def get_resources() -> dict:
     """Resource selection schema."""
 
     known_available_resources = {
@@ -41,15 +46,7 @@ def get_resources():
     return known_available_resources
 
 
-async def _validate_path(path):
-    """ make sure path is valid """
-    if os.path.exists(path):
-        return True
-    else:
-        return False
-
-
-async def _check_ffmpeg():
+async def _check_ffmpeg() -> bool:
     """ check if ffmpeg is installed """
     if which("ffmpeg") is not None:
         return True
@@ -57,7 +54,7 @@ async def _check_ffmpeg():
         return False
 
 
-async def _test_login(host, port, user, pwd):
+async def _test_login(host: str, port: int, user: str, pwd: str) -> bool:
     """function used to login"""
     # Attempt to catch invalid mail server hosts
     try:
@@ -77,19 +74,24 @@ async def _test_login(host, port, user, pwd):
 # Email Data helpers
 
 
-def process_emails(hass, config):
+def default_image_path(hass: HomeAssistant, config_entry: ConfigEntry) -> str:
+    """Return value of the default image path
+
+    Returns the default path based on logic (placeholder for future code)
+    """
+
+    # Return the default
+    return "custom_components/mail_and_packages/images/"
+
+
+def process_emails(hass: HomeAssistant, config: ConfigEntry) -> dict:
     """ Process emails and return value """
     host = config.get(CONF_HOST)
     port = config.get(CONF_PORT)
-    folder = config.get(const.CONF_FOLDER)
     user = config.get(CONF_USERNAME)
     pwd = config.get(CONF_PASSWORD)
-    img_out_path = config.get(const.CONF_PATH)
-    gif_duration = config.get(const.CONF_DURATION)
-    image_security = config.get(const.CONF_IMAGE_SECURITY)
-    generate_mp4 = config.get(const.CONF_GENERATE_MP4)
+    folder = config.get(const.CONF_FOLDER)
     resources = config.get(CONF_RESOURCES)
-    amazon_fwds = config.get(const.CONF_AMAZON_FWDS)
 
     # Login to email server and select the folder
     account = login(host, port, user, pwd)
@@ -105,78 +107,221 @@ def process_emails(hass, config):
 
     # Create image file name dict container
     _image = {}
-    if image_security:
-        image_name = str(uuid.uuid4()) + ".gif"
-    else:
-        image_name = const.DEFAULT_GIF_FILE_NAME
 
+    # USPS Mail Image name
+    image_name = image_file_name(hass, config)
+    _LOGGER.debug("Image name: %s", image_name)
     _image[const.ATTR_IMAGE_NAME] = image_name
+
+    # Amazon delivery image name
+    image_name = image_file_name(hass, config, True)
+    _LOGGER.debug("Amazon Image Name: %s", image_name)
+    _image[const.ATTR_AMAZON_IMAGE] = image_name
+
+    image_path = config.get(const.CONF_PATH)
+    _LOGGER.debug("Image path: %s", image_path)
+    _image[const.ATTR_IMAGE_PATH] = image_path
     data.update(_image)
 
     # Only update sensors we're intrested in
     for sensor in resources:
-        count = {}
-        if sensor == "usps_mail":
-            count[sensor] = get_mails(
-                account,
-                img_out_path,
-                gif_duration,
-                image_name,
-                generate_mp4,
-            )
-        elif sensor == const.AMAZON_PACKAGES:
-            count[sensor] = get_items(account, const.ATTR_COUNT, amazon_fwds)
-            count[const.AMAZON_ORDER] = get_items(account, const.ATTR_ORDER)
-        elif sensor == const.AMAZON_HUB:
-            value = amazon_hub(account, amazon_fwds)
-            count[sensor] = value[const.ATTR_COUNT]
-            count[const.AMAZON_HUB_CODE] = value[const.ATTR_CODE]
-        elif "_packages" in sensor:
-            prefix = sensor.split("_")[0]
-            delivering = prefix + "_delivering"
-            delivered = prefix + "_delivered"
-            total = 0
-            if delivered in data and delivering in data:
-                total = data[delivering] + data[delivered]
-            count[sensor] = total
-        elif "_delivering" in sensor:
-            prefix = sensor.split("_")[0]
-            delivering = prefix + "_delivering"
-            delivered = prefix + "_delivered"
-            tracking = prefix + "_tracking"
-            info = get_count(account, sensor, True)
-            total = info[const.ATTR_COUNT]
-            if delivered in data:
-                total = total - data[delivered]
-            total = max(0, total)
-            count[sensor] = total
-            count[tracking] = info[const.ATTR_TRACKING]
-        elif sensor == "zpackages_delivered":
-            count[sensor] = 0  # initialize the variable
-            for shipper in const.SHIPPERS:
-                delivered = shipper + "_delivered"
-                if delivered in data and delivered != sensor:
-                    count[sensor] += data[delivered]
-        elif sensor == "zpackages_transit":
-            total = 0
-            for shipper in const.SHIPPERS:
-                delivering = shipper + "_delivering"
-                if delivering in data and delivering != sensor:
-                    total += data[delivering]
-            count[sensor] = max(0, total)
-        elif sensor == "mail_updated":
-            count[sensor] = update_time()
-        else:
-            count[sensor] = get_count(account, sensor, False, img_out_path, hass)[
-                const.ATTR_COUNT
-            ]
+        fetch(hass, config, account, data, sensor)
 
-        data.update(count)
+    # Copy image file to www directory if enabled
+    if config.get(const.CONF_ALLOW_EXTERNAL):
+        copy_images(hass, config)
 
     return data
 
 
-def login(host, port, user, pwd):
+def copy_images(hass: HomeAssistant, config: ConfigEntry) -> None:
+    """Copy images to www directory if enabled."""
+    paths = []
+    src = f"{hass.config.path()}/{config.get(const.CONF_PATH)}"
+    dst = f"{hass.config.path()}/www/mail_and_packages/"
+
+    # Setup paths list
+    paths.append(dst)
+    paths.append(dst + "amazon/")
+
+    # Clean up the destination directory
+    for path in paths:
+        # Path check
+        path_check = os.path.exists(path)
+        if not path_check:
+            try:
+                os.makedirs(path)
+            except OSError as err:
+                _LOGGER.error("Problem creating: %s, error returned: %s", path, err)
+                return
+        cleanup_images(path)
+
+    try:
+        copytree(src, dst, dirs_exist_ok=True)
+    except Exception as err:
+        _LOGGER.error(
+            "Problem copying files from %s to %s error returned: %s", src, dst, err
+        )
+        return
+
+
+def image_file_name(
+    hass: HomeAssistant, config: ConfigEntry, amazon: bool = False
+) -> str:
+    """Determine if filename is to be changed or not.
+
+    Returns filename
+    """
+    image_name = None
+    mail_none = f"{os.path.dirname(__file__)}/mail_none.gif"
+    path = None
+
+    if amazon:
+        path = f"{hass.config.path()}/{config.get(const.CONF_PATH)}amazon"
+    else:
+        path = f"{hass.config.path()}/{config.get(const.CONF_PATH)}"
+
+    # Path check
+    path_check = os.path.exists(path)
+    if not path_check:
+        try:
+            os.makedirs(path)
+        except OSError as err:
+            _LOGGER.error("Problem creating: %s, error returned: %s", path, err)
+            return "mail_none.gif"
+
+    # SHA1 file hash check
+    try:
+        sha1 = hash_file(mail_none)
+    except OSError as err:
+        _LOGGER.error("Problem accessing file: %s, error returned: %s", mail_none, err)
+        return "mail_none.gif"
+
+    ext = None
+    ext = ".jpg" if amazon else ".gif"
+
+    for file in os.listdir(path):
+        if file.endswith(".gif") or (file.endswith(".jpg") and amazon):
+            try:
+                created = datetime.datetime.fromtimestamp(
+                    os.path.getctime(os.path.join(path, file))
+                ).strftime("%d-%b-%Y")
+            except OSError as err:
+                _LOGGER.error(
+                    "Problem accessing file: %s, error returned: %s", file, err
+                )
+                return image_name
+            today = get_formatted_date()
+            _LOGGER.debug("Created: %s, Today: %s", created, today)
+            # If image isn't mail_none and not created today,
+            # return a new filename
+            if sha1 != hash_file(os.path.join(path, file)) and today != created:
+                image_name = f"{str(uuid.uuid4())}{ext}"
+            else:
+                image_name = file
+
+    # Handle no gif file found
+    if image_name is None:
+        image_name = f"{str(uuid.uuid4())}{ext}"
+
+    # Insert place holder image
+    copyfile(mail_none, os.path.join(path, image_name))
+
+    return image_name
+
+
+def hash_file(filename: str) -> str:
+    """ "This function returns the SHA-1 hash
+    of the file passed into it"""
+
+    # make a hash object
+    h = hashlib.sha1()
+
+    # open file for reading in binary mode
+    with open(filename, "rb") as file:
+
+        # loop till the end of the file
+        chunk = 0
+        while chunk != b"":
+            # read only 1024 bytes at a time
+            chunk = file.read(1024)
+            h.update(chunk)
+
+    # return the hex representation of digest
+    return h.hexdigest()
+
+
+def fetch(
+    hass: HomeAssistant, config: ConfigEntry, account: Any, data: dict, sensor: str
+) -> int:
+    """Fetch data for a single sensor, including any sensors it depends on."""
+
+    img_out_path = f"{hass.config.path()}/{config.get(const.CONF_PATH)}"
+    gif_duration = config.get(const.CONF_DURATION)
+    generate_mp4 = config.get(const.CONF_GENERATE_MP4)
+    amazon_fwds = config.get(const.CONF_AMAZON_FWDS)
+    image_name = data[const.ATTR_IMAGE_NAME]
+    amazon_image_name = data[const.ATTR_AMAZON_IMAGE]
+
+    if sensor in data:
+        return data[sensor]
+
+    count = {}
+
+    if sensor == "usps_mail":
+        count[sensor] = get_mails(
+            account,
+            img_out_path,
+            gif_duration,
+            image_name,
+            generate_mp4,
+        )
+    elif sensor == const.AMAZON_PACKAGES:
+        count[sensor] = get_items(account, const.ATTR_COUNT, amazon_fwds)
+        count[const.AMAZON_ORDER] = get_items(account, const.ATTR_ORDER)
+    elif sensor == const.AMAZON_HUB:
+        value = amazon_hub(account, amazon_fwds)
+        count[sensor] = value[const.ATTR_COUNT]
+        count[const.AMAZON_HUB_CODE] = value[const.ATTR_CODE]
+    elif "_packages" in sensor:
+        prefix = sensor.split("_")[0]
+        delivering = fetch(hass, config, account, data, f"{prefix}_delivering")
+        delivered = fetch(hass, config, account, data, f"{prefix}_delivered")
+        count[sensor] = delivering + delivered
+    elif "_delivering" in sensor:
+        prefix = sensor.split("_")[0]
+        delivered = fetch(hass, config, account, data, f"{prefix}_delivered")
+        info = get_count(account, sensor, True)
+        count[sensor] = max(0, info[const.ATTR_COUNT] - delivered)
+        count[f"{prefix}_tracking"] = info[const.ATTR_TRACKING]
+    elif sensor == "zpackages_delivered":
+        count[sensor] = 0  # initialize the variable
+        for shipper in const.SHIPPERS:
+            delivered = f"{shipper}_delivered"
+            if delivered in data and delivered != sensor:
+                count[sensor] += fetch(hass, config, account, data, delivered)
+    elif sensor == "zpackages_transit":
+        total = 0
+        for shipper in const.SHIPPERS:
+            delivering = f"{shipper}_delivering"
+            if delivering in data and delivering != sensor:
+                total += fetch(hass, config, account, data, delivering)
+        count[sensor] = max(0, total)
+    elif sensor == "mail_updated":
+        count[sensor] = update_time()
+    else:
+        count[sensor] = get_count(
+            account, sensor, False, img_out_path, hass, amazon_image_name
+        )[const.ATTR_COUNT]
+
+    data.update(count)
+    _LOGGER.debug("Sensor: %s Count: %s", sensor, str(count[sensor]))
+    return count[sensor]
+
+
+def login(
+    host: str, port: int, user: str, pwd: str
+) -> Union[bool, Type[imaplib.IMAP4_SSL]]:
     """function used to login"""
 
     # Catch invalid mail server / host names
@@ -192,11 +337,12 @@ def login(host, port, user, pwd):
         rv, data = account.login(user, pwd)
     except Exception as err:
         _LOGGER.error("Error logging into IMAP Server: %s", str(err))
+        return False
 
     return account
 
 
-def selectfolder(account, folder):
+def selectfolder(account: Type[imaplib.IMAP4_SSL], folder: str) -> None:
     """Select folder inside the mailbox"""
     try:
         rv, mailboxes = account.list()
@@ -208,44 +354,54 @@ def selectfolder(account, folder):
         _LOGGER.error("Error selecting folder: %s", str(err))
 
 
-def get_formatted_date():
+def get_formatted_date() -> str:
     """Returns today in specific format"""
     today = datetime.datetime.today().strftime("%d-%b-%Y")
     #
     # for testing
-    # today = '06-May-2020'
+    # today = "11-Jan-2021"
     #
     return today
 
 
-def update_time():
+def update_time() -> str:
     """gets update time"""
     updated = datetime.datetime.now().strftime("%b-%d-%Y %I:%M %p")
 
     return updated
 
 
-def email_search(account, address, date, subject=None):
+def email_search(
+    account: Type[imaplib.IMAP4_SSL], address: list, date: str, subject: str = None
+) -> tuple:
     """Search emails with from, subject, senton date.
 
     Returns a tuple
     """
 
     imap_search = None  # Holds our IMAP SEARCH command
+    prefix_list = None
+    email_list = address
+    search = None
+    the_date = f'SINCE "{date}"'
 
-    if isinstance(address, list) and subject is not None:
+    if isinstance(address, list):
         if len(address) == 1:
             email_list = address[0]
-            imap_search = f'(FROM "{email_list}" SUBJECT "{subject}" SENTON "{date}")'
+
         else:
             email_list = '" FROM "'.join(address)
             prefix_list = " ".join(["OR"] * (len(address) - 1))
-            imap_search = f'({prefix_list} FROM "{email_list}" SUBJECT "{subject}" SENTON "{date}")'
 
-    elif subject is not None:
-        imap_search = f'(FROM "{address}" SUBJECT "{subject}" SENTON "{date}")'
+    if subject is not None:
+        search = f'FROM "{email_list}" SUBJECT "{subject}" {the_date}'
     else:
-        imap_search = f'(FROM "{address}" SENTON "{date}")'
+        search = f'FROM "{email_list}" {the_date}'
+
+    if prefix_list is not None:
+        imap_search = f"({prefix_list} {search})"
+    else:
+        imap_search = f"({search})"
 
     _LOGGER.debug("DEBUG imap_search: %s", imap_search)
 
@@ -258,7 +414,9 @@ def email_search(account, address, date, subject=None):
     return value
 
 
-def email_fetch(account, num, type="(RFC822)"):
+def email_fetch(
+    account: Type[imaplib.IMAP4_SSL], num: int, type: str = "(RFC822)"
+) -> tuple:
     """Download specified email for parsing.
 
     Returns tuple
@@ -272,15 +430,21 @@ def email_fetch(account, num, type="(RFC822)"):
     return value
 
 
-def get_mails(account, image_output_path, gif_duration, image_name, gen_mp4=False):
+def get_mails(
+    account: Type[imaplib.IMAP4_SSL],
+    image_output_path: str,
+    gif_duration: int,
+    image_name: str,
+    gen_mp4: bool = False,
+) -> int:
     """Creates GIF image based on the attachments in the inbox"""
     today = get_formatted_date()
     image_count = 0
     images = []
     imagesDelete = []
     msg = ""
-    address = const.SENSOR_DATA["usps_mail"][const.ATTR_EMAIL][0]
-    subject = const.SENSOR_DATA["usps_mail"][const.ATTR_SUBJECT][0]
+    address = const.SENSOR_DATA[const.ATTR_USPS_MAIL][const.ATTR_EMAIL]
+    subject = const.SENSOR_DATA[const.ATTR_USPS_MAIL][const.ATTR_SUBJECT][0]
 
     _LOGGER.debug("Attempting to find Informed Delivery mail")
     _LOGGER.debug("Informed delivery search date: %s", today)
@@ -411,7 +575,7 @@ def get_mails(account, image_output_path, gif_duration, image_name, gen_mp4=Fals
     return image_count
 
 
-def _generate_mp4(path, image_file):
+def _generate_mp4(path: str, image_file: str) -> None:
     """
     Generate mp4 from gif
     use a subprocess so we don't lock up the thread
@@ -425,6 +589,7 @@ def _generate_mp4(path, image_file):
         cleanup_images(os.path.split(mp4_file))
         _LOGGER.debug("Removing old mp4: %s", mp4_file)
 
+    # TODO: find a way to call ffmpeg the right way from HA
     subprocess.call(
         [
             "ffmpeg",
@@ -443,7 +608,7 @@ def _generate_mp4(path, image_file):
     )
 
 
-def resize_images(images, width, height):
+def resize_images(images: list, width: int, height: int) -> list:
     """
     Resize images
     This should keep the aspect ratio of the images
@@ -470,7 +635,7 @@ def resize_images(images, width, height):
     return all_images
 
 
-def copy_overlays(path):
+def copy_overlays(path: str) -> None:
     """ Copy overlay images to image output path."""
 
     overlays = const.OVERLAY
@@ -486,10 +651,10 @@ def copy_overlays(path):
             )
 
 
-def cleanup_images(path, image=None):
+def cleanup_images(path: str, image: Optional[str] = None) -> None:
     """
     Clean up image storage directory
-    Only supose to delete .gif and .mp4 files
+    Only supose to delete .gif, .mp4, and .jpg files
     """
 
     if image is not None:
@@ -500,14 +665,21 @@ def cleanup_images(path, image=None):
         return
 
     for file in os.listdir(path):
-        if file.endswith(".gif") or file.endswith(".mp4"):
+        if file.endswith(".gif") or file.endswith(".mp4") or file.endswith(".jpg"):
             try:
                 os.remove(path + file)
             except Exception as err:
                 _LOGGER.error("Error attempting to remove found image: %s", str(err))
 
 
-def get_count(account, sensor_type, get_tracking_num=False, image_path=None, hass=None):
+def get_count(
+    account: Type[imaplib.IMAP4_SSL],
+    sensor_type: str,
+    get_tracking_num: bool = False,
+    image_path: Optional[str] = None,
+    hass: Optional[HomeAssistant] = None,
+    amazon_image_name: Optional[str] = None,
+) -> dict:
     """
     Get Package Count
     todo: convert subjects to list and use a for loop
@@ -522,7 +694,9 @@ def get_count(account, sensor_type, get_tracking_num=False, image_path=None, has
 
     # Return Amazon delivered info
     if sensor_type == const.AMAZON_DELIVERED:
-        result[const.ATTR_COUNT] = amazon_search(account, image_path, hass)
+        result[const.ATTR_COUNT] = amazon_search(
+            account, image_path, hass, amazon_image_name
+        )
         result[const.ATTR_TRACKING] = ""
         return result
 
@@ -547,12 +721,12 @@ def get_count(account, sensor_type, get_tracking_num=False, image_path=None, has
         (rv, data) = email_search(account, email, today, subject)
         if rv == "OK":
             if body is not None:
-                count += find_text(data[0], account, body)
+                count += find_text(data[0], account, body[0])
             else:
                 count += len(data[0].split())
 
             _LOGGER.debug(
-                "Search for (%s) with subject 1 (%s) results: %s count: %s",
+                "Search for (%s) with subject (%s) results: %s count: %s",
                 email,
                 subject,
                 data[0],
@@ -563,7 +737,7 @@ def get_count(account, sensor_type, get_tracking_num=False, image_path=None, has
     if const.ATTR_PATTERN in const.SENSOR_DATA[pattern].keys():
         track = const.SENSOR_DATA[pattern][const.ATTR_PATTERN][0]
 
-    if track is not None and count > 0:
+    if track is not None and get_tracking_num and count > 0:
         tracking = get_tracking(data[0], account, track)
 
     if len(tracking) > 0:
@@ -576,48 +750,49 @@ def get_count(account, sensor_type, get_tracking_num=False, image_path=None, has
     return result
 
 
-def get_tracking(sdata, account, format=None):
+def get_tracking(
+    sdata: Any, account: Type[imaplib.IMAP4_SSL], format: Optional[str] = None
+) -> list:
     """Parse tracking numbers from email """
-    _LOGGER.debug("Searching for tracking numbers...")
     tracking = []
     pattern = None
     mail_list = sdata.split()
+    _LOGGER.debug("Searching for tracking numbers in %s messages...", len(mail_list))
 
     pattern = re.compile(r"{}".format(format))
     for i in mail_list:
         typ, data = email_fetch(account, i, "(RFC822)")
         for response_part in data:
-            if not isinstance(response_part, tuple):
-                continue
-            msg = email.message_from_bytes(response_part[1])
+            if isinstance(response_part, tuple):
+                msg = email.message_from_bytes(response_part[1])
+                _LOGGER.debug("Checking message subject...")
 
-            # Search subject for a tracking number
-            email_subject = msg["subject"]
-            found = pattern.findall(email_subject)
-            if len(found) > 0:
-                _LOGGER.debug(
-                    "Found tracking number in email subject: (%s)",
-                    found[0],
-                )
-                if found[0] in tracking:
+                # Search subject for a tracking number
+                email_subject = msg["subject"]
+                found = pattern.findall(email_subject)
+                if len(found) > 0:
+                    _LOGGER.debug(
+                        "Found tracking number in email subject: (%s)",
+                        found[0],
+                    )
+                    if found[0] not in tracking:
+                        tracking.append(found[0])
                     continue
-                tracking.append(found[0])
-                continue
 
-            # Search in email body for tracking number
-            email_msg = quopri.decodestring(str(msg.get_payload(0)))
-            email_msg = email_msg.decode("utf-8", "ignore")
-            found = pattern.findall(email_msg)
-            if len(found) > 0:
-                # DHL is special
-                if " " in format:
-                    found[0] = found[0].split(" ")[1]
+                # Search in email body for tracking number
+                _LOGGER.debug("Checking message body...")
+                email_msg = quopri.decodestring(str(msg.get_payload(0)))
+                email_msg = email_msg.decode("utf-8", "ignore")
+                found = pattern.findall(email_msg)
+                if len(found) > 0:
+                    # DHL is special
+                    if " " in format:
+                        found[0] = found[0].split(" ")[1]
 
-                _LOGGER.debug("Found tracking number in email body: %s", found[0])
-                if found[0] in tracking:
+                    _LOGGER.debug("Found tracking number in email body: %s", found[0])
+                    if found[0] not in tracking:
+                        tracking.append(found[0])
                     continue
-                tracking.append(found[0])
-                continue
 
     if len(tracking) == 0:
         _LOGGER.debug("No tracking numbers found")
@@ -625,7 +800,7 @@ def get_tracking(sdata, account, format=None):
     return tracking
 
 
-def find_text(sdata, account, search):
+def find_text(sdata: Any, account: Type[imaplib.IMAP4_SSL], search: str) -> int:
     """
     Filter for specific words in email
     Return count of items found
@@ -638,54 +813,59 @@ def find_text(sdata, account, search):
     for i in mail_list:
         typ, data = email_fetch(account, i, "(RFC822)")
         for response_part in data:
-            if not isinstance(response_part, tuple):
-                continue
-            msg = email.message_from_bytes(response_part[1])
-            email_msg = quopri.decodestring(str(msg.get_payload(0)))
-            try:
+            if isinstance(response_part, tuple):
+                msg = email.message_from_bytes(response_part[1])
+                email_msg = quopri.decodestring(str(msg.get_payload(0)))
                 email_msg = email_msg.decode("utf-8", "ignore")
-            except Exception as err:
-                _LOGGER.warning(
-                    "Error while attempting to find (%s) in email: %s",
-                    search,
-                    str(err),
-                )
-                continue
-            pattern = re.compile(r"{}".format(search))
-            found = pattern.search(email_msg)
-            if found is not None:
-                _LOGGER.debug("Found (%s) in email", search)
-                count += 1
+                pattern = re.compile(r"{}".format(search))
+                found = pattern.findall(email_msg)
+                if len(found) > 0:
+                    _LOGGER.debug(
+                        "Found (%s) in email %s times.", search, str(len(found))
+                    )
+                    count += len(found)
 
     _LOGGER.debug("Search for (%s) count results: %s", search, count)
     return count
 
 
-def amazon_search(account, image_path, hass):
+def amazon_search(
+    account: Type[imaplib.IMAP4_SSL],
+    image_path: str,
+    hass: HomeAssistant,
+    amazon_image_name: str,
+) -> int:
     """ Find Amazon Delivered email """
     _LOGGER.debug("Searching for Amazon delivered email(s)...")
     domains = const.Amazon_Domains.split(",")
-    subject = const.AMAZON_Delivered_Subject
+    subjects = const.AMAZON_Delivered_Subject
     today = get_formatted_date()
     count = 0
 
     for domain in domains:
-        email = const.AMAZON_Email + domain
-        _LOGGER.debug("Amazon email search address: %s", str(email))
+        for subject in subjects:
+            email = const.AMAZON_Email + domain
+            _LOGGER.debug("Amazon email search address: %s", str(email))
 
-        (rv, data) = email_search(account, email, today, subject)
+            (rv, data) = email_search(account, email, today, subject)
 
-        if rv != "OK":
-            continue
+            if rv != "OK":
+                continue
 
-        count += len(data[0].split())
-        _LOGGER.debug("Amazon delivered email(s) found: %s", count)
-        get_amazon_image(data[0], account, image_path, hass)
+            count += len(data[0].split())
+            _LOGGER.debug("Amazon delivered email(s) found: %s", count)
+            get_amazon_image(data[0], account, image_path, hass, amazon_image_name)
 
     return count
 
 
-def get_amazon_image(sdata, account, image_path, hass):
+def get_amazon_image(
+    sdata: Any,
+    account: Type[imaplib.IMAP4_SSL],
+    image_path: str,
+    hass: HomeAssistant,
+    image_name: str,
+) -> None:
     """ Find Amazon delivery image """
     _LOGGER.debug("Searching for Amazon image in emails...")
     search = const.AMAZON_IMG_PATTERN
@@ -697,36 +877,38 @@ def get_amazon_image(sdata, account, image_path, hass):
     for i in mail_list:
         typ, data = email_fetch(account, i, "(RFC822)")
         for response_part in data:
-            if not isinstance(response_part, tuple):
-                continue
-            msg = email.message_from_bytes(response_part[1])
-            _LOGGER.debug("Email Multipart: %s", str(msg.is_multipart()))
-            _LOGGER.debug("Content Type: %s", str(msg.get_content_type()))
-            if not msg.is_multipart() and msg.get_content_type() != "text/html":
-                continue
-            for part in msg.walk():
-                if part.get_content_type() != "text/html":
+            if isinstance(response_part, tuple):
+                msg = email.message_from_bytes(response_part[1])
+                _LOGGER.debug("Email Multipart: %s", str(msg.is_multipart()))
+                _LOGGER.debug("Content Type: %s", str(msg.get_content_type()))
+                if not msg.is_multipart() and msg.get_content_type() != "text/html":
                     continue
-                _LOGGER.debug("Processing HTML email...")
-                body = part.get_payload(decode=True)
-                body = body.decode("utf-8")
-                pattern = re.compile(r"{}".format(search))
-                found = pattern.findall(body)
-                for url in found:
-                    if url[1] != "us-prod-temp.s3.amazonaws.com":
+                for part in msg.walk():
+                    if part.get_content_type() != "text/html":
                         continue
-                    img_url = url[0] + url[1] + url[2]
-                    _LOGGER.debug("Amazon img URL: %s", img_url)
-                    break
+                    _LOGGER.debug("Processing HTML email...")
+                    body = part.get_payload(decode=True)
+                    body = body.decode("utf-8", "ignore")
+                    pattern = re.compile(r"{}".format(search))
+                    found = pattern.findall(body)
+                    for url in found:
+                        if url[1] != "us-prod-temp.s3.amazonaws.com":
+                            continue
+                        img_url = url[0] + url[1] + url[2]
+                        _LOGGER.debug("Amazon img URL: %s", img_url)
+                        break
 
     if img_url is not None:
         # Download the image we found
-        hass.add_job(download_img(img_url, image_path))
+        hass.add_job(download_img(img_url, image_path, image_name))
 
 
-async def download_img(img_url, img_path):
+async def download_img(img_url: str, img_path: str, img_name: str) -> None:
     """ Download image from url """
-    filepath = img_path + "amazon_delivered.jpg"
+
+    img_path = f"{img_path}amazon/"
+    filepath = f"{img_path}{img_name}"
+
     async with aiohttp.ClientSession() as session:
         async with session.get(img_url.replace("&amp;", "&")) as resp:
             if resp.status != 200:
@@ -742,7 +924,7 @@ async def download_img(img_url, img_path):
                     _LOGGER.debug("Amazon image downloaded")
 
 
-def amazon_hub(account, fwds=None):
+def amazon_hub(account: Type[imaplib.IMAP4_SSL], fwds: Optional[str] = None) -> dict:
     """ Find Amazon Hub info and return it """
     email_address = const.AMAZON_HUB_EMAIL
     subject_regex = const.AMAZON_HUB_SUBJECT
@@ -763,14 +945,13 @@ def amazon_hub(account, fwds=None):
     for i in id_list:
         typ, data = email_fetch(account, i, "(RFC822)")
         for response_part in data:
-            if not isinstance(response_part, tuple):
-                continue
-            msg = email.message_from_bytes(response_part[1])
+            if isinstance(response_part, tuple):
+                msg = email.message_from_bytes(response_part[1])
 
-            # Get combo number from subject line
-            email_subject = msg["subject"]
-            pattern = re.compile(r"{}".format(subject_regex))
-            found.append(pattern.search(email_subject).group(3))
+                # Get combo number from subject line
+                email_subject = msg["subject"]
+                pattern = re.compile(r"{}".format(subject_regex))
+                found.append(pattern.search(email_subject).group(3))
 
     info[const.ATTR_COUNT] = len(found)
     info[const.ATTR_CODE] = found
@@ -778,7 +959,11 @@ def amazon_hub(account, fwds=None):
     return info
 
 
-def get_items(account, param, fwds=None):
+def get_items(
+    account: Type[imaplib.IMAP4_SSL],
+    param: str,
+    fwds: Optional[str] = None,
+) -> Union[List[str], int]:
     """Parse Amazon emails for delivery date and order number"""
 
     _LOGGER.debug("Attempting to find Amazon email with item list ...")
@@ -789,16 +974,21 @@ def get_items(account, param, fwds=None):
     deliveriesToday = []
     orderNum = []
     domains = const.Amazon_Domains.split(",")
-    if fwds and fwds != '""':
+    if isinstance(fwds, list):
         for fwd in fwds:
-            domains.append(fwd)
+            if fwd != '""':
+                domains.append(fwd)
+                _LOGGER.debug("Amazon email adding %s to list", str(fwd))
 
     for domain in domains:
         if "@" in domain:
-            email_address = domain
+            email_address = domain.strip('"')
             _LOGGER.debug("Amazon email search address: %s", str(email_address))
         else:
-            email_address = "shipment-tracking@" + domain
+            email_address = []
+            addresses = const.AMAZON_SHIPMENT_TRACKING
+            for address in addresses:
+                email_address.append(f"{address}@{domain}")
             _LOGGER.debug("Amazon email search address: %s", str(email_address))
 
         (rv, sdata) = email_search(account, email_address, tfmt)
@@ -810,65 +1000,74 @@ def get_items(account, param, fwds=None):
             for i in id_list:
                 typ, data = email_fetch(account, i, "(RFC822)")
                 for response_part in data:
-                    if not isinstance(response_part, tuple):
-                        continue
-                    msg = email.message_from_bytes(response_part[1])
+                    if isinstance(response_part, tuple):
+                        msg = email.message_from_bytes(response_part[1])
 
-                    _LOGGER.debug("Email Multipart: %s", str(msg.is_multipart()))
-                    _LOGGER.debug("Content Type: %s", str(msg.get_content_type()))
+                        _LOGGER.debug("Email Multipart: %s", str(msg.is_multipart()))
+                        _LOGGER.debug("Content Type: %s", str(msg.get_content_type()))
 
-                    # Get order number from subject line
-                    email_subject = msg["subject"]
-                    pattern = re.compile(r"#[0-9]{3}-[0-9]{7}-[0-9]{7}")
-                    found = pattern.findall(email_subject)
-
-                    # Don't add the same order number twice
-                    if len(found) > 0 and found[0] not in orderNum:
-                        orderNum.append(found[0])
-
-                    # Catch bad format emails
-                    try:
-                        email_msg = quopri.decodestring(str(msg.get_payload(0)))
-                        email_msg = email_msg.decode("utf-8", "ignore")
-                    except Exception as err:
-                        _LOGGER.debug(
-                            "Error while attempting to parse Amazon email: %s",
-                            str(err),
-                        )
-                        continue
-
-                    searches = const.AMAZON_TIME_PATTERN.split(",")
-                    for search in searches:
-                        if search not in email_msg:
-                            continue
-
-                        start = email_msg.find(search) + len(search)
-                        end = email_msg.find("Track your package:")
-                        arrive_date = email_msg[start:end].strip()
-                        arrive_date = arrive_date.split(" ")
-                        arrive_date = arrive_date[0:3]
-                        arrive_date[2] = arrive_date[2][:2]
-                        arrive_date = " ".join(arrive_date).strip()
-                        if "today" in arrive_date or "tomorrow" in arrive_date:
-                            arrive_date = arrive_date.split(",")[1].strip()
-                            dateobj = datetime.datetime.strptime(arrive_date, "%B %d")
+                        # Get order number from subject line
+                        encoding = decode_header(msg["subject"])[0][1]
+                        if encoding is not None:
+                            email_subject = decode_header(msg["subject"])[0][0].decode(
+                                encoding, "ignore"
+                            )
                         else:
+                            email_subject = decode_header(msg["subject"])[0][0]
+                        _LOGGER.debug("Amazon Subject: %s", str(email_subject))
+                        pattern = re.compile(r"[0-9]{3}-[0-9]{7}-[0-9]{7}")
+                        found = pattern.findall(email_subject)
+
+                        # Don't add the same order number twice
+                        if len(found) > 0 and found[0] not in orderNum:
+                            orderNum.append(found[0])
+
+                        try:
+                            email_msg = quopri.decodestring(str(msg.get_payload(0)))
+                        except Exception as err:
+                            _LOGGER.debug(
+                                "Problem decoding email message: %s", str(err)
+                            )
+                            continue
+                        email_msg = email_msg.decode("utf-8", "ignore")
+                        searches = const.AMAZON_TIME_PATTERN.split(",")
+                        for search in searches:
+                            if search not in email_msg:
+                                continue
+
+                            start = email_msg.find(search) + len(search)
+                            end = email_msg.find("Track your")
+                            arrive_date = email_msg[start:end].strip()
+                            arrive_date = arrive_date.split(" ")
+                            arrive_date = arrive_date[0:3]
+                            arrive_date[2] = arrive_date[2][:2]
+                            arrive_date = " ".join(arrive_date).strip()
+                            time_format = None
+
+                            _LOGGER.debug("Arrive Date: %s", arrive_date)
+
+                            if "today" in arrive_date or "tomorrow" in arrive_date:
+                                arrive_date = arrive_date.split(",")[1].strip()
+                                time_format = "%B %d"
+                            elif arrive_date.endswith(","):
+                                arrive_date = arrive_date.rstrip(",")
+                                time_format = "%A, %B %d"
+                            else:
+                                time_format = "%A, %B %d"
+
                             dateobj = datetime.datetime.strptime(
-                                arrive_date, "%A, %B %d"
+                                arrive_date, time_format
                             )
 
-                        if (
-                            dateobj.day == datetime.date.today().day
-                            and dateobj.month == datetime.date.today().month
-                        ):
-                            deliveriesToday.append("Amazon Order")
+                            if (
+                                dateobj.day == datetime.date.today().day
+                                and dateobj.month == datetime.date.today().month
+                            ):
+                                deliveriesToday.append("Amazon Order")
 
     if param == "count":
         _LOGGER.debug("Amazon Count: %s", str(len(deliveriesToday)))
         return len(deliveriesToday)
-    elif param == "order":
+    else:
         _LOGGER.debug("Amazon order: %s", str(orderNum))
         return orderNum
-    else:
-        _LOGGER.debug("Amazon json: %s", str(deliveriesToday))
-        return deliveriesToday
