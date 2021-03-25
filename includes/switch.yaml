@@ -8,3 +8,21 @@
           service: litter_robot.reset_drawer
         turn_off:
           service: litter_robot.reset_drawer
+
+      litter_robot_nightlight:
+        friendly_name: "LitterBot 5000 Night Light"
+        value_template: "{{ is_state('sensor.litter_robot_litterbot_5000_nightlight', 'On') }}"
+        icon_template: "mdi:lightbulb"
+        turn_on:
+          service: litter_robot.nightlight_turn_on
+        turn_off:
+          service: litter_robot.nightlight_turn_off
+
+      litter_robot_cycle:
+        friendly_name: "LitterBot 5000 Cycle"
+        value_template: "{{ is_state('sensor.litter_robot_litterbot_5000_status', 'Clean Cycling') }}"
+        icon_template: "mdi:refresh"
+        turn_on:
+          service: litter_robot.cycle
+        turn_off:
+          service: litter_robot.cycle
