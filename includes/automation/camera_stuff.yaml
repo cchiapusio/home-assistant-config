@@ -1,0 +1,178 @@
+- alias: Sound the alarm
+  trigger:
+    platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: alarm
+  action:
+    - service: scene.turn_on
+      entity_id: scene.all_indoor_lights_on
+
+- alias: pause backdoor motion for ten minutes
+  mode: single
+  max_exceeded: silent
+  trigger:
+    platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: pause10backdoor
+  action:
+    - service: automation.turn_off
+      entity_id: automation.backdoor_motion_notification
+    - delay:
+        minutes: 10
+    - service: automation.turn_on
+      entity_id: automation.backdoor_motion_notification
+
+- alias: pause backdoor motion for thirty minutes
+  mode: single
+  max_exceeded: silent
+  trigger:
+    platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: pause30backdoor
+  action:
+    - service: automation.turn_off
+      entity_id: automation.backdoor_motion_notification
+    - delay:
+        minutes: 30
+    - service: automation.turn_on
+      entity_id: automation.backdoor_motion_notification
+      
+
+- alias: turn on deck floodlights when motion detected at back door
+  trigger: 
+    - platform: state
+      entity_id: binary_sensor.back_door_motion
+      from: 'off'
+      to: 'on'
+  condition:
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: sun.sun
+          state: below_horizon
+        - condition: state
+          entity_id: light.dining_room_lamp_west
+          state: 'off'
+  action:
+    - service: switch.turn_on
+      entity_id: switch.shelly_2_5_e8db84d2729c_relay_1
+    - delay:
+        minutes: 5
+    - service: switch.turn_off
+      entity_id: switch.shelly_2_5_e8db84d2729c_relay_1
+    
+
+- alias: turn on lights when person detected at back door
+  trigger: 
+    - platform: state
+      entity_id: binary_sensor.person_at_back_door
+      from: 'off'
+      to: 'on'
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: below_horizon
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: light.dining_room_lamp_west
+          state: 'off'
+        - condition: state
+          entity_id: group.persons
+          state:  'not_home'
+  action:
+    - service: scene.create
+      data:
+        scene_id: entryway_motion_save
+        snapshot_entities:
+        - light.dining_room_lights
+        - switch.hutch_light
+        - light.foyer_lamp
+        - light.living_room_lamp_1
+        - light.living_room_lamp_2
+        - light.mbr_bed_leds
+    - service: light.turn_on
+      entity_id: light.mbr_bed_leds
+      data:
+        rgb_color: [0,0,255]
+        brightness: 130
+    - service: light.turn_on
+      data:
+        entity_id: light.dining_room_lights
+        brightness: 255
+    - service: light.turn_on
+      data:
+        entity_id: light.foyer_lamp
+        brightness: 255
+    - delay:
+        seconds: 15
+    - service: light.turn_on
+      data:
+        entity_id: light.living_room_lamp_1
+        brightness: 255
+    - service: light.turn_on
+      data:
+        entity_id: light.living_room_lamp_2
+        brightness: 255
+    - service: switch.turn_on
+      entity_id: switch.hutch_light
+    - delay:
+        minutes: 1
+    - service: light.turn_on
+      data:
+        entity_id: light.dining_room_lights
+        brightness: 100
+    - service: light.turn_on
+      data:
+        entity_id: light.foyer_lamp
+        brightness: 100
+    - service: light.turn_on
+      data:
+        entity_id: light.living_room_lamp_1
+        brightness: 100
+    - service: light.turn_on
+      data:
+        entity_id: light.living_room_lamp_2
+        brightness: 100
+    - delay:
+        minutes: 5
+    - service: scene.turn_on
+      entity_id: scene.entryway_motion_save
+
+
+- alias: pause frontyard motion for ten minutes
+  mode: single
+  max_exceeded: silent
+  trigger:
+    platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: pause10frontyard
+  action:
+    - service: automation.turn_off
+      entity_id: automation.frontyard_motion_notification
+    - delay:
+        minutes: 10
+    - service: automation.turn_on
+      entity_id: automation.frontyard_motion_notification
+
+- alias: pause frontyard motion for thirty minutes
+  mode: single
+  max_exceeded: silent
+  trigger:
+    platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: pause30frontyard
+  action:
+    - service: automation.turn_off
+      entity_id: automation.frontyard_motion_notification
+    - delay:
+        minutes: 30
+    - service: automation.turn_on
+      entity_id: automation.frontyard_motion_notification
+      
+    

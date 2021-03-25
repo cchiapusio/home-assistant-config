@@ -1,0 +1,50 @@
+- alias: turn on kitchen light on motion
+  trigger: 
+    platform: state
+    entity_id: binary_sensor.person_in_kitchen
+    to: 'on'
+  condition: 
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: switch.hutch_light
+        state:  'off'
+      - condition: state
+        entity_id: sun.sun
+        state:  below_horizon
+  action:
+    - service: switch.turn_on
+      entity_id: switch.hutch_light
+    - delay:
+        minutes: 5
+    - service: switch.turn_off
+      entity_id: switch.hutch_light
+
+- alias: Alert that a Cat is locked in the kitchen
+  trigger: 
+    platform: state
+    entity_id: binary_sensor.cat_in_kitchen
+    to: 'on'
+  condition: 
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: switch.hutch_light
+        state:  'off'
+      - condition: state
+        entity_id: sun.sun
+        state:  below_horizon
+  action:
+    - service: notify.master_bedroom_tv
+      data:
+        message: "There is a cat in the kitchen"
+    - service: notify.toris_bedroom_tv
+      data:
+        message: "There is a cat in the kitchen"
+    - service: notify.mobile_app_sm_n986u
+      data:
+        message: "There is a cat in the kitchen"
+        data:
+          sticky: 'true'
+          channel: Alarm
+          importance: high

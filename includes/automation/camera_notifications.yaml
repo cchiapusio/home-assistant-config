@@ -1,0 +1,121 @@
+- alias: amcrest1 motion notification
+  initial_state: true
+  trigger: 
+    - platform: state
+      entity_id: binary_sensor.amcrest1_motion
+      from: 'off'
+      to: 'on'
+  action:
+    - service: image_processing.scan
+      entity_id: image_processing.deepstack_object_bi_amcrest1
+    - service: notify.mobile_app_sm_n986u
+      data:
+        message: "Amcrest1 Motion"
+        data:
+          image: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_amcrest1', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_amcrest1', 'last_target_detection') }}.jpg"
+          group: Motion
+          sticky: true
+          clickAction: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_amcrest1', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_amcrest1', 'last_target_detection') }}.jpg"
+          actions:
+            - action: "alarm"
+              title: "Trigger Alarm"
+            - action: "pause10amcrest1"
+              title: "Pause 10m"
+            - action: "pause30amcrest1"
+              title: "Pause 30m"
+
+- alias: pause amcrest1 motion for ten minutes
+  mode: single
+  max_exceeded: silent
+  trigger:
+    platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: pause10amcrest1
+  action:
+    - service: automation.turn_off
+      entity_id: automation.amcrest1_motion_notification
+    - delay:
+        minutes: 10
+    - service: automation.turn_on
+      entity_id: automation.amcrest1_motion_notification
+
+- alias: pause amcrest1 motion for thirty minutes
+  mode: single
+  max_exceeded: silent
+  trigger:
+    platform: event
+    event_type: mobile_app_notification_action
+    event_data:
+      action: pause30amcrest1
+  action:
+    - service: automation.turn_off
+      entity_id: automation.amcrest1_motion_notification
+    - delay:
+        minutes: 30
+    - service: automation.turn_on
+      entity_id: automation.amcrest1_motion_notification
+
+- alias: backdoor motion notification
+  initial_state: true
+  trigger: 
+    - platform: state
+      entity_id: binary_sensor.person_at_back_door
+      from: 'off'
+      to: 'on'
+  action:
+    - service: image_processing.scan
+      entity_id: image_processing.deepstack_object_bi_backdoor
+    - service: notify.mobile_app_sm_n986u
+      data:
+        message: "Back Door Motion"
+        data:
+          image: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_backdoor', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_backdoor', 'last_target_detection') }}.jpg"
+          group: Motion
+          sticky: true
+          clickAction: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_backdoor', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_backdoor', 'last_target_detection') }}.jpg"
+          actions:
+            - action: "alarm"
+              title: "Trigger Alarm"
+            - action: "pause10backdoor"
+              title: "Pause 10m"
+            - action: "pause30backdoor"
+              title: "Pause 30m"
+
+- alias: frontyard motion notification
+  initial_state: true
+  trigger: 
+    - platform: state
+      entity_id: binary_sensor.person_in_front_yard
+      from: 'off'
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.vehicle_in_front_yard
+      from: 'off'
+      to: 'on'
+  action:
+    - service: image_processing.scan
+      entity_id: image_processing.deepstack_object_bi_front_yard
+    - service: notify.living_room_tv
+      data:
+        message: "Front Yard Motion"
+    - service: media_player.play_media
+      data:
+        entity_id: media_player.office_display
+        media_content_id: "http://192.168.10.11/mjpg/frontyard/video.mjpg"
+        media_content_type: 'image/jpg'
+    - service: notify.mobile_app_sm_n986u
+      data:
+        message: "Front Yard Motion"
+        data:
+          image: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_front_yard', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_front_yard', 'last_target_detection') }}.jpg"
+          group: Motion
+          sticky: true
+          clickAction: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_front_yard', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_front_yard', 'last_target_detection') }}.jpg"
+          actions:
+            - action: "alarm"
+              title: "Trigger Alarm"
+            - action: "pause10frontyard"
+              title: "Pause 10m"
+            - action: "pause30frontyard"
+              title: "Pause 30m"

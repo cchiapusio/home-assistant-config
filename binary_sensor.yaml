@@ -41,3 +41,94 @@
     name: "sun elevation weather check"
     upper: 40
     entity_id: sensor.sun_elevation
+
+  - platform: mqtt
+    name: "Back Door Motion"
+    state_topic: BlueIris/sensor/backdoor/motion
+    payload_on: "ON"
+    payload_off: "OFF"
+    device_class: motion
+
+  - platform: mqtt
+    name: "Kitchen Motion"
+    state_topic: BlueIris/sensor/kitchen/motion
+    payload_on: "ON"
+    payload_off: "OFF"
+    device_class: motion
+
+  - platform: mqtt
+    name: "Front Yard Motion"
+    state_topic: BlueIris/sensor/frontyard/motion
+    payload_on: "ON"
+    payload_off: "OFF"
+    device_class: motion
+
+  - platform: mqtt
+    name: "Cat Room Motion"
+    state_topic: BlueIris/sensor/catroom/motion
+    payload_on: "ON"
+    payload_off: "OFF"
+    device_class: motion
+
+  - platform: mqtt
+    name: "Amcrest1 Motion"
+    state_topic: BlueIris/sensor/amcrest1/motion
+    payload_on: "ON"
+    payload_off: "OFF"
+    device_class: motion
+
+  - platform: mqtt
+    name: "Person in Kitchen"
+    device_class: motion
+    state_topic: "BlueIris/sensor/kitchen/ai"
+    payload_on: true
+    payload_off: false
+    value_template: "{{ 'person' in value | lower }}"
+
+  - platform: mqtt
+    name: "Cat in Kitchen"
+    device_class: motion
+    state_topic: "BlueIris/sensor/kitchen/ai"
+    payload_on: true
+    payload_off: false
+    value_template: "{{ 'cat' in value | lower or 'dog' in value | lower }}"
+
+  - platform: mqtt
+    name: "Person at Back Door"
+    device_class: motion
+    state_topic: "BlueIris/sensor/backdoor/ai"
+    payload_on: true
+    payload_off: false
+    value_template: "{{ 'person' in value | lower }}"
+
+  - platform: mqtt
+    name: "Animal at the Back Door "
+    device_class: motion
+    state_topic: "BlueIris/sensor/backdoor/ai"
+    payload_on: true
+    payload_off: false
+    value_template: "{{ 'cat' in value | lower or 'dog' in value | lower }}"
+
+  - platform: mqtt
+    name: "Person in front yard"
+    device_class: motion
+    state_topic: "BlueIris/sensor/frontyard/ai"
+    payload_on: true
+    payload_off: false
+    value_template: "{{ 'person' in value | lower or 'bicycle' in value | lower }}"
+
+  - platform: mqtt
+    name: "Animal in front yard"
+    device_class: motion
+    state_topic: "BlueIris/sensor/frontyard/ai"
+    payload_on: true
+    payload_off: false
+    value_template: "{{ 'cat' in value | lower or 'dog' in value | lower }}"
+
+  - platform: mqtt
+    name: "Vehicle in front yard"
+    device_class: motion
+    state_topic: "BlueIris/sensor/frontyard/ai"
+    payload_on: true
+    payload_off: false
+    value_template: "{{ 'car' in value | lower or 'truck' in value | lower or 'bus' in value | lower }}"
