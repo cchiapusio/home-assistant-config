@@ -21,6 +21,13 @@
     - light.mbr_lamp_west_light
 
   - platform: group
+    name: mbr lights
+    entities: 
+    - light.mbr_lamp_east_light
+    - light.mbr_lamp_west_light
+    - light.mbr_lamp_mirror
+
+  - platform: group
     name: dining room lights
     entities: 
     - light.dining_room_lamp_east
