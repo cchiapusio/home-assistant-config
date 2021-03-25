@@ -1,0 +1,26 @@
+- alias: turn on deck floodlights at sunset
+  trigger:
+    platform: numeric_state
+    entity_id: sun.sun
+    value_template: '{{ state.attributes.elevation }}'
+    below: -3
+  condition:
+    condition: template
+    value_template: '{{ is_state_attr("sun.sun", "rising", false) }}'
+  action:
+    - service: homeassistant.turn_on
+      entity_id: switch.shelly_2_5_e8db84d2729c_relay_1
+    - service: homeassistant.turn_on
+      entity_id: switch.shelly_2_5_8caab55f9707_relay_0
+    - service: homeassistant.turn_off
+      target:
+        entity_id: 
+          - switch.shelly_2_5_e8db84d2729c_relay_0
+          - switch.shelly_2_5_8caab55f9707_relay_1
+    - delay: 00:00:02
+    - service: homeassistant.turn_on
+      target:
+        entity_id: 
+          - switch.shelly_2_5_e8db84d2729c_relay_0
+          - switch.shelly_2_5_8caab55f9707_relay_1
+    
