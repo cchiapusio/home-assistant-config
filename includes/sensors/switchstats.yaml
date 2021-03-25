@@ -1,0 +1,38 @@
+  # -- Define the statistics enabled counters
+  - platform: statistics
+    name: Internet WAN In Counter
+    entity_id: sensor.1_1_1_ifinoctets
+    sampling_size: 2
+    max_age:
+      minutes: 5
+  - platform: statistics
+    name: Internet WAN Out Counter
+    entity_id: sensor.1_1_1_ifoutoctets
+    sampling_size: 2
+    max_age:
+      minutes: 5
+  # -- Define the actual sensor templates you'll use
+  - platform: template
+    sensors:
+      internet_wan_in_mbps:
+        icon_template: mdi:cloud-download-outline
+        friendly_name: 'Internet WAN Traffic In'
+        unit_of_measurement: 'Mbps'
+        entity_id: sensor.internet_wan_in_counter
+        value_template: >
+          {% if state_attr('sensor.internet_wan_in_counter','change_rate')|int > 0 %}
+            {{ (((state_attr('sensor.internet_wan_in_counter','change_rate')|float)*8)/1000000)|round(2) }}
+          {% else  %}
+            0
+          {% endif %}
+      internet_wan_out_mbps:
+        icon_template: mdi:cloud-upload-outline
+        friendly_name: 'Internet WAN Traffic Out'
+        unit_of_measurement: 'Mbps'
+        entity_id: sensor.internet_wan_out_counter
+        value_template: >
+          {% if state_attr('sensor.internet_wan_out_counter','change_rate')|int > 0 %}
+            {{ (((state_attr('sensor.internet_wan_out_counter','change_rate')|float)*8)/1000000)|round(2) }}
+          {% else  %}
+            0
+          {% endif %}
