@@ -1,0 +1,53 @@
+- id: 'cube-no-shake-plz'
+  alias: No shake cube plz
+  description: 'No shake cube plz (desc)'
+  trigger:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 00:15:8d:00:05:42:b0:1e
+      command: knock
+  action:
+   - service: tts.google_say
+     entity_id: media_player.office_display
+     data:
+       message: 'Please stopp shaking me, i will be a good cube!'
+   - service: light.toggle
+     entity_id: light.office_lamp
+
+- id: "adjust lights down on twist left"
+  alias: twist left for lights down
+  trigger:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 00:15:8d:00:05:42:b0:1e
+      command: rotate_left
+  condition:
+    - condition: state
+      entity_id: light.office_lamp
+      state:  'on'
+  action:
+    - service: light.turn_on
+      data:
+        brightness_step_pct: -30
+      entity_id: light.office_lamp
+
+
+- id: "adjust lights up on twist right"
+  alias: twist right for lights up
+  trigger:
+  - platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 00:15:8d:00:05:42:b0:1e
+      command: rotate_right
+  condition:
+    - condition: state
+      entity_id: light.office_lamp
+      state:  'on'
+  action:
+    - service: light.turn_on
+      data:
+        brightness_step_pct: 30
+      entity_id: light.office_lamp
