@@ -133,7 +133,7 @@ http:
 
 # https://home-assistant.io/components/logger/
 logger:
-  default: warning
+  default: info
 #  logs:
 #    homeassistant.components.zha: debug
 #    bellows.ezsp: debug
