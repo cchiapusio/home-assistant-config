@@ -12,6 +12,6 @@
     - condition: template
       value_template: '{{ states("sensor.playstation_game_time_today") |float > 2.1 }}'
   action:
-    - service: notify.notify_chip
+    - service: notify.mobile_app_sm_n986u
       data:
         message: "PS4 2h time limit reached"

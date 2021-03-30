@@ -6,7 +6,7 @@
   - condition: template
     value_template: '{{ states.sensor.recycling.attributes.days == 1 }}'
   action:
-    service: notify.notify_chip
+    service: notify.mobile_app_sm_n986u
     data:
       message: "Take out Recycling bin tonight"
 
@@ -25,6 +25,6 @@
   action:
     - service: scene.turn_on
       entity_id: scene.housecleaners_coming
-    - service: notify.notify_chip
+    - service: notify.mobile_app_sm_n986u
       data:
         message: "Prepare the house for the Maids"

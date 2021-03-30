@@ -14,7 +14,7 @@
 #        valute_template: '{{ state.attributes.hvac_modes }}'
 #        state:  'Cool'
   action:
-    - service: notify.notify_chip
+    - service: notify.mobile_app_sm_n986u
       data:
         message: "I could have turned the heat on for you"
 

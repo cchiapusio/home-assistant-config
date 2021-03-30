@@ -69,6 +69,6 @@
       from: 'off'
       to: 'on'
   action:
-    - service: notify.notify_chip
+    - service: notify.mobile_app_sm_n986u
       data:
         message: "start the projector"

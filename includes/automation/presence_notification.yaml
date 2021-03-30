@@ -20,6 +20,17 @@
     data:
       message: "Alert, Tommy is here"
 
+- alias: Natalie is here
+  trigger:
+    platform: state
+    entity_id: device_tracker.natalies_iphone
+    to: home
+  action:
+    service: tts.google_say
+    entity_id: media_player.office_display
+    data:
+      message: "Alert, Natalie is here"
+
 - alias: Suspend camera notifications when Chip comes home
   trigger:
     platform: state
