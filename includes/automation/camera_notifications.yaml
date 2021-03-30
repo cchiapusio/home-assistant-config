@@ -119,3 +119,15 @@
               title: "Pause 10m"
             - action: "pause30frontyard"
               title: "Pause 30m"
+
+- alias: reenable backdoor notifications after one hour
+  trigger: 
+  - platform: state
+    entity_id: automation.backdoor_motion_notification
+    from: 'on'
+    to: 'off'
+    for:
+      hours: 1
+  action:
+  - service: automation.turn_on
+    entity_id: automation.backdoor_motion_notification
