@@ -118,6 +118,8 @@ recorder:
 #      - device_tracker.life360_tori
 #      - device_tracker.life360_cindy
 #      - device_tracker.life360_chip
+      - automation.backdoor_motion_notification
+      - automation.frontyard_motion_notification
 
 # https://home-assistant.io/components/http/
 http:
