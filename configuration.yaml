@@ -6,14 +6,14 @@
 
 # https://home-assistant.io/docs/configuration/basic/
 homeassistant:
-  name: Home
-  latitude: !secret home_lat
-  longitude: !secret home_long
-  elevation: 1227
-  unit_system: imperial
-  time_zone: America/New_York
-  external_url: !secret base_url_secret
-  internal_url: !secret internal_url
+#  name: Home
+#  latitude: !secret home_lat
+#  longitude: !secret home_long
+#  elevation: 1227
+#  unit_system: imperial
+#  time_zone: America/New_York
+#  external_url: !secret base_url_secret
+#  internal_url: !secret internal_url
   allowlist_external_dirs:
     - /config/faces/
     - /config/www/
@@ -38,7 +38,7 @@ homeassistant:
       friendly_name: 'Speedtest Download Average'
       icon: mdi:speedometer
     sensor.upload_speed_mean:
-      friendly_name: 'Spedtest Upload Average'
+      friendly_name: 'Speedtest Upload Average'
       icon: mdi:speedometer
     sensor.ping_time_mean:
       friendly_name: 'Speedtest Ping Average'
