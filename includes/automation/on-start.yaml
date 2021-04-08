@@ -22,8 +22,8 @@
       payload: 'setoption19 1;Fade ON;Speed 5; state'
 
  # automations.yaml file
-- id: shellies_announce
-  alias: 64b84f07-ba00-48bd-9999-1194261d137e
+- alias: shellies_announce
+  id: 64b84f07-ba00-48bd-9999-1194261d137e
   trigger:
     - platform: homeassistant
       event: start
@@ -35,8 +35,8 @@
       topic: shellies/command
       payload: announce
 
-- id: 'shellies_discovery'
-  alias: 1326abd3-1aac-4f5c-baf3-d26b86ffbfce
+- alias: 'shellies_discovery'
+  id: 1326abd3-1aac-4f5c-baf3-d26b86ffbfce
   mode: queued
   max: 999
   trigger:
