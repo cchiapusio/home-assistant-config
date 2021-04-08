@@ -2,6 +2,7 @@
 ## Turn off lights at midnight if the TV is off
 ##
 - alias: turn off living room lights at midnight
+  id: 277b1ae2-1b04-4656-8d6c-ce23f7c84ab4
   trigger:
     platform: time
     at: "23:00:00"
@@ -17,6 +18,7 @@
 ## Turn off Lights if TV turns off after midnight
 ##
 - alias: turn off lights when done watching TV
+  id: 9608670a-5061-44ca-9827-239f19ba9b23
   trigger:
     platform: state
     entity_id: media_player.lg_webos_smart_tv
@@ -42,6 +44,7 @@
         entity_id: timer.5m
 
 - alias: turn off living room lights after timer
+  id: 8767441e-27d8-4d10-a652-6651c84041d7
   trigger:
     platform: event
     event_type: timer.finished
@@ -56,6 +59,7 @@
 ##
 
 - alias: turn on living room lights at sunset
+  id: 70d19e4a-2360-48ad-8abc-a0fa12df379c
   trigger:
     platform: numeric_state
     entity_id: sun.sun
@@ -77,6 +81,7 @@
 
 
 - alias: turn on living room lights early if cloudy
+  id: dd5e6b30-7222-48f5-8035-c4df9b10aba6
   trigger:
     platform: numeric_state
     entity_id: sun.sun
@@ -102,6 +107,7 @@
         - switch.curio_cabinets
 
 - alias: turn on living room lights even earlier if 100% cloudy
+  id: 87592801-4bc6-4fde-9515-63df8dc1046b
   trigger:
     platform: numeric_state
     entity_id: sensor.dark_sky_cloud_coverage
@@ -125,6 +131,7 @@
         - switch.curio_cabinets
 
 - alias: turn on living room lights when there is an afternoon storm
+  id: 3ce0ab6b-6b27-464e-b227-340c6f84978b
   trigger:
     platform: numeric_state
     entity_id: sensor.dark_sky_precip_intensity
@@ -148,6 +155,7 @@
         - switch.curio_cabinet_lamp
 
 - alias: Media player paused/stopped
+  id: b239b22a-5bae-4e71-b7cc-99f7c6fecfb2
   trigger:
     - platform: state
       entity_id: media_player.living_room_shield, media_player.plex_plex_for_lg_lg_75sm8670pua
@@ -162,6 +170,7 @@
     entity_id: scene.livingroom_normal
 
 - alias: Media player playing
+  id: b99dc5b6-0243-4407-86df-1eecc1a00ad3
   trigger:
     - platform: state
       entity_id: media_player.living_room_shield
@@ -176,6 +185,7 @@
     entity_id: scene.livingroom_dim
 
 - alias: Packers Playing
+  id: 76271bea-d291-4264-81bc-9fe2fcde508d
   trigger:   
   - platform: state
     entity_id: calendar.green_bay_packers
@@ -185,6 +195,7 @@
     entity_id: scene.packers_playing
 
 - alias: Packers done Playing
+  id: 6404c369-15d4-4450-b6e1-9d114c135482
   trigger:   
   - platform: state
     entity_id: calendar.green_bay_packers
@@ -194,6 +205,7 @@
     entity_id: scene.livingroom_normal
 
 - alias: Tori scheduled for work this morning
+  id: ab5c5a72-3831-44d1-a860-3fc9b23168c5
   trigger:
     - platform: time_pattern
       minutes: '/5'
@@ -220,6 +232,7 @@
       entity_id: switch.hutch_light
 
 - alias: Tori left for work
+  id: 7c8d4f4c-d3f2-426e-a321-c0ea3175bee2
   trigger:
     - platform: state
       entity_id: person.tori
@@ -237,6 +250,7 @@
       - light.foyer_lamp
 
 - alias: turn on candle in the morning
+  id: 8d184c18-380b-4d4a-9528-460badcd25d9
   trigger:
     platform: time
     at: "09:00:00"
@@ -251,6 +265,7 @@
 # turn on hyperion wled lights when TV turns on
 #
 - alias: turn on ambilight when TV turns on
+  id: 03e16f89-e328-4051-93e4-f7f6fc96003a
   trigger:
     platform: state
     entity_id: media_player.lg_webos_smart_tv

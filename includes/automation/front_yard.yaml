@@ -1,4 +1,5 @@
 - alias: front yard scene
+  id: 2dd3178d-2aee-45a8-95b4-a9aa0d8dee0f
   trigger:
     platform: sun
     event: sunset
@@ -48,6 +49,7 @@
           {% endif %}
 
 - alias: floods_off_at_dawn
+  id: 1973456b-bc9c-46ec-a5bc-b7daca87c62c
   trigger:
     platform: sun
     event: sunrise
@@ -59,6 +61,7 @@
       entity_id: light.flood02
 
 - alias: turn off house floods at midnight
+  id: 242a674a-11c6-4896-a34c-ca537dac9f55
   trigger:
     platform: time
     at: "00:00:00"

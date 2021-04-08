@@ -1,5 +1,5 @@
 - alias: bed motion floor light
-  id: 'mbr bed motion'
+  id: 094e94c0-c852-4b74-a90f-27d2b4b64045
   initial_state: true
   trigger:
     - platform: state
@@ -27,7 +27,7 @@
       brightness: 70
 
 - alias: bed nomotion floor light off
-  id: 'mbr bed nomotion'
+  id: d02d1cbd-52c0-46a5-8dda-e7de772aa712
   initial_state: true
   trigger:
     - platform: state

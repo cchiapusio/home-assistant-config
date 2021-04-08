@@ -1,4 +1,5 @@
 - alias: "Update USPS Mail Camera"
+  id: 87bc6f91-d470-4e6b-9842-8f1aff7a3968
   trigger:
     - platform: state
       entity_id: sensor.mail_usps_mail
@@ -14,6 +15,7 @@
           {% endif %}
 
 - alias: "Mail Notif - Mail Delieveries"
+  id: 7ee9d2f1-9bb3-47f7-973d-9be45eb0f77c
   initial_state: 'on'
   trigger:
   #Trigger if mail or packages get updated
@@ -42,6 +44,7 @@
             file: "/config/www/mail_and_packages/mail_today.gif"
 
 - alias: "Update USPS Mail Camera Path on Hass Restart"
+  id: 65f3fed1-2ac1-4d92-94e0-f4990f722f4e
   trigger:
     - platform: state
       entity_id: sensor.mail_updated

@@ -1,4 +1,4 @@
-- id: 'cube-no-shake-plz'
+- id: 10bd1001-eaf4-4fff-a982-07034af5e868
   alias: No shake cube plz
   description: 'No shake cube plz (desc)'
   trigger:
@@ -8,14 +8,10 @@
       device_ieee: 00:15:8d:00:05:42:b0:1e
       command: knock
   action:
-   - service: tts.google_say
-     entity_id: media_player.office_display
-     data:
-       message: 'Please stopp shaking me, i will be a good cube!'
    - service: light.toggle
      entity_id: light.office_lamp
 
-- id: "adjust lights down on twist left"
+- id: ac7f1a14-46a8-4eea-b1c2-f80038e875fa
   alias: twist left for lights down
   trigger:
   - platform: event
@@ -34,7 +30,7 @@
       entity_id: light.office_lamp
 
 
-- id: "adjust lights up on twist right"
+- id: fffe4724-1468-4901-998c-8cf6b1a1f3e8
   alias: twist right for lights up
   trigger:
   - platform: event

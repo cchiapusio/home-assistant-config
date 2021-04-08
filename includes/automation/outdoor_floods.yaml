@@ -1,4 +1,5 @@
 - alias: turn on deck floodlights at sunset
+  id: d50b3dbe-d917-4aec-8bb9-6b1c4a8d98d9
   trigger:
     platform: numeric_state
     entity_id: sun.sun

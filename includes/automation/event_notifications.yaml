@@ -1,4 +1,5 @@
 - alias: take out recycling bin
+  id: b30798c5-ba5c-4322-900a-64cc1fc35f7e
   trigger:
     platform: time
     at: "18:00:00"
@@ -11,6 +12,7 @@
       message: "Take out Recycling bin tonight"
 
 - alias: Turn on lights for maids
+  id: 44bce5d9-e0e0-447b-850f-93e080ea0b9f
   trigger:
     - platform: time_pattern
       minutes: '/5'

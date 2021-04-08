@@ -1,4 +1,5 @@
 - alias: commute alert
+  id: 8da8616e-bee1-44b5-a009-3e4dabc886de
   trigger:   
     platform: template
     value_template: "{{ ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) < 3600) and ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) > 3500 )}}"

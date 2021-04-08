@@ -1,4 +1,5 @@
 - alias: brrrrrrrrrr
+  id: 8f4c18f0-9cc1-4a45-9134-88b5ea28f1af
   trigger:
     platform: time
     at: "07:00:00"
@@ -19,6 +20,7 @@
         message: "I could have turned the heat on for you"
 
 - alias: Im still cold
+  id: 33233d15-7f05-4df6-8d47-a13faed902a2
   trigger:
   - platform: state
     entity_id: climate.my_ecobee
@@ -48,6 +50,7 @@
       entity_id: scene.cold_case_save
 
 - alias: Things are Warming Up
+  id: 542051b3-3f90-4c87-9703-cc2fc0623efe
   trigger:
   - platform: state
     entity_id: climate.my_ecobee

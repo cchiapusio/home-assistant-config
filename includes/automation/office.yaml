@@ -2,6 +2,7 @@
 ## Turn on lights at sunset
 ##
 - alias: turn on office lights at sunset
+  id: 328d28db-1038-4f23-b233-60a7d0049ef0
   trigger:
     platform: numeric_state
     entity_id: sun.sun
@@ -34,6 +35,7 @@
 
 
 - alias: turn on desk lights for work
+  id: 917f0150-640e-460a-ad5b-86675cd7db78
   trigger:
     platform: time
     at: "08:00:00"

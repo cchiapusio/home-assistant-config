@@ -49,6 +49,7 @@
       entity_id: switch.outdoor_switch_3_1
 
 - alias: turn on halloween props for early evening
+  id: e550221c-3900-41c8-ba82-6375016c67aa
   trigger:
     platform: time
     at: "17:00:00"
@@ -63,6 +64,7 @@
       entity_id: switch.outdoor_switch_3_1
 
 - alias: notify projector turned on
+  id: abc6d0fa-4459-4e20-9ade-018769376a68
   trigger:
     - platform: state
       entity_id: switch.tommys_ac

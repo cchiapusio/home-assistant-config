@@ -1,4 +1,5 @@
 - alias: Tori Leaving Home
+  id: f6b4e37f-c558-4a49-8fb1-1f98e60267ea
   trigger:
     platform: state
     entity_id: person.tori
@@ -10,6 +11,7 @@
         - light.dresser_lamp
       
 - alias: Tori arriving Home
+  id: 29af254f-05f1-4c72-9e88-0c704ca1ef12
   trigger:
     platform: state
     entity_id: person.tori
@@ -20,18 +22,16 @@
         scene_id: tori_is_home_save
         snapshot_entities:
         - light.wled
+        - light.crystal_castle_2
     - service: scene.turn_on
       entity_id: scene.triumphant_return
     - delay:
         seconds: 10
     - service: scene.turn_on
       entity_id: scene.tori_is_home_save
-    - service: light.turn_on
-      entity_id: 
-        - light.desk_lamp
-        - light.dresser_lamp
     
 - alias: Notify when someone enters or leaves a zone
+  id: ef70f12c-3fb3-4146-af59-16a299c1f43a
   description: ''
   trigger:
     platform: state
@@ -54,6 +54,7 @@
         message: "{{ trigger.to_state.attributes.friendly_name }} {% if trigger.to_state.state == 'not_home' %}has left {{ trigger.from_state.state }}{% endif %}{% if trigger.from_state.state == 'not_home' %}arrived at {{ trigger.to_state.state }}{% endif %}"
       
 - alias: Cindy arriving Home
+  id: 3a1e5e64-2659-4a67-9fac-d3b9801b6a7c
   trigger:
     platform: state
     entity_id: person.cindy
@@ -75,6 +76,7 @@
         message: "Cindy is home"
 
 - alias: turn off triumphant return
+  id: a489b413-834c-4253-8d61-ceb1d4371584
   trigger:
     platform: event
     event_type: timer.finished
@@ -87,6 +89,7 @@
 
 
 - alias: Tori arriving Home late
+  id: 15df64e8-68f7-4cdd-991e-40b45def4280
   trigger:
     platform: state
     entity_id: person.tori
@@ -110,6 +113,7 @@
         entity_id: timer.late_tori
 
 - alias: turn off lights after tori as gotten home late
+  id: 4630a807-9ac6-47a7-aceb-00cda637578f
   trigger:
     platform: event
     event_type: timer.finished

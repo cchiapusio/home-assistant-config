@@ -1,4 +1,5 @@
 - alias: Margo is here
+  id: 7426f12b-0e03-44f0-b1af-3f883f85d3a6
   trigger:
     platform: state
     entity_id: device_tracker.galaxy_note10
@@ -10,6 +11,7 @@
       message: "Alert, Margo is here"
 
 - alias: Tommy is here
+  id: 307114cc-6b94-4e32-9dd2-0ce4dd9b8612
   trigger:
     platform: state
     entity_id: device_tracker.galaxy_note10
@@ -21,6 +23,7 @@
       message: "Alert, Tommy is here"
 
 - alias: Natalie is here
+  id: 4cf0b6ee-2e33-4f10-bb4d-0d22fa68f606
   trigger:
     platform: state
     entity_id: device_tracker.natalies_iphone
@@ -32,6 +35,7 @@
       message: "Alert, Natalie is here"
 
 - alias: Suspend camera notifications when Chip comes home
+  id: 73f5932d-2ad6-45b5-b96d-6e5ec506124a
   trigger:
     platform: state
     entity_id: person.chip
@@ -49,6 +53,7 @@
       entity_id: automation.backdoor_motion_notification
       
 - alias: suspend frontyard camera notifications when jeep-wled
+  id: bdc0a8d7-71e2-4986-b652-9192045efdb5
   trigger:
     platform: state
     entity_id: device_tracker.wled_jeep

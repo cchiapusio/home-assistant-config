@@ -1,4 +1,5 @@
 - alias: Sound the alarm
+  id: ed4395ce-3ebd-4769-883c-198436d3fbe4
   trigger:
     platform: event
     event_type: mobile_app_notification_action
@@ -9,6 +10,7 @@
       entity_id: scene.all_indoor_lights_on
 
 - alias: pause backdoor motion for ten minutes
+  id: 7d31c562-51ac-4f28-a2a7-25bb761be2f0
   mode: single
   max_exceeded: silent
   trigger:
@@ -25,6 +27,7 @@
       entity_id: automation.backdoor_motion_notification
 
 - alias: pause backdoor motion for thirty minutes
+  id: ba759530-36dc-48f4-a630-89e11e00028a
   mode: single
   max_exceeded: silent
   trigger:
@@ -42,6 +45,7 @@
       
 
 - alias: turn on deck floodlights when motion detected at back door
+  id: 052b5cec-b075-45bf-a08a-a178e59939fd
   trigger: 
     - platform: state
       entity_id: binary_sensor.back_door_motion
@@ -66,6 +70,7 @@
     
 
 - alias: turn on lights when person detected at back door
+  id: df789665-dffa-4637-a48f-ef5c725a2b53
   trigger: 
     - platform: state
       entity_id: binary_sensor.person_at_back_door
@@ -144,6 +149,7 @@
 
 
 - alias: pause frontyard motion for ten minutes
+  id: c7c4035d-3eb5-41a8-bc74-16285ba277c8
   mode: single
   max_exceeded: silent
   trigger:
@@ -160,6 +166,7 @@
       entity_id: automation.frontyard_motion_notification
 
 - alias: pause frontyard motion for thirty minutes
+  id: df0ef0f1-b2ee-470b-95b1-43d0fc89e033
   mode: single
   max_exceeded: silent
   trigger:

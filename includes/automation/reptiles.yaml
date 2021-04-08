@@ -1,4 +1,5 @@
 - alias: cycle mister
+  id: 43359d56-d56a-460e-9c4e-196c349e1d30
   trigger:
     - platform: time_pattern
       minutes: '/10'
@@ -7,6 +8,7 @@
     entity_id: switch.eddies_mister
 
 - alias: turn off mister
+  id: ee3d8bea-8cf0-4a29-8ea3-76217dc81873
   trigger:
    - platform: state
      entity_id: switch.eddies_mister

@@ -1,4 +1,5 @@
 - alias: set initial state for Eddies mister
+  id: 129aa50c-f2fd-4b62-85e9-33ae2c8313a9
   trigger:
     platform: homeassistant
     event: start
@@ -8,7 +9,7 @@
       entity_id: switch.eddies_mister
 
 - alias: Sync Tasmota states
-  id: Sync Tasmota states
+  id: b9b8a397-1c0d-4077-a2c9-dad8e5abb9e0
   initial_state: true
   trigger:
     platform: homeassistant
@@ -22,7 +23,7 @@
 
  # automations.yaml file
 - id: shellies_announce
-  alias: 'Shellies Announce'
+  alias: 64b84f07-ba00-48bd-9999-1194261d137e
   trigger:
     - platform: homeassistant
       event: start
@@ -35,7 +36,7 @@
       payload: announce
 
 - id: 'shellies_discovery'
-  alias: 'Shellies Discovery'
+  alias: 1326abd3-1aac-4f5c-baf3-d26b86ffbfce
   mode: queued
   max: 999
   trigger:

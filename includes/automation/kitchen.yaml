@@ -1,4 +1,5 @@
 - alias: turn on kitchen light on motion
+  id: 064e899c-2153-497b-9d1e-4a54f5da77a8
   trigger: 
     platform: state
     entity_id: binary_sensor.person_in_kitchen
@@ -21,6 +22,7 @@
       entity_id: switch.hutch_light
 
 - alias: Alert that a Cat is locked in the kitchen
+  id: cd5eb362-d7af-435b-b380-d2b689b995a8
   trigger: 
     platform: state
     entity_id: binary_sensor.cat_in_kitchen
