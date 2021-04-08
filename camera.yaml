@@ -99,30 +99,6 @@
     password: !secret BI_Pass
     authentication: basic
 
-#  - platform: ffmpeg
-#    name: BI Backdoor
-#    input: !secret Camera_bi_backdoorhd
-
-#  - platform: ffmpeg
-#    name: BI Kitchen
-#    input: !secret Camera_bi_kitchen
-
-#  - platform: ffmpeg
-#    name: BI Cat Room
-#    input: !secret Camera_bi_catroom
-
-#  - platform: ffmpeg
-#    name: BI Front Yard
-#    input: !secret Camera_bi_frontyard
-
-#  - platform: ffmpeg
-#    name: BI Amcrest1
-#    input: !secret Camera_bi_amcrest1
-
-#  - platform: ffmpeg
-#    name: BI Cycle
-#    input: !secret Camera_bi_cycle
-
-#  - platform: ffmpeg
-#    name: BI All
-#    input: !secret Camera_bi_all
+  - platform: mjpeg
+    mjpeg_url: http://octoprint.home.llamas.net/webcam/?action=stream
+    name: Octoprint
