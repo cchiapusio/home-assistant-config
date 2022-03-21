@@ -1,0 +1,3 @@
+suspend_camera_notifications:
+  name: Suspend Camera Notifications
+  initial: off
