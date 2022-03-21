@@ -1,16 +1,3 @@
-- id: 10bd1001-eaf4-4fff-a982-07034af5e868
-  alias: No shake cube plz
-  description: 'No shake cube plz (desc)'
-  trigger:
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 00:15:8d:00:05:42:b0:1e
-      command: knock
-  action:
-   - service: light.toggle
-     entity_id: light.office_lamp
-
 - id: ac7f1a14-46a8-4eea-b1c2-f80038e875fa
   alias: twist left for lights down
   trigger:
@@ -21,13 +8,13 @@
       command: rotate_left
   condition:
     - condition: state
-      entity_id: light.office_lamp
+      entity_id: light.mbr_lights
       state:  'on'
   action:
     - service: light.turn_on
       data:
-        brightness_step_pct: -30
-      entity_id: light.office_lamp
+        brightness_step_pct: -20
+      entity_id: light.mbr_lights
 
 
 - id: fffe4724-1468-4901-998c-8cf6b1a1f3e8
@@ -40,10 +27,59 @@
       command: rotate_right
   condition:
     - condition: state
-      entity_id: light.office_lamp
+      entity_id: light.mbr_lights
       state:  'on'
   action:
     - service: light.turn_on
       data:
-        brightness_step_pct: 30
-      entity_id: light.office_lamp
+        brightness_step_pct: 20
+      entity_id: light.mbr_lights
+
+- id: '1620264989749'
+  alias: AqaraCube MBR
+  description: 'Aqara Cube MBR actions'
+  use_blueprint:
+    path: Mikkelmoeller/aqara-magic-cube-zha-51-actions.yaml
+    input:
+      remote: c241196803e22cfa7fbff271770e13de
+      flip_90: true
+      cube_flip_90:
+      - choose:
+        - conditions:
+          - condition: and
+            conditions:
+            - condition: state
+              entity_id: light.mbr_lights
+              state: 'off'
+            - condition: state
+              entity_id: switch.fairy_lights
+              state: 'off'
+          sequence:
+          - scene: scene.mbr_lights_on
+        - conditions:
+          - condition: and
+            conditions:
+            - condition: state
+              entity_id: light.mbr_lights
+              state: 'on'
+            - condition: state
+              entity_id: switch.fairy_lights
+              state: 'on'
+          sequence:
+          - scene: scene.mood_lighting
+        - conditions:
+          - condition: and
+            conditions:
+            - condition: state
+              entity_id: light.mbr_lights
+              state: 'off'
+            - condition: state
+              entity_id: switch.fairy_lights
+              state: 'on'
+          sequence:
+          - scene: scene.mbr_lights_off
+        default: []
+      knock_any_side: true
+      cube_knock_any:
+      - scene: scene.mbr_lights_full
+

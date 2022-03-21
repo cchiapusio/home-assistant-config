@@ -8,6 +8,8 @@
       state: on
       brightness: 212
       color_temp: 454
+    switch.curio_cabinet_lamp:
+      state: on
  
 - name: Dining Room Dim
   entities:
@@ -17,3 +19,5 @@
     light.dining_room_lamp_west:
       state: on
       brightness: 76
+    switch.curio_cabinet_lamp:
+      state: off

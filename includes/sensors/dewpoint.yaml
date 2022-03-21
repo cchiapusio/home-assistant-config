@@ -1,11 +1,11 @@
-- platform: dewpoint
-  sensors:
-    dewpoint_dark_sky:
-      temperature: sensor.dark_sky_temperature
-      rel_hum: sensor.dark_sky_humidity
-    dewpoint_ecobee:
-      temperature: sensor.my_ecobee_temperature
-      rel_hum: sensor.my_ecobee_humidity
-#    dewpoint_laundry_room:
-#      temperature: sensor.dining_room_env_temperature
-#      rel_hum: sensor.dining_room_env_humidity
+#- platform: dewpoint
+#  sensors:
+#    dewpoint_dark_sky:
+#      temperature: sensor.dark_sky_temperature
+#      rel_hum: sensor.dark_sky_humidity
+#    dewpoint_ecobee:
+#      temperature: sensor.my_ecobee_temperature
+#      rel_hum: sensor.my_ecobee_humidity
+##    dewpoint_laundry_room:
+##      temperature: sensor.dining_room_env_temperature
+##      rel_hum: sensor.dining_room_env_humidity

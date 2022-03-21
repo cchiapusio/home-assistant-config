@@ -37,17 +37,18 @@
         snapshot_entities:
         - light.wled
         - light.office_lamp
-        - light.dining_room_lamp_east
-        - light.dining_room_lamp_west
-        - light.living_room_lamp_1
-        - light.living_room_lamp_2
-        - light.foyer_lamp
     - service: scene.turn_on
       entity_id: scene.cold_case
     - delay:
         seconds: 10
     - service: scene.turn_on
       entity_id: scene.cold_case_save
+    - service: notify.mobile_app_sm_n986u
+      data:
+        message: "Winter is Coming"
+        data:
+          channel: Temperature
+          importance: low
 
 - alias: Things are Warming Up
   id: 542051b3-3f90-4c87-9703-cc2fc0623efe
@@ -67,14 +68,15 @@
         snapshot_entities:
         - light.wled
         - light.office_lamp
-        - light.dining_room_lamp_east
-        - light.dining_room_lamp_west
-        - light.living_room_lamp_1
-        - light.living_room_lamp_2
-        - light.foyer_lamp
     - service: scene.turn_on
       entity_id: scene.warm_up
     - delay:
         seconds: 10
     - service: scene.turn_on
       entity_id: scene.warm_up_save
+    - service: notify.mobile_app_sm_n986u
+      data:
+        message: "The Heat is on!"
+        data:
+          channel: Temperature
+          importance: low

@@ -52,5 +52,5 @@
       friendly_name: "Toris work destination"
       value_template: >
         {% set x = state_attr('calendar.work_today', 'location') %}
-        {{ x if x is ne '' else '2521 Sardis Rd N Charlotte, NC 28227' }}
+        {{ x if x is ne '' else '34.9992354775376, -80.85492410370368' }}
 #      value_template: "{{ state_attr('calendar.work_today', 'location') }}"

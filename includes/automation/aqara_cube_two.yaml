@@ -1,0 +1,52 @@
+- id: 5914c1f5-fd17-47c3-b9e0-5cf8e4e7b9db
+  alias: AqaraCube Office
+  description: 'Aqara Cube Office actions'
+  use_blueprint:
+    path: Mikkelmoeller/aqara-magic-cube-zha-51-actions.yaml
+    input:
+      remote: f0e54a60d47ce0d390609b4e331af7ca
+      flip_90: true
+      cube_flip_90:
+      - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.office_lamp
+              state: 'off'
+          sequence:
+          - scene: scene.office_normal
+        - conditions:
+          - condition: and
+            conditions:
+            - condition: state
+              entity_id: light.office_lights
+              state: 'on'
+            - condition: template
+              value_template: "{{ state_attr('light.office_lights', 'brightness') > 100 }}"
+          sequence:
+          - scene: scene.office_dim
+        - conditions:
+          - condition: and
+            conditions:
+            - condition: state
+              entity_id: light.office_lights
+              state: 'on'
+            - condition: template
+              value_template: "{{ state_attr('light.office_lights', 'brightness') < 100 }}"
+          sequence:
+          - scene: scene.office_desk_only
+        default: []
+      knock_any_side: true
+      cube_knock_any:
+      - scene: scene.office_videoconf
+      rotate_right:
+      - service: light.turn_on
+        data:
+          brightness_step_pct: 20
+        target:
+          entity_id: light.office_lights
+      rotate_left:
+      - service: light.turn_on
+        data:
+          brightness_step_pct: -20
+        target:
+          entity_id: light.office_lights

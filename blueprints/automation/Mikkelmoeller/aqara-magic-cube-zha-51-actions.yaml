@@ -370,10 +370,10 @@ trigger:
     device_id: !input 'remote'
 action:
 - variables:
-    command: '{{ trigger.event.data.command }}'
-    value: '{{ trigger.event.data.args.value }}'
-    flip_degrees: '{{ trigger.event.data.args.flip_degrees }}'
-    relative_degrees: '{{ trigger.event.data.args.relative_degrees }}'
+    command: '{{ trigger.event.data.command | default("") }}'
+    value: '{{ trigger.event.data.args.value | default("") }}'
+    flip_degrees: '{{ trigger.event.data.args.flip_degrees | default("0") }}'
+    relative_degrees: '{{ trigger.event.data.args.relative_degrees | default("0") }}'
     flip_90: !input 'flip_90'
     flip_180: !input 'flip_180'
     slide_any_side: !input 'slide_any_side'

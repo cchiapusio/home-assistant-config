@@ -1,11 +1,3 @@
-startupalltasmota:
-  alias: Tasmota Restore State at Startup
-  sequence:
-  - data:
-      payload: ''
-      topic: sonoffs/cmnd/state
-    service: mqtt.publish
-
 execute_cast_dropdown:
     alias: Press to execute
     sequence:
@@ -19,22 +11,48 @@ execute_cast_dropdown:
             {% elif is_state("input_select.cast_to_screen_dropdown", "MBR Display") %}
               media_player.master_bedroom_display
             {% elif is_state("input_select.cast_to_screen_dropdown", "Master Bedroom TV") %}
-              media_player.mbr_chromecast
+              media_player.shield_3
             {% elif is_state("input_select.cast_to_screen_dropdown", "Living Room TV") %}
               media_player.shield_2
             {% endif %}
           media_content_id: >
             {% if is_state("input_select.camera_dropdown", "Back Door") %}
-              http://192.168.10.11/mjpg/backdoorhd/video.mjpg
+              http://bigblue.home.llamas.net/mjpg/backdoorhd/video.mjpg
             {% elif is_state("input_select.camera_dropdown", "Front Yard") %}
-              http://192.168.10.11/mjpg/frontyard/video.mjpg
-            {% elif is_state("input_select.camera_dropdown", "Kitchen") %}
-              http://192.168.10.11/mjpg/kitchen/video.mjpg
-            {% elif is_state("input_select.camera_dropdown", "Cat Room") %}
-              http://192.168.10.11/mjpg/catroom/video.mjpg
+              http://bigblue.home.llamas.net/mjpg/frontyard/video.mjpg
+            {% elif is_state("input_select.camera_dropdown", "Mr. Lizard") %}
+              http://bigblue.home.llamas.net/mjpg/amcrest1/video.mjpg
+            {% elif is_state("input_select.camera_dropdown", "Front Window") %}
+              http://bigblue.home.llamas.net/mjpg/catroom/video.mjpg
             {% elif is_state("input_select.camera_dropdown", "Cycle Cameras") %}
-              http://192.168.10.11/mjpg/@HD?/video.mjpg
+              http://bigblue.home.llamas.net/mjpg/@HD?/video.mjpg
             {% elif is_state("input_select.camera_dropdown", "All Cameras") %}
-              http://192.168.10.11/mjpg/HD?/video.mjpg
+              http://bigblue.home.llamas.net/mjpg/HD?/video.mjpg
             {% endif %}
           media_content_type: 'image/jpg'
+
+
+learn_projector:
+  sequence:
+    - service: remote.learn_command
+      target:
+        entity_id: remote.rm3mini1_remote
+      data:
+        device: projector
+        command:
+          - turn on
+          - select
+          - play
+          - turn off
+
+turn_on_house_lights:
+  sequence:
+    - service: scene.turn_on
+      entity_id: scene.livingroom_normal
+    - service: scene.turn_on
+      entity_id: scene.dining_room_normal
+    - service: homeassistant.turn_on
+      entity_id: 
+        - switch.hutch_light
+        - switch.curio_cabinet_lamp
+        - switch.curio_cabinets

@@ -1,9 +1,5 @@
 - name: yard_light_normal
   entities:
-    light.flood01:
-      state: on
-      kelvin: 2700
-      brightness_pct: 100
     light.flood02:
       state: on
       kelvin: 2700
@@ -16,19 +12,53 @@
       state: on
       kelvin: 2700
       brightness_pct: 25
+    light.flood05:
+      state: on
+      kelvin: 2700
+      brightness_pct: 25
+    light.flood06:
+      state: on
+      kelvin: 2700
+      brightness_pct: 25
+    light.flood07:
+      state: on
+      kelvin: 2700
+      brightness_pct: 25
+    light.flood08:
+      state: on
+      kelvin: 2700
+      brightness_pct: 25
 
 - name: yard_light_halloween
   entities:
-    light.flood01:
+    light.flood02:
       state: on
       brightness_pct: 100
       xy_color: [0.216, 0.077] # purple
-    light.flood02:
+    light.flood03:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.216, 0.077] # purple
+    light.flood04:
       state: on
       brightness_pct: 100 
       xy_color: [0.701, 0.299] # red
-    switch.outdoor_plug_2:
+    light.flood05:
       state: on
+      brightness_pct: 100 
+      xy_color: [0.136, 0.04] 
+    light.flood06:
+      state: on
+      brightness: 117 
+      xy_color: [0.581, 0.245] 
+    light.flood07:
+      state: on
+      brightness: 201 
+      xy_color: [0.136, 0.04] 
+    light.flood08:
+      state: on
+      brightness: 217 
+      xy_color: [0.136, 0.065] 
     switch.outdoor_plug_1:
       state: on
     switch.outdoor_switch_3_1:
@@ -39,73 +69,135 @@
       state: on
     switch.outdoor_switch_4_2:
       state: on
-    switch.tommys_ac:
+    switch.outdoor_switch_5_1:
+      state: on
+    switch.outdoor_switch_5_2:
       state: on
 
 - name: yard_light_christmas
   entities:
-    light.flood01:
-      state: on
-      brightness_pct: 100
-      xy_color: [0.172, 0.747] # green
     light.flood02:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.701, 0.299] # red
+    light.flood03:
       state: on
       brightness_pct: 100 
       xy_color: [0.701, 0.299] # red
     light.flood04:
       state: on
-      brightness_pct: 100
+      brightness_pct: 100 
       xy_color: [0.172, 0.747] # green
-    light.flood03:
+    light.flood05:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.172, 0.747] # green
+    light.flood06:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.172, 0.747] # green
+    light.flood07:
       state: on
       brightness_pct: 100 
       xy_color: [0.701, 0.299] # red
+    light.flood08:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.701, 0.299] # red
+    switch.outdoor_switch_3_2:
+      state: on
+    switch.outdoor_switch_4_2:
+      state: on
 
 - name: yard_light_stpatricks
   entities:
-    light.flood01:
-      state: on
-      brightness_pct: 100
-      xy_color: [0.172, 0.747] # green
     light.flood02:
       state: on
       brightness_pct: 100 
       xy_color: [0.172, 0.747] # green
     light.flood03:
       state: on
-      brightness_pct: 100
+      brightness_pct: 100 
       xy_color: [0.172, 0.747] # green
     light.flood04:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.172, 0.747] # green
+    light.flood05:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.172, 0.747] # green
+    light.flood06:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.172, 0.747] # green
+    light.flood07:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.172, 0.747] # green
+    light.flood08:
       state: on
       brightness_pct: 100 
       xy_color: [0.172, 0.747] # green
 
 - name: yard_light_independence
   entities:
-    light.flood01:
-      state: on
-      brightness_pct: 100
-      xy_color: [0.126, 0.04] # blue
     light.flood02:
       state: on
       brightness_pct: 100 
+      xy_color: [0.126, 0.04] # blue
+    light.flood03:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.126, 0.04] # blue
+    light.flood04:
+      state: on
+      brightness_pct: 100 
       xy_color: [0.701, 0.299] # red
+    light.flood05:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.701, 0.299] # red
+    light.flood06:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.701, 0.299] # red
+    light.flood07:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.126, 0.04] # blue
+    light.flood08:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.126, 0.04] # blue
 
 - name: yard_light_greenbay
   entities:
-    light.flood01:
-      state: on
-      brightness: 255
-      xy_color: [0.172, 0.747] # green
     light.flood02:
       state: on
-      brightness: 255
+      brightness_pct: 100 
       xy_color: [0.461, 0.502] # Yellow
     light.flood03:
       state: on
-      brightness: 255
-      xy_color: [0.172, 0.747] # green
+      brightness_pct: 100 
+      xy_color: [0.461, 0.502] # Yellow
     light.flood04:
       state: on
-      brightness: 255
+      brightness_pct: 100 
+      xy_color: [0.172, 0.747] # green
+    light.flood05:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.172, 0.747] # green
+    light.flood06:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.172, 0.747] # green
+    light.flood07:
+      state: on
+      brightness_pct: 100 
+      xy_color: [0.461, 0.502] # Yellow
+    light.flood08:
+      state: on
+      brightness_pct: 100 
       xy_color: [0.461, 0.502] # Yellow

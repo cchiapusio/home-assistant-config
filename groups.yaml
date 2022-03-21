@@ -5,13 +5,13 @@ persons:
     - person.cindy
     - person.tori
 
-LitterBot 5000:
-  entities:
-    - sensor.litter_robot_litterbot_5000_nightlight
-    - sensor.litter_robot_litterbot_5000_status
-    - sensor.litter_robot_litterbot_5000_waste
-    - switch.litter_robot_reset_drawer
-    - switch.litter_robot_nightlight
+#LitterBot 5000:
+#  entities:
+#    - sensor.litter_robot_litterbot_5000_nightlight
+#    - sensor.litter_robot_litterbot_5000_status
+#    - sensor.litter_robot_litterbot_5000_waste
+#    - switch.litter_robot_reset_drawer
+#    - switch.litter_robot_nightlight
 
 Cast_Cameras_Group:
   entities:

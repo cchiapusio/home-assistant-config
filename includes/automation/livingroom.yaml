@@ -8,11 +8,18 @@
     at: "23:00:00"
   condition:
     condition: state
-    entity_id: media_player.lg_webos_smart_tv
+    entity_id: media_player.living_room_tv
     state:  'off'
   action:
-    service: scene.turn_on
-    entity_id: scene.good_night_lights
+    - service: scene.turn_on
+      entity_id: scene.livingroom_dim
+    - service: scene.turn_on
+      entity_id: scene.dining_room_dim
+    - service: switch.turn_off
+      entity_id: switch.curio_cabinet_lamp
+    - service: timer.start
+      data:
+        entity_id: timer.5m
 
 ##
 ## Turn off Lights if TV turns off after midnight
@@ -21,7 +28,7 @@
   id: 9608670a-5061-44ca-9827-239f19ba9b23
   trigger:
     platform: state
-    entity_id: media_player.lg_webos_smart_tv
+    entity_id: media_player.living_room_tv
     to: 'off'
   condition:
     condition: and
@@ -54,111 +61,11 @@
     service: scene.turn_on
     entity_id: scene.good_night_lights
 
-##
-## Turn on lights at sunset
-##
-
-- alias: turn on living room lights at sunset
-  id: 70d19e4a-2360-48ad-8abc-a0fa12df379c
-  trigger:
-    platform: numeric_state
-    entity_id: sun.sun
-    value_template: '{{ state.attributes.elevation }}'
-    below: 15
-  condition:
-    condition: template
-    value_template: '{{ is_state_attr("sun.sun", "rising", false) }}'
-  action:
-    - service: homeassistant.turn_on
-      entity_id: 
-        - switch.curio_cabinets
-        - switch.hutch_light
-        - switch.curio_cabinet_lamp
-    - service: scene.turn_on
-      entity_id: scene.livingroom_normal
-    - service: scene.turn_on
-      entity_id: scene.dining_room_normal
-
-
-- alias: turn on living room lights early if cloudy
-  id: dd5e6b30-7222-48f5-8035-c4df9b10aba6
-  trigger:
-    platform: numeric_state
-    entity_id: sun.sun
-    value_template: '{{ state.attributes.elevation }}'
-    below: 40
-  condition:
-    condition: and
-    conditions:
-      - condition: numeric_state
-        entity_id: sensor.dark_sky_cloud_coverage
-        above: 40
-      - condition: template
-        value_template: '{{ is_state_attr("sun.sun", "rising", false) }}'
-  action:
-    - service: scene.turn_on
-      entity_id: scene.livingroom_normal
-    - service: scene.turn_on
-      entity_id: scene.dining_room_normal
-    - service: homeassistant.turn_on
-      entity_id: 
-        - switch.hutch_light
-        - switch.curio_cabinet_lamp
-        - switch.curio_cabinets
-
-- alias: turn on living room lights even earlier if 100% cloudy
-  id: 87592801-4bc6-4fde-9515-63df8dc1046b
-  trigger:
-    platform: numeric_state
-    entity_id: sensor.dark_sky_cloud_coverage
-    above: 85
-  condition:
-    condition: and
-    conditions:
-      - condition: template
-        value_template: '{{ state_attr("sun.sun", "elevation") < 40 }}'
-      - condition: template
-        value_template: '{{ is_state_attr("sun.sun", "rising", false) }}'
-  action:
-    - service: scene.turn_on
-      entity_id: scene.livingroom_normal
-    - service: scene.turn_on
-      entity_id: scene.dining_room_normal
-    - service: homeassistant.turn_on
-      entity_id: 
-        - switch.hutch_light
-        - switch.curio_cabinet_lamp
-        - switch.curio_cabinets
-
-- alias: turn on living room lights when there is an afternoon storm
-  id: 3ce0ab6b-6b27-464e-b227-340c6f84978b
-  trigger:
-    platform: numeric_state
-    entity_id: sensor.dark_sky_precip_intensity
-    above: 0.6
-  condition:
-    condition: and
-    conditions:
-      - condition: numeric_state
-        entity_id: sensor.dark_sky_precip_probability
-        above: 80
-      - condition: template
-        value_template: '{{ is_state_attr("sun.sun", "rising", false) }}'
-  action:
-    - service: scene.turn_on
-      entity_id: scene.livingroom_normal
-    - service: scene.turn_on
-      entity_id: scene.dining_room_normal
-    - service: homeassistant.turn_on
-      entity_id: 
-        - switch.hutch_light
-        - switch.curio_cabinet_lamp
-
 - alias: Media player paused/stopped
   id: b239b22a-5bae-4e71-b7cc-99f7c6fecfb2
   trigger:
     - platform: state
-      entity_id: media_player.living_room_shield, media_player.plex_plex_for_lg_lg_75sm8670pua
+      entity_id: media_player.living_room_shield, media_player.plex_plex_for_lg_lg_75sm8670pua, media_player.plex_plex_for_android_tv_shield_android_tv
       from: playing
 #      to: idle
   condition:
@@ -173,7 +80,7 @@
   id: b99dc5b6-0243-4407-86df-1eecc1a00ad3
   trigger:
     - platform: state
-      entity_id: media_player.living_room_shield
+      entity_id: media_player.living_room_shield, media_player.plex_plex_for_android_tv_shield_android_tv
       to: playing
 #      from: idle
   condition:
@@ -258,9 +165,18 @@
     - service: switch.turn_on
       entity_id: switch.candle_light
     - service: light.turn_on
-      entity_id: light.crystal_castle_1
+      entity_id: light.crystal_castle_1,light.crystal_castle_2
       data:
         brightness: 40
+    - service: wled.preset
+      entity_id: light.crystal_castle_1
+      data:
+        preset: 1
+    - service: wled.preset
+      entity_id: light.crystal_castle_2
+      data:
+        preset: 1
+
 
 # turn on hyperion wled lights when TV turns on
 #
@@ -268,10 +184,26 @@
   id: 03e16f89-e328-4051-93e4-f7f6fc96003a
   trigger:
     platform: state
-    entity_id: media_player.lg_webos_smart_tv
+    entity_id: media_player.living_room_tv
     to: 'on'
   action:
-    - service: light.turn_on
-      data:
+  - choose:
+    - conditions:
+      - condition: state
         entity_id: light.lg75_wled
-        brightness: 255
+        state: 'off'
+      sequence:
+      - service: light.turn_on
+        data:
+          entity_id: light.lg75_wled
+          brightness: 255
+    - conditions:
+      - condition: state
+        entity_id: timer.5m
+        state: active
+      sequence:
+      - service: script.turn_on
+        entity_id: script.turn_on_house_lights
+      - service: timer.cancel
+        target:
+          entity_id: timer.5m

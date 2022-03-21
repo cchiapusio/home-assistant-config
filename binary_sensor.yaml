@@ -78,6 +78,14 @@
     device_class: motion
 
   - platform: mqtt
+    name: "Doorbell Motion"
+    state_topic: BlueIris/sensor/doorbell/motion
+    payload_on: "ON"
+    payload_off: "OFF"
+    device_class: motion
+
+
+  - platform: mqtt
     name: "Person in Kitchen"
     device_class: motion
     state_topic: "BlueIris/sensor/kitchen/ai"
@@ -132,3 +140,42 @@
     payload_on: true
     payload_off: false
     value_template: "{{ 'car' in value | lower or 'truck' in value | lower or 'bus' in value | lower }}"
+
+  - platform: mqtt
+    name: "Person at front door"
+    device_class: motion
+    state_topic: "BlueIris/sensor/doorbell/ai"
+    payload_on: true
+    payload_off: false
+    value_template: "{{ 'person' in value | lower or 'bicycle' in value | lower }}"
+
+  - platform: mqtt
+    name: "Animal at front door"
+    device_class: motion
+    state_topic: "BlueIris/sensor/doorbell/ai"
+    payload_on: true
+    payload_off: false
+    value_template: "{{ 'cat' in value | lower or 'dog' in value | lower }}"
+
+  - platform: mqtt
+    name: "Vehicle at front door"
+    device_class: motion
+    state_topic: "BlueIris/sensor/doorbell/ai"
+    payload_on: true
+    payload_off: false
+    value_template: "{{ 'car' in value | lower or 'truck' in value | lower or 'bus' in value | lower }}"
+  
+  - platform: trend
+    sensors:
+      barometer_falling:
+        entity_id: sensor.lumi_lumi_weather_6cb78906_pressure
+        sample_duration: 14400
+        max_samples: 120
+        min_gradient: -0.0002
+    
+  - platform: threshold
+    entity_id: sensor.washer_running_filter
+    name: Washer running
+    device_class: running
+    upper: 10
+    hysteresis: 0.1

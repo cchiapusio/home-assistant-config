@@ -58,7 +58,7 @@
   save_timestamped_file: true
   targets:
     - target: person
-      confidence: 40
+      confidence: 50
     - target: car
       confidence: 60
     - target: truck
@@ -81,4 +81,25 @@
   save_faces: true
   save_faces_folder: /config/faces/
   source:
-    - entity_id: camera.bi_amcrest1
+    - entity_id: camera.front_door_main
+
+- platform: deepstack_object
+  ip_address: 192.168.10.4
+  port: 5000
+  timeout: 10
+  save_file_folder: /config/www/ds
+  always_save_latest_file: true
+  save_timestamped_file: true
+  targets:
+    - target: person
+      confidence: 50
+    - target: car
+      confidence: 60
+    - target: truck
+      confidence: 60
+    - target: cat
+      confidence: 40
+    - target: dog
+      confidence: 40
+  source:
+    - entity_id: camera.front_door_main

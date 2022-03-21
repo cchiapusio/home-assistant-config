@@ -1,13 +1,3 @@
-- alias: set initial state for Eddies mister
-  id: 129aa50c-f2fd-4b62-85e9-33ae2c8313a9
-  trigger:
-    platform: homeassistant
-    event: start
-  action:
-    - delay: '00:00:30'
-    - service: homeassistant.turn_off
-      entity_id: switch.eddies_mister
-
 - alias: Sync Tasmota states
   id: b9b8a397-1c0d-4077-a2c9-dad8e5abb9e0
   initial_state: true
@@ -19,10 +9,14 @@
   - service: mqtt.publish
     data:
       topic: cmnd/tasmotas/backlog
-      payload: 'setoption19 1;Fade ON;Speed 5; state'
+      payload: 'state'
+#      payload: 'Fade ON;Speed 5; OtaUrl http://ota.tasmota.com/tasmota/release/tasmota.bin.gz; so19 0; so8 1;so56 1;so57 1; state'
+#     setOption8 show temp in fahrenheight
+#     setOption19 disable homeassistant MQTT autoconf (enable tasmota autoconf)
+#     setOption56 wifi network scan for strongest signal on restart
+#     setOption57 wifi network re-scan for stronger signal every 44 minutes
 
- # automations.yaml file
-- alias: shellies_announce
+- alias: 'Shellies Announce'
   id: 64b84f07-ba00-48bd-9999-1194261d137e
   trigger:
     - platform: homeassistant
@@ -35,7 +29,7 @@
       topic: shellies/command
       payload: announce
 
-- alias: 'shellies_discovery'
+- alias: 'Shellies Discovery'
   id: 1326abd3-1aac-4f5c-baf3-d26b86ffbfce
   mode: queued
   max: 999
@@ -49,3 +43,5 @@
       mac: '{{ trigger.payload_json.mac }}'
       fw_ver: '{{ trigger.payload_json.fw_ver }}'
       model: '{{ trigger.payload_json.model }}'
+      mode: '{{ trigger.payload_json.mode | default }}'
+      host: '{{ trigger.payload_json.ip }}'

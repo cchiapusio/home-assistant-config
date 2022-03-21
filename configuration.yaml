@@ -49,6 +49,18 @@ homeassistant:
     sensor.wan_traffic_out_mean:
       friendly_name: 'WAN Upload Average'
       icon: mdi:upload
+    sensor.zplug3_smartenergy_metering:
+      device_class: power
+      state_class: measurement
+#      last_reset: '1970-01-01T00:00:00+00:00'
+    sensor.zplug4_smartenergy_metering:
+      device_class: power
+      state_class: measurement
+#      last_reset: '1970-01-01T00:00:00+00:00'
+    binary_sensor.front_door:
+      friendly_name: Front Door
+    binary_sensor.back_door:
+      friendly_name: Back Door
 
 
 ####################################################
@@ -63,6 +75,9 @@ config:
 # https://www.home-assistant.io/integrations/my/
 my:
 
+#https://www.home-assistant.io/docs/energy/
+energy:
+
 #https://www.home-assistant.io/components/mobile_app/
 #mobile_app:
 
@@ -76,6 +91,7 @@ history:
 recorder:
   db_url: !secret hass_db_string
   purge_keep_days: 15
+  commit_interval: 5
   exclude:
     domains:
       - media_player
@@ -137,6 +153,20 @@ http:
 logger:
   default: info
 #  logs:
+#    homeassistant.core: debug
+#    homeassistant.components.zha: debug
+#    bellows.zigbee.application: debug
+#    bellows.ezsp: debug
+#    zigpy: debug
+#    zigpy_cc: debug
+#    zigpy_deconz.zigbee.application: debug
+#    zigpy_deconz.api: debug
+#    zigpy_xbee.zigbee.application: debug
+#    zigpy_xbee.api: debug
+#    zigpy_zigate: debug
+#    zigpy_znp: debug
+#    zhaquirks: debug
+#    homeassistant.components.mqtt: debug
 #    homeassistant.components.zha: debug
 #    bellows.ezsp: debug
 #    bellows.uart: debug
@@ -182,6 +212,7 @@ person: !include includes/person.yaml
 switch: !include includes/switch.yaml
 input_select: !include input_select.yaml
 input_number: !include input_number.yaml
+input_boolean: !include input_boolean.yaml
 image_processing: !include image_processing.yaml
 # https://www.home-assistant.io/integrations/stream
 stream:
@@ -190,13 +221,13 @@ stream:
 camera: !include camera.yaml
 
 # https://www.home-assistant.io/integrations/webostv/
-webostv:
-  - name: Living Room TV
-    host: 192.168.10.20
-  - name: Master Bedroom TV
-    host: 192.168.10.25
-  - name: Toris Bedroom Tv
-    host: 192.168.10.254
+#webostv:
+#  - name: Living Room TV
+#    host: 192.168.10.20
+#  - name: Master Bedroom TV
+#    host: 192.168.10.25
+#  - name: Toris Bedroom Tv
+#    host: 192.168.10.254
     
 
 # https://www.home-assistant.io/integrations/directv/
@@ -222,8 +253,9 @@ cloud:
 # https://www.home-assistant.io/integrations/google_assistant/
 google_assistant:
   project_id: home-assistant-integrati-72eed
+  service_account: !include home-assistant-integrati-72eed-cc2245778156.json
 #  api_key: !secret google_assistant_api
-#  report_state: true
+  report_state: true
   exposed_domains:
     - switch
     - light
@@ -232,11 +264,6 @@ google_assistant:
     - scene
   expose_by_default: true
   
-# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
-updater:
-  # Optional, allows Home Assistant developers to focus on popular components.
-  include_used_components: true
-
 # Discover some devices automatically
 discovery:
 
@@ -256,36 +283,31 @@ tts:
 
 #https://www.home-assistant.io/components/mqtt/
 mqtt:
-  broker: 192.168.10.4
-  username: !secret mqtt_username
-  password: !secret mqtt_password
-  discovery: true
-  discovery_prefix: homeassistant
 
 #https://www.home-assistant.io/components/tplink/
-tplink:
- discovery: true
+#tplink:
+# discovery: true
 
 # light:
 #  - host: 192.168.10.205 # office-lamp
 #  - host: 192.168.10.201 # desk-lamp
 
- switch:
-  - host: 192.168.10.203 # desk-lights
-  - host: 192.168.10.204 # curio-cabinets
-  - host: 192.168.10.206 # catroom-lamp
-#  - host: 192.168.10.207 # gecko-lights1
-  - host: 192.168.10.208 # eddies-mister
+# switch:
+#  - host: 192.168.10.203 # desk-lights
+#  - host: 192.168.10.204 # curio-cabinets
+#  - host: 192.168.10.206 # catroom-lamp
+#  - host: 192.168.10.207 # office skelly
+#  - host: 192.168.10.208 # office bats 
 
 #https://www.home-assistant.io/components/eufy/
-eufy:
-  username: !secret eufy_username
-  password: !secret eufy_password
-  devices:
-    - address: 192.168.10.202
-      access_token: !secret eufy_access_token
-      type: T1201
-      name: Eufy Switch
+#eufy:
+#  username: !secret eufy_username
+#  password: !secret eufy_password
+#  devices:
+#    - address: 192.168.10.202
+#      access_token: !secret eufy_access_token
+#      type: T1201
+#      name: Eufy Switch
 
 
 #https://www.home-assistant.io/components/panel_iframe/
@@ -333,10 +355,10 @@ google:
   client_secret: !secret google_oauth_pass
 
 # https://github.com/joshjcarrier/homeassistant-litter-robot
-litter_robot:
-  username: !secret litter_robot_user
-  password: !secret litter_robot_pass
-  scan_interval: 120
+#litter_robot:
+#  username: !secret litter_robot_user
+#  password: !secret litter_robot_pass
+#  scan_interval: 120
 
 # https://www.home-assistant.io/integrations/weather.darksky/
 weather:
@@ -345,35 +367,25 @@ weather:
     latitude: !secret home_lat
     longitude: !secret home_long
 
-# https://github.com/bruxy70/Garbage-Collection
-garbage_collection:
-  sensors:
-  - name: garbage
-    frequency: weekly
-    verbose_state: True
-    verbose_format: "{days} days"
-    move_country_holidays: US
-    collection_days:
-    - wed
-  - name: recycling
-    frequency: every-n-weeks
-    verbose_state: True
-    verbose_format: "{days} days"
-    period: 2
-    first_week: 1
-    move_country_holidays: US
-    collection_days:
-    - wed
 
 # https://www.home-assistant.io/integrations/spotify/
 spotify:
   client_id: !secret spotify_client_id
   client_secret: !secret spotify_client_secret
 
-pi_hole:
-  - host: 192.168.10.10
-    name: 'pi-hole raspi1'
-    api_key: !secret piholeraspi_api
-  - host: 192.168.10.9
-    name: 'pi-hole VM'
-    api_key: !secret piholevm_api
+#pi_hole:
+#  - host: 192.168.10.10
+#    name: 'pi-hole raspi1'
+#    api_key: !secret piholeraspi_api
+#  - host: 192.168.10.9
+#    name: 'pi-hole VM'
+#    api_key: !secret piholevm_api
+
+zha:
+  zigpy_config:
+    ota:
+      ikea_provider: true
+      ledvance_provider: true
+    network:
+      channel: 15
+      channels: [15, 20, 25]

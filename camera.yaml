@@ -22,9 +22,9 @@
 #    name: Front Yard
 #    input: !secret Camera_frontyardlow
 
-#  - platform: ffmpeg
-#    name: Graveyard
-#    input: !secret Camera_skeleton
+  - platform: ffmpeg
+    name: Graveyard
+    input: !secret Camera_skeleton
 
   - platform: local_file
     file_path: /config/www/mail_and_packages/mail_today.gif
@@ -46,59 +46,6 @@
     file_path: /config/www/ds/deepstack_object_bi_kitchen_latest.jpg
     name: AI kitchen
 
-  - platform: mjpeg
-    mjpeg_url: http://bigblue.home.llamas.net/mjpg/kitchen
-    name: BI Kitchen
-    username: !secret BI_User
-    password: !secret BI_Pass
-    authentication: basic
-
-  - platform: mjpeg
-    mjpeg_url: http://bigblue.home.llamas.net/mjpg/catroom
-    name: BI Cat Room
-    username: !secret BI_User
-    password: !secret BI_Pass
-    authentication: basic
-
-  - platform: mjpeg
-    mjpeg_url: http://bigblue.home.llamas.net/mjpg/frontyard
-    name: BI Front Yard
-    username: !secret BI_User
-    password: !secret BI_Pass
-    authentication: basic
-
-  - platform: mjpeg
-    mjpeg_url: http://bigblue.home.llamas.net/mjpg/backdoor
-  #- platform: generic
-  #  still_image_url: http://bigblue.home.llamas.net/image/backdoorhd
-  #  stream_source: rtsp://bigblue.home.llamas.net:80/backdoorhd
-  #  framerate: 15
-    name: BI Backdoor
-    username: !secret BI_User
-    password: !secret BI_Pass
-    authentication: basic
-
-  - platform: mjpeg
-    mjpeg_url: http://bigblue.home.llamas.net/mjpg/amcrest1hd
-    name: BI Amcrest1
-    username: !secret BI_User
-    password: !secret BI_Pass
-    authentication: basic
-
-  - platform: mjpeg
-    mjpeg_url: http://bigblue.home.llamas.net/mjpg/@HD
-    name: BI Cycle
-    username: !secret BI_User
-    password: !secret BI_Pass
-    authentication: basic
-
-  - platform: mjpeg
-    mjpeg_url: http://bigblue.home.llamas.net/mjpg/HD
-    name: BI All
-    username: !secret BI_User
-    password: !secret BI_Pass
-    authentication: basic
-
-  - platform: mjpeg
-    mjpeg_url: http://octoprint.home.llamas.net/webcam/?action=stream
-    name: Octoprint
+  - platform: local_file
+    file_path: /config/ww/ds/bi_amcrest1_latest.jpg
+    name: oreo latest

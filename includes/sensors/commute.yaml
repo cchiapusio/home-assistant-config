@@ -1,7 +1,7 @@
-  - platform: waze_travel_time
-    name: "Toris commute to work today"
-    origin: person.tori
-    destination: sensor.tori_work_destination
-    region: 'US'
-    units: imperial
-    vehicle_type: car
+#  - platform: waze_travel_time
+#    name: "Toris commute to work today"
+#    origin: person.tori
+#    destination: sensor.tori_work_destination
+#    region: 'US'
+#    units: imperial
+#    vehicle_type: car

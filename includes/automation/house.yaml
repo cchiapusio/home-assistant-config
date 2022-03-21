@@ -1,0 +1,54 @@
+- alias: turn on house lights
+  id: de260dc5-3e3f-4168-8bf7-8eef528a12de
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    value_template: '{{ state.attributes.elevation }}'
+    below: 15
+    id: elevation
+  - platform: numeric_state
+    entity_id: sensor.dark_sky_cloud_coverage
+    above: 85
+    id: cloud_high
+  - platform: numeric_state
+    entity_id: sensor.dark_sky_precip_intensity
+    above: 0.6
+    id: intensity_high
+  - platform: numeric_state
+    entity_id: sensor.dark_sky_precip_probability
+    above: 80
+    id: probability_high
+  action:
+  - choose:
+    - conditions:
+      - condition: trigger
+        id: elevation 
+      - condition: template
+        value_template: '{{ is_state_attr("sun.sun", "rising", false) }}'
+      sequence:
+      - service: script.turn_on
+        entity_id: script.turn_on_house_lights
+        alias: sunset
+    - conditions:
+      - condition: trigger
+        id: intensity_high
+      - condition: trigger
+        id: probability_high
+      - condition: state
+        entity_id: sun.sun
+        state: above_horizon
+      sequence:
+      - service: script.turn_on
+        entity_id: script.turn_on_house_lights
+        alias: storm coming
+    - conditions:
+      - condition: numeric_state
+        entity_id: sensor.dark_sky_cloud_coverage
+        above: 85
+      - condition: state
+        entity_id: sun.sun
+        state: above_horizon
+      sequence:
+      - service: script.turn_on
+        entity_id: script.turn_on_house_lights
+        alias: very cloudy

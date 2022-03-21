@@ -6,6 +6,10 @@
       entity_id: binary_sensor.amcrest1_motion
       from: 'off'
       to: 'on'
+  condition:
+    condition: state
+    entity_id: input_boolean.suspend_camera_notifications
+    state: "off"
   action:
     - service: image_processing.scan
       entity_id: image_processing.deepstack_object_bi_amcrest1
@@ -14,8 +18,10 @@
         message: "Amcrest1 Motion"
         data:
           image: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_amcrest1', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_amcrest1', 'last_target_detection') }}.jpg"
-          group: Motion
+          channel: Motion
           sticky: true
+          ttl: 0
+          priority: high
           clickAction: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_amcrest1', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_amcrest1', 'last_target_detection') }}.jpg"
           actions:
             - action: "alarm"
@@ -67,6 +73,10 @@
       entity_id: binary_sensor.person_at_back_door
       from: 'off'
       to: 'on'
+  condition:
+    condition: state
+    entity_id: input_boolean.suspend_camera_notifications
+    state: "off"
   action:
     - service: image_processing.scan
       entity_id: image_processing.deepstack_object_bi_backdoor
@@ -75,8 +85,10 @@
         message: "Back Door Motion"
         data:
           image: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_backdoor', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_backdoor', 'last_target_detection') }}.jpg"
-          group: Motion
+          channel: Motion
           sticky: true
+          ttl: 0
+          priority: high
           clickAction: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_backdoor', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_backdoor', 'last_target_detection') }}.jpg"
           actions:
             - action: "alarm"
@@ -98,24 +110,22 @@
       entity_id: binary_sensor.vehicle_in_front_yard
       from: 'off'
       to: 'on'
+  condition:
+    condition: state
+    entity_id: input_boolean.suspend_camera_notifications
+    state: "off"
   action:
     - service: image_processing.scan
       entity_id: image_processing.deepstack_object_bi_front_yard
-    - service: notify.living_room_tv
-      data:
-        message: "Front Yard Motion"
-    - service: media_player.play_media
-      data:
-        entity_id: media_player.office_display
-        media_content_id: "http://192.168.10.11/mjpg/frontyard/video.mjpg"
-        media_content_type: 'image/jpg'
     - service: notify.mobile_app_sm_n986u
       data:
         message: "Front Yard Motion"
         data:
           image: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_front_yard', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_front_yard', 'last_target_detection') }}.jpg"
-          group: Motion
+          channel: Motion
           sticky: true
+          ttl: 0
+          priority: high
           clickAction: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_bi_front_yard', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_bi_front_yard', 'last_target_detection') }}.jpg"
           actions:
             - action: "alarm"
@@ -124,6 +134,14 @@
               title: "Pause 10m"
             - action: "pause30frontyard"
               title: "Pause 30m"
+#    - service: media_player.play_media
+#      data_template:
+#        entity_id: media_player.office_display
+#        media_content_id: "http://192.168.10.11/mjpg/frontyard/video.mjpg"
+#        media_content_type: image/jpg
+    - service: notify.living_room_tv
+      data:
+        message: "Front Yard Motion"
 
 - alias: reenable backdoor notifications after one hour
   id: 4fb5695f-bf71-49ee-8dd1-da5f5d9aaf9d
@@ -134,6 +152,91 @@
     to: 'off'
     for:
       hours: 1
+  - platform: state
+    entity_id: input_boolean.suspend_camera_notifications
+    from: "on"
+    to: "off"
+    for:
+      hours: 1
   action:
   - service: automation.turn_on
     entity_id: automation.backdoor_motion_notification
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.suspend_camera_notifications
+
+- alias: snapshot oreo tank on motion
+  id: 080431bf-fef3-4a12-b5a3-c9d0d8b687b8
+  trigger:
+  - platform: state
+    entity_id: binary_motion.amcrest1_motion
+    from: 'off'
+    to: 'on'
+  action:
+  - service: camera.snapshot
+    data:
+      entity_id: camera.bi_amcrest1
+      filename: "/config/www/ds/bi_amcrest1_latest.jpg"
+
+- alias: disable back camera when door opens
+  id: 28e2c714-b59c-41e4-981a-2d2390e82467
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.back_door
+    from: 'off'
+    to: 'on'
+  action:
+    - service: automation.turn_off
+      entity_id: automation.backdoor_motion_notification
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.suspend_camera_notifications
+    - delay:
+        minutes: 10
+    - service: automation.turn_on
+      entity_id: automation.backdoor_motion_notification
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.suspend_camera_notifications
+      
+- alias: frontdoor motion notification
+  id: 38f7ecca-6ad0-45ac-8b98-e3d7487d93a7
+  initial_state: true
+  trigger: 
+    - platform: state
+      entity_id: binary_sensor.person_in_front_yard
+      from: 'off'
+      to: 'on'
+    - platform: state
+      entity_id: binary_sensor.vehicle_in_front_yard
+      from: 'off'
+      to: 'on'
+  condition:
+    condition: state
+    entity_id: input_boolean.suspend_camera_notifications
+    state: "off"
+  action:
+    - service: image_processing.scan
+      entity_id: image_processing.deepstack_object_front_door_main
+    - service: notify.mobile_app_sm_n986u
+      data:
+        message: "Front Door Motion"
+        data:
+          image: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_front_door_main', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_front_door_main', 'last_target_detection') }}.jpg"
+          channel: Motion
+          sticky: true
+          ttl: 0
+          priority: high
+          clickAction: "https://hass.chiapusio.org/local/ds/{{ state_attr('image_processing.deepstack_object_front_door_main', 'friendly_name') }}_{{ state_attr('image_processing.deepstack_object_front_door_main', 'last_target_detection') }}.jpg"
+          actions:
+            - action: "alarm"
+              title: "Trigger Alarm"
+            - action: "pause10frontyard"
+              title: "Pause 10m"
+            - action: "pause30frontyard"
+              title: "Pause 30m"
+    - service: media_player.play_media
+      data_template:
+        entity_id: media_player.office_display
+        media_content_id: "http://192.168.10.11/mjpg/doorbell/video.mjpg"
+        media_content_type: image/jpg
+    - service: notify.living_room_tv
+      data:
+        message: "Front Door Motion"

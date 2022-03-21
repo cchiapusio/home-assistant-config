@@ -1,4 +1,5 @@
 - alias: turn off halloween props at midnight
+  id: 32f5da5d-86a7-488c-867c-771b27414644
   trigger:
     platform: time
     at: "00:00:00"
@@ -8,8 +9,6 @@
       state: 'Halloween'
   action:
     - service: homeassistant.turn_off
-      entity_id: switch.outdoor_plug_1_outdoor_plug_1
-    - service: homeassistant.turn_off
       entity_id: switch.outdoor_switch_3_1
     - service: homeassistant.turn_off
       entity_id: switch.outdoor_switch_3_2
@@ -17,8 +16,13 @@
       entity_id: switch.outdoor_switch_4_1
     - service: homeassistant.turn_off
       entity_id: switch.outdoor_switch_4_2
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_5_1
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_5_2
 
 - alias: turn off halloween props at mid-morning
+  id: 2c231044-7687-4945-a9bc-38ce39c88fe9
   trigger:
     platform: time
     at: "09:00:00"
@@ -28,11 +32,13 @@
       state: 'Halloween'
   action:
     - service: homeassistant.turn_off
-      entity_id: switch.outdoor_plug_1_outdoor_plug_1
-    - service: homeassistant.turn_off
       entity_id: switch.outdoor_plug_2_outdoor_plug_2
     - service: homeassistant.turn_off
       entity_id: switch.outdoor_switch_3_1
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_5_1
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_5_2
 
 - alias: turn on halloween props for morning commute
   trigger:
@@ -44,9 +50,18 @@
       state: 'Halloween'
   action:
     - service: switch.turn_on
-      entity_id: switch.outdoor_plug_1_outdoor_plug_1
+      entity_id: switch.outdoor_switch_5_1
+    - service: switch.turn_on
+      entity_id: switch.outdoor_switch_5_2
     - service: switch.turn_on
       entity_id: switch.outdoor_switch_3_1
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm3mini1_remote
+      data:
+        device: projector
+        command:
+          - turn off
 
 - alias: turn on halloween props for early evening
   id: e550221c-3900-41c8-ba82-6375016c67aa
@@ -59,18 +74,67 @@
       state: 'Halloween'
   action:
     - service: switch.turn_on
-      entity_id: switch.outdoor_plug_1_outdoor_plug_1
+      entity_id: switch.outdoor_plug_1
     - service: switch.turn_on
       entity_id: switch.outdoor_switch_3_1
+    - service: switch.turn_on
+      entity_id: switch.outdoor_switch_5_1
+    - service: switch.turn_on
+      entity_id: switch.outdoor_switch_5_2
 
-- alias: notify projector turned on
-  id: abc6d0fa-4459-4e20-9ade-018769376a68
+
+- alias: turn on projector
+  id: 9f3044ac-6a92-4f1d-b201-8150d608c2b9
   trigger:
-    - platform: state
-      entity_id: switch.tommys_ac
-      from: 'off'
-      to: 'on'
+    platform: time
+    at: "19:00:00"
+  condition:
+    - condition: state
+      entity_id: sun.sun
+      state: below_horizon
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Halloween'
   action:
-    - service: notify.mobile_app_sm_n986u
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm3mini1_remote
       data:
-        message: "start the projector"
+        device: projector
+        command:
+          - turn on
+    - delay: 20
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm3mini1_remote
+      data:
+        device: projector
+        command:
+          - select
+          - select
+    - delay: 5
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm3mini1_remote
+      data:
+        device: projector
+        command:
+          - play
+
+- alias: turn off projector
+  id: ccb25ca6-f641-46a7-b0b5-63bbe719af02
+  trigger:
+    platform: time
+    at: "06:00:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Halloween'
+  action:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm3mini1_remote
+      data:
+        device: projector
+        command:
+          - turn off

@@ -69,6 +69,12 @@
       state: off
     switch.shelly_2_5_8caab55f9707_relay_0:
       state: off
+    light.tv_wash_light:
+      state: off
+    light.flood03:
+      state: off
+    light.flood04:
+      state: off
 
 - name: Housecleaners coming
   entities:
@@ -150,18 +156,9 @@
       state: on
       effect: Solid
       xy_color: [0.126, 0.04] # blue
-#    light.office_lamp:
-#      state: on
-#      xy_color: [0.126, 0.04] # blue
-#    light.living_room_lamp_1:
-#      state: on
-#      xy_color: [0.126, 0.04] # blue
-#    light.living_room_lamp_2:
-#      state: on
-#      xy_color: [0.126, 0.04] # blue
-#    light.foyer_lamp:
-#      state: on
-#      xy_color: [0.126, 0.04] # blue
+    light.office_lamp:
+      state: on
+      xy_color: [0.126, 0.04] # blue
 
 - name: warm_up
   entities:
@@ -169,15 +166,6 @@
       state: on
       effect: Solid
       xy_color: [0.701, 0.299] # red
-#    light.office_lamp:
-#      state: on
-#      xy_color: [0.701, 0.299] # red
-#    light.living_room_lamp_1:
-#      state: on
-#      xy_color: [0.701, 0.299] # red
-#    light.living_room_lamp_2:
-#      state: on
-#      xy_color: [0.701, 0.299] # red
-#    light.foyer_lamp:
-#      state: on
-#      xy_color: [0.701, 0.299] # red
+    light.office_lamp:
+      state: on
+      xy_color: [0.701, 0.299] # red

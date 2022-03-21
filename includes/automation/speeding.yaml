@@ -1,47 +1,47 @@
 ######## Speeding ########
-- alias: Going fast
-  id: d96f0ae3-e625-4571-b2b3-9837096a3d2c
-  trigger:
-    platform: numeric_state
-    entity_id: device_tracker.life360_tori
-    value_template: '{{ state.attributes.speed }}'
-    above: 65
-    for:
-      minutes: 1
-  action:
-    - service: scene.create
-      data:
-        scene_id: office_save
-        snapshot_entities:
-        - light.wled
-        - light.office_lamp
-    - service: scene.turn_on
-      entity_id: scene.going_fast
-    - service: timer.start
-      data:
-        entity_id: timer.alert
+#- alias: Going fast
+#  id: d96f0ae3-e625-4571-b2b3-9837096a3d2c
+#  trigger:
+#    platform: numeric_state
+#    entity_id: device_tracker.life360_tori
+#    value_template: '{{ state.attributes.speed }}'
+#    above: 65
+#    for:
+#      minutes: 1
+#  action:
+#    - service: scene.create
+#      data:
+#        scene_id: office_save
+#        snapshot_entities:
+#        - light.wled
+#        - light.office_lamp
+#    - service: scene.turn_on
+#      entity_id: scene.going_fast
+#    - service: timer.start
+#      data:
+#        entity_id: timer.alert
 
-- alias: Going too fast
-  id: 3a089353-f675-4fc6-a675-a1ca37576463
-  trigger:
-    platform: numeric_state
-    entity_id: device_tracker.life360_tori
-    value_template: '{{ state.attributes.speed }}'
-    above: 73
-    for:
-      minutes: 1
-  action:
-    - service: scene.create
-      data:
-        scene_id: office_save
-        snapshot_entities:
-        - light.wled
-        - light.office_lamp
-    - service: scene.turn_on
-      entity_id: scene.going_too_fast
-    - service: timer.start
-      data:
-        entity_id: timer.alert
+#- alias: Going too fast
+#  id: 3a089353-f675-4fc6-a675-a1ca37576463
+#  trigger:
+#    platform: numeric_state
+#    entity_id: device_tracker.life360_tori
+#    value_template: '{{ state.attributes.speed }}'
+#    above: 73
+#    for:
+#      minutes: 1
+#  action:
+#    - service: scene.create
+#      data:
+#        scene_id: office_save
+#        snapshot_entities:
+#        - light.wled
+#        - light.office_lamp
+#    - service: scene.turn_on
+#      entity_id: scene.going_too_fast
+#    - service: timer.start
+#      data:
+#        entity_id: timer.alert
 
 
 #- alias: Going slow enough

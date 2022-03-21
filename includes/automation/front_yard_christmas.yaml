@@ -1,0 +1,15 @@
+- alias: turn off christmas lights at midnight
+  id: 23306405-9f42-459e-a243-5060ac896827
+  trigger:
+    platform: time
+    at: "00:00:00"
+  condition:
+    - condition: state
+      entity_id: input_select.outdoor_light_scene
+      state: 'Christmas'
+  action:
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_3_2
+    - service: homeassistant.turn_off
+      entity_id: switch.outdoor_switch_4_2
+    - service: homeassistant.turn_off

@@ -42,7 +42,7 @@
         minutes: 30
     - service: automation.turn_on
       entity_id: automation.backdoor_motion_notification
-      
+
 
 - alias: turn on deck floodlights when motion detected at back door
   id: 052b5cec-b075-45bf-a08a-a178e59939fd
@@ -76,14 +76,21 @@
       entity_id: binary_sensor.person_at_back_door
       from: 'off'
       to: 'on'
+    - platform: state
+      entity_id: binary_sensor.front_door_smart_motion_human
+      from: 'off'
+      to: 'on'
   condition:
     - condition: state
       entity_id: sun.sun
       state: below_horizon
+    - condition: state
+      entity_id: input_boolean.suspend_camera_notifications
+      state: "off"
     - condition: or
       conditions:
         - condition: state
-          entity_id: light.dining_room_lamp_west
+          entity_id: switch.shelly_2_5_e8db84d2729c_relay_1
           state: 'off'
         - condition: state
           entity_id: group.persons
@@ -98,9 +105,9 @@
         - light.foyer_lamp
         - light.living_room_lamp_1
         - light.living_room_lamp_2
-        - light.mbr_bed_leds
+        - light.crystal_castle_2
     - service: light.turn_on
-      entity_id: light.mbr_bed_leds
+      entity_id: light.crystal_castle_2
       data:
         rgb_color: [0,0,255]
         brightness: 130

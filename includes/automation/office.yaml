@@ -16,6 +16,7 @@
     entity_id: 
       - light.office_lamp
       - switch.catroom_lamp
+      - light.tv_wash_light
 
 ##
 ## Turn off lights at midnight
