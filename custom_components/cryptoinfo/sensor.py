@@ -2,12 +2,6 @@
 """
 Sensor component for Cryptoinfo
 Author: Johnny Visser
-
-ToDo:
-- Add documentation and reference to coingecko
-- Add to hacs repo
-https://api.coingecko.com/api/v3/simple/price?ids=neo&vs_currencies=usd
-https://api.coingecko.com/api/v3/simple/price?ids=neo&vs_currencies=usd&include_market_cap=true&include_24hr_vol=true&include_24hr_change=true
 """
 
 import requests
@@ -24,15 +18,15 @@ from .const.const import (
     SENSOR_PREFIX,
     ATTR_LAST_UPDATE,
     ATTR_VOLUME,
+    ATTR_BASE_PRICE,
     ATTR_CHANGE,
     ATTR_MARKET_CAP,
     API_ENDPOINT,
     CONF_ID,
 )
 
-from homeassistant.components.sensor import PLATFORM_SCHEMA
+from homeassistant.components.sensor import PLATFORM_SCHEMA, SensorDeviceClass
 import homeassistant.helpers.config_validation as cv
-from homeassistant.const import CONF_RESOURCES
 from homeassistant.util import Throttle
 from homeassistant.helpers.entity import Entity
 
@@ -42,7 +36,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Required(CONF_CURRENCY_NAME, default="usd"): cv.string,
         vol.Required(CONF_MULTIPLIER, default=1): cv.string,
         vol.Required(CONF_UPDATE_FREQUENCY, default=60): cv.string,
-        vol.Optional(CONF_ID, default = ""): cv.string,
+        vol.Optional(CONF_ID, default=""): cv.string,
     }
 )
 
@@ -61,7 +55,11 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     try:
         entities.append(
             CryptoinfoSensor(
-                cryptocurrency_name, currency_name, multiplier, update_frequency, id_name
+                cryptocurrency_name,
+                currency_name,
+                multiplier,
+                update_frequency,
+                id_name,
             )
         )
     except urllib.error.HTTPError as error:
@@ -69,6 +67,7 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
         return False
 
     add_entities(entities)
+
 
 class CryptoinfoSensor(Entity):
     def __init__(
@@ -79,14 +78,23 @@ class CryptoinfoSensor(Entity):
         self.currency_name = currency_name
         self.multiplier = multiplier
         self.update = Throttle(update_frequency)(self._update)
-        self._name = SENSOR_PREFIX + (id_name + " " if len(id_name) > 0  else "") + cryptocurrency_name + " " + currency_name
+        self._attr_device_class = SensorDeviceClass.MONETARY
+        self._name = (
+            SENSOR_PREFIX
+            + (id_name + " " if len(id_name) > 0 else "")
+            + cryptocurrency_name
+            + " "
+            + currency_name
+        )
         self._icon = "mdi:bitcoin"
         self._state = None
         self._last_update = None
         self._volume = None
+        self._base_price = None
         self._change = None
         self._market_cap = None
         self._unit_of_measurement = "\u200b"
+        self._attr_unique_id = cryptocurrency_name + currency_name + multiplier
 
     @property
     def name(self):
@@ -105,8 +113,14 @@ class CryptoinfoSensor(Entity):
         return self._unit_of_measurement
 
     @property
-    def device_state_attributes(self):
-        return {ATTR_LAST_UPDATE: self._last_update, ATTR_VOLUME: self._volume, ATTR_CHANGE: self._change, ATTR_MARKET_CAP: self._market_cap }
+    def extra_state_attributes(self):
+        return {
+            ATTR_LAST_UPDATE: self._last_update,
+            ATTR_VOLUME: self._volume,
+            ATTR_BASE_PRICE: self._base_price,
+            ATTR_CHANGE: self._change,
+            ATTR_MARKET_CAP: self._market_cap,
+        }
 
     def _update(self):
         url = (
@@ -121,7 +135,7 @@ class CryptoinfoSensor(Entity):
         r = requests.get(url=url)
         # extracting response json
         self.data = r.json()[self.cryptocurrency_name][self.currency_name]
-        #multiply the price
+        # multiply the price
         price_data = self.data * float(self.multiplier)
 
         try:
@@ -130,14 +144,24 @@ class CryptoinfoSensor(Entity):
                 self._last_update = datetime.today().strftime("%d-%m-%Y %H:%M")
                 self._state = float(price_data)
                 # set the attributes of the sensor
-                self._volume = r.json()[self.cryptocurrency_name][self.currency_name + "_24h_vol"]
-                self._change = r.json()[self.cryptocurrency_name][self.currency_name + "_24h_change"]
-                self._market_cap = r.json()[self.cryptocurrency_name][self.currency_name + "_market_cap"]
+                self._volume = r.json()[self.cryptocurrency_name][
+                    self.currency_name + "_24h_vol"
+                ]
+                self._base_price = r.json()[self.cryptocurrency_name][
+                    self.currency_name
+                ]
+                self._change = r.json()[self.cryptocurrency_name][
+                    self.currency_name + "_24h_change"
+                ]
+                self._market_cap = r.json()[self.cryptocurrency_name][
+                    self.currency_name + "_market_cap"
+                ]
             else:
                 raise ValueError()
         except ValueError:
             self._state = None
             self._last_update = datetime.today().strftime("%d-%m-%Y %H:%M")
             self._volume = None
+            self._base_price = None
             self._change = None
             self._market_cap = None

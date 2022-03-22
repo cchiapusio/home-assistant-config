@@ -1,9 +1,11 @@
+from __future__ import annotations
+
 import json
 import logging
 
 from custom_components.blueiris.models.base_entity import BlueIrisEntity
 from homeassistant.components.binary_sensor import STATE_ON, BinarySensorEntity
-from homeassistant.components.mqtt import Message, async_subscribe
+from homeassistant.components.mqtt import ReceiveMessage, async_subscribe
 from homeassistant.core import callback
 
 from ..helpers.const import *
@@ -29,6 +31,11 @@ class BlueIrisMainBinarySensor(BinarySensorEntity, BlueIrisEntity):
         return self.entity.state
 
     @property
+    def device_class(self) -> BinarySensorDeviceClass | str | None:
+        """Return the class of this sensor."""
+        return self.entity.binary_sensor_device_class
+
+    @property
     def force_update(self):
         """Force update."""
         return DEFAULT_FORCE_UPDATE
@@ -41,7 +48,7 @@ class BlueIrisMainBinarySensor(BinarySensorEntity, BlueIrisEntity):
         )
 
         @callback
-        def state_message_received(message: Message):
+        def state_message_received(message: ReceiveMessage):
             """Handle a new received MQTT state message."""
             _LOGGER.debug(
                 f"Received BlueIris Message - {message.topic}: {message.payload}"
@@ -58,7 +65,7 @@ class BlueIrisMainBinarySensor(BinarySensorEntity, BlueIrisEntity):
             self.remove_subscription()
             self.remove_subscription = None
 
-    def _state_message_received(self, message: Message):
+    def _state_message_received(self, message: ReceiveMessage):
         topic = message.topic
         payload = json.loads(message.payload)
 

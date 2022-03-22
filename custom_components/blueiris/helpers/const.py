@@ -4,10 +4,14 @@ For more details about this platform, please refer to the documentation at
 https://home-assistant.io/components/switch.blueiris/
 """
 from datetime import timedelta
+from http.client import NOT_ACCEPTABLE
 
 import voluptuous as vol
 
-from homeassistant.components.binary_sensor import DOMAIN as DOMAIN_BINARY_SENSOR
+from homeassistant.components.binary_sensor import (
+    DOMAIN as DOMAIN_BINARY_SENSOR,
+    BinarySensorDeviceClass,
+)
 from homeassistant.components.camera import DOMAIN as DOMAIN_CAMERA
 from homeassistant.components.switch import DOMAIN as DOMAIN_SWITCH
 from homeassistant.const import (
@@ -37,13 +41,19 @@ BI_ATTR_NAME = "optionDisplay"
 BI_ATTR_ID = "optionValue"
 BI_ATTR_AUDIO = "audio"
 BI_ATTR_IS_ONLINE = "isOnline"
+BI_ATTR_GROUP = "group"
+BI_ATTR_TYPE = "type"
 
-BI_NON_GENERIC_ATTRIBUTES = [BI_ATTR_NAME, BI_ATTR_ID, BI_ATTR_AUDIO, BI_ATTR_IS_ONLINE]
+BI_NON_GENERIC_ATTRIBUTES = [BI_ATTR_NAME, BI_ATTR_ID, BI_ATTR_AUDIO, BI_ATTR_IS_ONLINE, BI_ATTR_GROUP, BI_ATTR_TYPE]
 
 CAMERA_HAS_AUDIO = "has_audio"
 CAMERA_IS_ONLINE = "is_online"
 CAMERA_IS_SYSTEM = "is_system"
+CAMERA_IS_GROUP = "is_group"
+CAMERA_GROUP_CAMERAS = "group_cameras"
 CAMERA_DATA = "data"
+CAMERA_TYPE = "type"
+
 
 CONF_ARR = [CONF_USERNAME, CONF_PASSWORD, CONF_HOST, CONF_PORT, CONF_SSL]
 
@@ -75,11 +85,16 @@ DATA_BLUEIRIS_HA_ENTITIES = f"{DATA_BLUEIRIS}_HA_Entities"
 DEFAULT_NAME = "BlueIris"
 DEFAULT_PORT = 80
 
+NOT_AVAILABLE = "N/A"
+
 DOMAIN_KEY_FILE = f"{DOMAIN}.key"
 JSON_DATA_FILE = f"custom_components/{DOMAIN}/data/[NAME].json"
 
 DOMAIN_LOGGER = "logger"
 SERVICE_SET_LEVEL = "set_level"
+SERVICE_TRIGGER_CAMERA = "trigger_camera"
+SERVICE_MOVE_TO_PRESET = "move_to_preset"
+
 
 ATTR_ADMIN_PROFILE = "Profile"
 ATTR_ADMIN_SCHEDULE = "Schedule"
@@ -123,15 +138,13 @@ SENSOR_AUDIO_NAME = "Audio"
 SENSOR_MAIN_NAME = "Main"
 
 NEGATIVE_SENSOR_STATE = [SENSOR_CONNECTIVITY_NAME]
-CAMERA_SENSORS = [
-    SENSOR_MOTION_NAME,
-    SENSOR_CONNECTIVITY_NAME,
-    SENSOR_EXTERNAL_NAME,
-    SENSOR_DIO_NAME,
-    SENSOR_AUDIO_NAME,
-]
-
-SENSOR_DEVICE_CLASS = {SENSOR_AUDIO_NAME: "sound"}
+CAMERA_SENSORS = {
+    SENSOR_MOTION_NAME: BinarySensorDeviceClass.MOTION,
+    SENSOR_CONNECTIVITY_NAME: BinarySensorDeviceClass.CONNECTIVITY,
+    SENSOR_EXTERNAL_NAME: BinarySensorDeviceClass.PRESENCE,
+    SENSOR_DIO_NAME: BinarySensorDeviceClass.PLUG,
+    SENSOR_AUDIO_NAME: BinarySensorDeviceClass.SOUND,
+}
 
 MQTT_MESSAGE_TRIGGER = "trigger"
 MQTT_MESSAGE_TYPE = "type"
@@ -144,21 +157,45 @@ CONFIG_OPTIONS = "options"
 CONFIG_CONDITIONS = "conditions"
 CONFIG_ITEMS = "items"
 
+BI_CAMERA_ATTR_FPS = "FPS"
+BI_CAMERA_ATTR_AUDIO_SUPPORT = "Audio Support"
+BI_CAMERA_ATTR_WIDTH = "Width"
+BI_CAMERA_ATTR_HEIGHT = "Height"
+BI_CAMERA_ATTR_IS_ONLINE = "Is Online"
+BI_CAMERA_ATTR_IS_RECORDING = "Is Recording"
+BI_CAMERA_ATTR_ISSUE = "Issue"
+BI_CAMERA_ATTR_ALERTS_HASH = "Alerts #"
+BI_CAMERA_ATTR_TRIGGERS_HASH = "Triggers #"
+BI_CAMERA_ATTR_CLIPS_HASH = "Clips #"
+BI_CAMERA_ATTR_NO_SIGNAL_HASH = "No Signal #"
+BI_CAMERA_ATTR_ERROR = "Error"
+BI_CAMERA_ATTR_GROUP_CAMERAS = "Group Cameras"
+
+BI_CAMERA_TYPE_SCREEN_CAPTURE = 0
+BI_CAMERA_TYPE_USB_FIREWIRE_ANALOG = 2
+BI_CAMERA_TYPE_NETWORK_IP = 4
+BI_CAMERA_TYPE_BROADCAST = 5
+BI_CAMERA_TYPE_SCREEN_CAPTURE_LABEL = "Screen Capture Camera"
+BI_CAMERA_TYPE_USB_FIREWIRE_ANALOG_LABEL = "USB, Firewire, or Analog Camera"
+BI_CAMERA_TYPE_NETWORK_IP_LABEL = "Network IP Camera"
+BI_CAMERA_TYPE_BROADCAST_LABEL = "Broadcast Camera"
+
 ATTR_BLUE_IRIS_CAMERA = {
     "optionDisplay": CONF_NAME,
     "optionValue": CONF_ID,
-    "FPS": "FPS",
-    "audio": "Audio support",
-    "width": "Width",
-    "height": "Height",
-    "isOnline": "Is Online",
-    "isRecording": "Is Recording",
-    "isYellow": "Issue",
-    "nAlerts": "Alerts #",
-    "nTriggers": "Triggers #",
-    "nClips": "Clips #",
-    "nNoSignal": "No Signal #",
-    "error": "Error",
+    "FPS": BI_CAMERA_ATTR_FPS,
+    "audio": BI_CAMERA_ATTR_AUDIO_SUPPORT,
+    "width": BI_CAMERA_ATTR_WIDTH,
+    "height": BI_CAMERA_ATTR_HEIGHT,
+    "isOnline": BI_CAMERA_ATTR_IS_ONLINE,
+    "isRecording": BI_CAMERA_ATTR_IS_RECORDING,
+    "isYellow": BI_CAMERA_ATTR_ISSUE,
+    "nAlerts": BI_CAMERA_ATTR_ALERTS_HASH,
+    "nTriggers": BI_CAMERA_ATTR_TRIGGERS_HASH,
+    "nClips": BI_CAMERA_ATTR_CLIPS_HASH,
+    "nNoSignal": BI_CAMERA_ATTR_NO_SIGNAL_HASH,
+    "error": BI_CAMERA_ATTR_ERROR,
+    "group": BI_CAMERA_ATTR_GROUP_CAMERAS,
 }
 ATTR_BLUE_IRIS_STATUS = [
     "system name",
@@ -202,7 +239,7 @@ ENTITY_ICON = "icon"
 ENTITY_UNIQUE_ID = "unique-id"
 ENTITY_EVENT = "event-type"
 ENTITY_TOPIC = "topic"
-ENTITY_DEVICE_CLASS = "device-class"
+ENTITY_BINARY_SENSOR_DEVICE_CLASS = "binary-sensor-device-class"
 ENTITY_DEVICE_NAME = "device-name"
 ENTITY_CAMERA_DETAILS = "camera-details"
 ENTITY_BINARY_SENSOR_TYPE = "binary-sensor-type"

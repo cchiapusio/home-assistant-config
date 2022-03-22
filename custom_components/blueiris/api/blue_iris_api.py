@@ -82,7 +82,7 @@ class BlueIrisApi:
 
         try:
             async with self.session.post(
-                self.url, data=json.dumps(data), ssl=False
+                    self.url, data=json.dumps(data), ssl=False
             ) as response:
                 _LOGGER.debug(f"Status of {self.url}: {response.status}")
 
@@ -139,7 +139,7 @@ class BlueIrisApi:
             )
 
     async def async_update(self):
-        _LOGGER.info(f"Updating data from BI Server ({self.config_data.name})")
+        _LOGGER.info(f"Updating data from BI Server ({self.config_manager.config_entry.title})")
 
         await self.load_camera()
         await self.load_status()
@@ -236,8 +236,9 @@ class BlueIrisApi:
             for key in data:
                 self.status[key] = data[key]
 
+
     async def set_profile(self, profile_id):
-        _LOGGER.info("Setting profile (#{profile_id})")
+        _LOGGER.info(f"Setting profile {profile_id}")
 
         await self._set_profile(profile_id)
 
@@ -262,10 +263,12 @@ class BlueIrisApi:
 
             for key in data:
                 self.status[key] = data[key]
+
     async def set_schedule(self, schedule_name):
-        _LOGGER.info("Setting schedule (#{schedule_name})")
+        _LOGGER.info(f"Setting schedule {schedule_name}")
 
         await self._set_schedule(schedule_name)
+
     async def _set_schedule(self, schedule_name, check_lock=True):
         request_data = {
             "cmd": "status",
@@ -287,3 +290,24 @@ class BlueIrisApi:
 
             for key in data:
                 self.status[key] = data[key]
+
+    async def trigger_camera(self, camera_short_name):
+        _LOGGER.info(f"Triggering camera {camera_short_name}")
+
+        request_data = {
+            "cmd": "trigger",
+            "session": self.session_id,
+            "camera" : camera_short_name
+        }
+        await self.async_verified_post(request_data)
+
+    async def move_to_preset(self, camera_short_name, preset):
+        _LOGGER.info(f"Moving {camera_short_name} to preset {preset}")
+        preset_value = 100 + preset
+        request_data = {
+            "cmd": "ptz",
+            "session": self.session_id,
+            "camera" : camera_short_name,
+            "button" : preset_value
+        }
+        await self.async_verified_post(request_data)

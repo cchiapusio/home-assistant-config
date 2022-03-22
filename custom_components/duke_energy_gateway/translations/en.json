@@ -1,0 +1,35 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Duke Energy Gateway",
+        "description": "Enter the email and password that you use to connect to Duke Energy below. If you need help with the configuration have a look here: https://github.com/mjmeli/ha-duke-energy-gateway",
+        "data": {
+          "email": "Email",
+          "password": "Password"
+        }
+      }
+    },
+    "error": {
+      "auth": "Email/Password is wrong."
+    },
+    "abort": {
+      "single_instance_allowed": "Only a single instance is allowed."
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "binary_sensor": "Binary sensor enabled",
+          "sensor": "Sensor enabled",
+          "switch": "Switch enabled",
+          "realtimeInterval": "Real-time Usage Update Interval (sec)"
+        }
+      }
+    },
+    "abort": {
+      "invalid_update_interval_value": "The Real-time Usage Update Interval must be a positive integer or 0 for no interval."
+    }
+  }
+}

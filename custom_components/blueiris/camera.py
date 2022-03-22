@@ -6,14 +6,17 @@ https://home-assistant.io/components/camera.blueiris/
 from abc import ABC
 import asyncio
 import logging
+from typing import Optional
 
 import aiohttp
 import async_timeout
+import voluptuous as vol
 
 from homeassistant.components.camera import SUPPORT_STREAM, Camera
 from homeassistant.const import CONF_VERIFY_SSL
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import TemplateError
+from homeassistant.helpers import config_validation as cv, entity_platform
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .helpers.const import *
@@ -31,7 +34,21 @@ async def async_setup_entry(hass, config_entry, async_add_devices):
     """Set up the BlueIris Camera."""
     await async_setup_base_entry(
         hass, config_entry, async_add_devices, CURRENT_DOMAIN, get_camera
+        )
+    platform = entity_platform.current_platform.get()
+    platform.async_register_entity_service(
+       SERVICE_TRIGGER_CAMERA,
+       {},
+       SERVICE_TRIGGER_CAMERA,
     )
+    platform.async_register_entity_service(
+       SERVICE_MOVE_TO_PRESET,
+       {
+           vol.Required('preset'): cv.positive_int,
+       },
+       SERVICE_MOVE_TO_PRESET,
+    )
+
 
 
 async def async_unload_entry(hass, config_entry):
@@ -85,6 +102,7 @@ class BlueIrisCamera(Camera, BlueIrisEntity, ABC):
         self._last_url = None
         self._last_image = None
 
+
     def _immediate_update(self, previous_state: bool):
         if previous_state != self.entity.state:
             _LOGGER.debug(
@@ -107,13 +125,13 @@ class BlueIrisCamera(Camera, BlueIrisEntity, ABC):
         """Return the interval between frames of the mjpeg stream."""
         return self._frame_interval
 
-    def camera_image(self):
+    def camera_image(self, width: Optional[int] = None, height: Optional[int] = None) -> Optional[bytes]:
         """Return bytes of camera image."""
         return asyncio.run_coroutine_threadsafe(
             self.async_camera_image(), self.hass.loop
         ).result()
 
-    async def async_camera_image(self):
+    async def async_camera_image(self, width: Optional[int] = None, height: Optional[int] = None) -> Optional[bytes]:
         """Return a still image response from the camera."""
         try:
             url = self._still_image_url.async_render()
@@ -142,3 +160,17 @@ class BlueIrisCamera(Camera, BlueIrisEntity, ABC):
     async def stream_source(self):
         """Return the source of the stream."""
         return self._stream_source
+
+    async def trigger_camera(self):
+        if self.entity.attributes[BI_CAMERA_ATTR_GROUP_CAMERAS] == NOT_AVAILABLE:
+            await self.api.trigger_camera(self.entity.id)
+        else:
+            for grouped_camera in self.entity.attributes[BI_CAMERA_ATTR_GROUP_CAMERAS]:
+                await self.api.trigger_camera(grouped_camera)
+
+    async def move_to_preset(self, preset):
+        if self.entity.attributes[BI_CAMERA_ATTR_GROUP_CAMERAS] == NOT_AVAILABLE:
+            await self.api.move_to_preset(self.entity.id, preset)
+        else:
+            for grouped_camera in self.entity.attributes[BI_CAMERA_ATTR_GROUP_CAMERAS]:
+                await self.api.move_to_preset(grouped_camera, preset)
