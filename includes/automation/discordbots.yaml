@@ -1,0 +1,35 @@
+- alias: gamedeals free games
+  id: acf34f9b-324b-4051-bc9e-6901f45caf8f
+  trigger:
+    - platform: sun
+      event: sunset
+  condition:
+    condition: state
+    entity_id: binary_sensor.gamedeals_free
+    state: 'on'
+  action:
+    - variables:
+        freebies: >
+          {% set ns = namespace(free=[]) %}
+          {% for count in range(0, states('sensor.reddit_gamedeals')|int - 1) %}
+            {% if ((state_attr('sensor.reddit_gamedeals', 'posts')[ count ].title ) is search('100%', ignorecase=True) ) %}
+              {% if (state_attr('sensor.reddit_gamedeals', 'posts')[ count ].score > 30) %}
+                {% set ns.free = ns.free + [ int(count) ] %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.free }}
+    - repeat:
+        count: '{{ freebies | count }}'
+        sequence:
+        - variables:
+            item_num: '{{ freebies [repeat.index - 1 ] }}'
+        - service: notify.freebie_llama_chipsworld
+          data:
+            message: ""
+            target: [961330364478001165]
+            data:
+              embed:
+                title: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ item_num ].title }}"
+                description: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ item_num ].body }}"
+                url: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ item_num ].url }}"
