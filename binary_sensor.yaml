@@ -179,3 +179,45 @@
     device_class: running
     upper: 10
     hysteresis: 0.1
+    
+  - platform: threshold
+    entity_id: sensor.nebulizer_running_filter
+    name: Nebulizer running
+    device_class: running
+    upper: 10
+    hysteresis: 0.1
+
+  - platform: template
+    sensors:
+      gamedeals_free:
+        value_template: >
+          {% set ns = namespace(free=[]) %}
+          {% for count in range(0, states('sensor.reddit_gamedeals_2')|int - 1) %}
+            {% if ((state_attr('sensor.reddit_gamedeals_2', 'posts')[ count ].title ) is search('100%', ignorecase=True) ) %}
+            {% if (state_attr('sensor.reddit_gamedeals_2', 'posts')[ count ].score > 30) %}
+              {% set ns.free = ns.free + [ count ] %}
+            {% endif %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.free | count > 0 }}
+      gamedeals_highscore:
+        value_template: >
+          {% set ns = namespace(good=[]) %}
+          {% for count in range(0, states('sensor.reddit_gamedeals_2')|int - 1) %}
+            {% if (state_attr('sensor.reddit_gamedeals', 'posts')[ count ].score > 100) %}
+              {% set ns.good = ns.good + [ count ] %}
+            {% endif %}
+          {% endfor %}
+          {{ ns.good | count > 0 }}
+      new_gamedeals_free:
+        value_template: >
+          {% set free = null %}
+          {% if ((state_attr('sensor.reddit_gamedeals', 'posts')[ (states('input_number.gamedeals_free_index')|int) ].title ) is search('100%', ignorecase=True) ) %}
+          {% if (state_attr('sensor.reddit_gamedeals', 'posts')[ count ].score > (states('input_number.gamedeals_free_score')|int)) %}
+            {% set free = 1 %}
+          {% endif %}
+          {% endif %}
+          {{ free > 0 }}
+
+
+    

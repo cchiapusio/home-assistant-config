@@ -11,9 +11,9 @@
     - variables:
         freebies: >
           {% set ns = namespace(free=[]) %}
-          {% for count in range(0, states('sensor.reddit_gamedeals')|int - 1) %}
-            {% if ((state_attr('sensor.reddit_gamedeals', 'posts')[ count ].title ) is search('100%', ignorecase=True) ) %}
-              {% if (state_attr('sensor.reddit_gamedeals', 'posts')[ count ].score > 30) %}
+          {% for count in range(0, states('sensor.reddit_gamedeals_2')|int - 1) %}
+            {% if ((state_attr('sensor.reddit_gamedeals_2', 'posts')[ count ].title ) is search('100%', ignorecase=True) ) %}
+              {% if (state_attr('sensor.reddit_gamedeals_2', 'posts')[ count ].score > 30) %}
                 {% set ns.free = ns.free + [ int(count) ] %}
               {% endif %}
             {% endif %}
@@ -30,6 +30,29 @@
             target: [961330364478001165]
             data:
               embed:
-                title: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ item_num ].title }}"
-                description: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ item_num ].body }}"
-                url: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ item_num ].url }}"
+                title: "{{ state_attr('sensor.reddit_gamedeals_2', 'posts')[ item_num ].title }}"
+                description: "{{ state_attr('sensor.reddit_gamedeals_2', 'posts')[ item_num ].body }}"
+                url: "{{ state_attr('sensor.reddit_gamedeals_2', 'posts')[ item_num ].url }}"
+
+# webhook addr: https://hass.chiapusio.org/api/webhook/1c78de0f-c150-4c32-b8ec-51e10c08ddad
+
+- alias: realtime free game posts
+  id: 5f2665ad-01be-48a8-bc93-4a3fc3908c55
+  trigger:
+    - platform: state
+      entity_id: sensor.reddit_gamedeals
+  condition:
+    condition: state
+    entity_id: binary_sensor.new_gamedeals_free
+    state: 'on'
+  action:
+    - service: notify.freebie_llama_chipsworld
+      data:
+        message: ""
+        target: [961330364478001165]
+        data:
+          embed:
+            title: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ (states('input_number.gamedeals_free_index')|int) ].title }}"
+            description: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ (states('input_number.gamedeals_free_index')|int) ].body }}"
+            url: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ (states('input_number.gamedeals_free_index')|int) ].url }}"
+            footer: "Score: {{ state_attr('sensor.reddit_gamedeals', 'score')[ (states('input_number.gamedeals_free_index')|int) ].url }}"

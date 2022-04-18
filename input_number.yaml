@@ -5,3 +5,15 @@ box_etherium_tokens:
   mode: box
   initial: 1
   step: 0.001
+gamedeals_free_index:
+  name: Gamedeals index 
+  min: 0
+  max: 9
+  step: 1
+  mode: slider
+gamedeals_free_score:
+  name: Gamedeals score
+  min: 10
+  max: 200
+  step: 1
+  mode: slider
