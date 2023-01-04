@@ -12,9 +12,28 @@
       state: on
       brightness: 255
       color_temp: 454
-    light.living_room_ambilight:
+    switch.willow_tree:
       state: on
-      effect: "Full color mood blobs"
+    light.crystal_wall:
+      state: on
+      brightness: 255
+ 
+- name: Livingroom_Full
+  entities:
+    light.living_room_lamp_1:
+      state: on
+      brightness: 255
+    light.living_room_lamp_2:
+      state: on
+      brightness: 255
+    light.foyer_lamp:
+      state: on
+      brightness: 255
+    switch.willow_tree:
+      state: on
+    light.crystal_wall:
+      state: on
+      brightness: 255
  
 - name: Livingroom_Dim
   entities:
@@ -25,6 +44,11 @@
       state: on
       brightness: 76
     light.foyer_lamp:
+      state: on
+      brightness: 76
+    switch.willow_tree:
+      state: on
+    light.crystal_wall:
       state: on
       brightness: 76
 
@@ -47,9 +71,20 @@
     light.living_room_ambilight:
       state: on
       effect: "Green mood blobs"
-
-
-- name: litter bot reset scene
+ 
+- name: Livingroom off
   entities:
-    switch.litter_robot_reset_drawer:
-      state: on
+    light.living_room_lamp_1:
+      state: off
+    light.living_room_lamp_2:
+      state: off
+    light.foyer_lamp:
+      state: off
+    switch.willow_tree:
+      state: off
+    light.crystal_wall:
+      state: off
+    light.living_room_ambilight:
+      state: off
+    light.lg75_wled:
+      state: off

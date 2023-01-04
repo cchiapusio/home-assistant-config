@@ -1,62 +1,70 @@
-- id: 346454c5-2e88-499f-ad5f-6dd6772ede58
-  alias: Office Cube (z2m)
+- id: 037edbbf-3951-42a0-aaa1-4bd980950735
+  alias: MBR Cube (z2m)
+  mode: queued
   description: ''
   use_blueprint:
     path: SirGoodenough/Zigbee2MQTT - Xiaomi Cube Controller.yaml
     input:
-      remote: sensor.office_cube_action
+      remote: sensor.mbr_cube_action
       doubletap_any:
       - service: scene.turn_on
         target:
-          entity_id: scene.office_videoconf
+          entity_id: scene.mbr_lights_full
         metadata: {}
       flipped90_any:
       - choose:
         - conditions:
-          - condition: state
-            entity_id: light.office_lamp
-            state: 'off'
+          - condition: and
+            conditions:
+            - condition: state
+              entity_id: light.mbr_lights
+              state: 'off'
+            - condition: state
+              entity_id: switch.fairy_lights
+              state: 'off'
           sequence:
           - service: scene.turn_on
             target:
-              entity_id: scene.office_normal
+              entity_id: scene.mbr_lights_on
             metadata: {}
         - conditions:
           - condition: and
             conditions:
             - condition: state
-              entity_id: light.office_lights
+              entity_id: light.mbr_lights
               state: 'on'
-            - condition: template
-              value_template: "{{ state_attr('light.office_lights', 'brightness') > 100 }}"
+            - condition: state
+              entity_id: switch.fairy_lights
+              state: 'on'
           sequence:
           - service: scene.turn_on
             target:
-              entity_id: scene.office_dim
+              entity_id: scene.mood_lighting
             metadata: {}
         - conditions:
           - condition: and
             conditions:
             - condition: state
-              entity_id: light.office_lights
+              entity_id: light.mbr_lights
+              state: 'off'
+            - condition: state
+              entity_id: switch.fairy_lights
               state: 'on'
-            - condition: template
-              value_template: "{{ state_attr('light.office_lights', 'brightness') < 100 }}"
           sequence:
           - service: scene.turn_on
             target:
-              entity_id: scene.office_desk_only
+              entity_id: scene.mbr_lights_off
             metadata: {}
         default: []
       rotate_cw_any:
       - service: light.turn_on
         data:
-          brightness_step_pct: 20
+          brightness_step_pct: 10
         target:
-          entity_id: light.office_lights
+          entity_id: light.mbr_lights
       rotate_ccw_any:
       - service: light.turn_on
         data:
-          brightness_step_pct: -20
+          brightness_step_pct: -10
         target:
-          entity_id: light.office_lights
+          entity_id: light.mbr_lights

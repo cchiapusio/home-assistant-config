@@ -1,15 +1,15 @@
-- alias: commute alert
-  id: 8da8616e-bee1-44b5-a009-3e4dabc886de
-  trigger:   
-    platform: template
-    value_template: "{{ ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) < 3600) and ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) > 3500 )}}"
-  action:
-    - service: homeassistant.update_entity
-      entity_id: sensor.toris_commute_to_work_today
+#- alias: commute alert
+#  id: 8da8616e-bee1-44b5-a009-3e4dabc886de
+#  trigger:   
+#    platform: template
+#    value_template: "{{ ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) < 3600) and ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) > 3500 )}}"
+#  action:
+#    - service: homeassistant.update_entity
+#      entity_id: sensor.toris_commute_to_work_today
 #    - service: tts.google_say
 #      entity_id: media_player.toris_room_speaker
 #      data_template:
 #        message: 'Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
-    - service: notify.toris_bedroom_tv
-      data:
-        message: 'Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
+#    - service: notify.toris_bedroom_tv
+#      data:
+#        message: 'Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'

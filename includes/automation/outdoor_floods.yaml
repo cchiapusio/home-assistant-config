@@ -17,6 +17,10 @@
       - condition: state
         entity_id: sun.sun
         state: below_horizon
+      - condition: state
+        entity_id: sun.sun
+        attribute: rising
+        state: false
   action:
     - service: homeassistant.turn_on
       entity_id: switch.shelly_2_5_e8db84d2729c_relay_1
@@ -43,6 +47,10 @@
       - condition: state
         entity_id: input_select.porch_light_setting
         state: 'always on'
+      - condition: state
+        entity_id: sun.sun
+        attribute: rising
+        state: false
   action:
     - service: homeassistant.turn_on
       entity_id: switch.shelly_2_5_8caab55f9707_relay_0

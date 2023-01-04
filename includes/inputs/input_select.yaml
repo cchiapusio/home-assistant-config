@@ -1,0 +1,57 @@
+
+#outdoor_light_scene:
+#  name: Outdoor Light Scene
+#  options:
+#    - Normal
+#    - Halloween
+#    - Christmas
+#    - St Patricks
+#    - Independence Day
+#    - Memorial Day
+#    - Green Bay Packers
+#  icon: mdi:string-lights
+
+camera_dropdown:
+  name: Cast camera
+  options:
+    - Back Door
+    - Front Yard
+    - Mr. Lizard
+    - Front Window
+    - Cycle Cameras
+    - All Cameras
+  initial: All Cameras
+  icon: mdi:camera
+
+cast_to_screen_dropdown:
+  name: To Screen
+  options:
+    - Office Display
+    - Office Chromecast
+    - MBR Display
+    - Master Bedroom TV
+    - Living Room TV
+  initial: Office Display
+  icon: mdi:cast
+
+porch_light_setting:
+  name: Porch Light behavoir
+  options:
+    - always on
+    - motion
+    - person
+  icon: mdi:lightbulb
+
+front_flood_setting:
+  name: Front Floodlight behavoir
+  options:
+    - always on
+    - motion
+  icon: mdi:lightbulb
+
+back_flood_setting:
+  name: Back Floodlight behavoir
+  options:
+    - always on
+    - motion
+  icon: mdi:lightbulb

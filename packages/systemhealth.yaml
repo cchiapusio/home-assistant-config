@@ -1,0 +1,35 @@
+#mqtt:
+#  binary_sensor:
+#    - name: RA living room status
+#      state_topic: "room-assistant/status/living-room"
+#      payload_available: "online"
+#      payload_not_available: "offline"
+#    - name: RA kitchen status
+#      state_topic: "homeassistant/sensor/room-assistant/kitchen-status-cluster-size"
+#      availability_topic: "room-assistant/status/kitchen"
+#      payload_available: "online"
+#      payload_not_available: "offline"
+#    - name: RA master bedroom status
+#      state_topic: "room-assistant/status/master-bedroom"
+#      payload_available: "online"
+#      payload_not_available: "offline"
+#      force_update: true
+#    - name: RA office status
+#      state_topic: "room-assistant/status/office"
+#      payload_available: "online"
+#      payload_not_available: "offline"
+
+
+#automation:
+#  - alias: Room Assistant Sensor status
+#    id: 20624c41-d3cb-4e31-bed4-b0e91ad42d73
+#    trigger:
+#      - platform: state
+#        entity_id: sensor.bob
+#        from: online
+#        for:
+#          minutes: 10
+#    action:
+#      - service: notify.mobile_app_sm_n986u
+#        data:
+#          message: "Room Assistant Node offline {{trigger.event}}" 

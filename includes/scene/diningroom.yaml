@@ -1,23 +1,48 @@
 - name: Dining Room Normal
   entities:
-    light.dining_room_lamp_east:
+    light.diningroom_ne:
       state: on
-      brightness: 212
+      brightness: 191
       color_temp: 454
-    light.dining_room_lamp_west:
+    light.diningroom_nw:
       state: on
-      brightness: 212
+      brightness: 191
       color_temp: 454
-    switch.curio_cabinet_lamp:
+    light.diningroom_se:
       state: on
+      brightness: 191
+      color_temp: 454
+    light.diningroom_sw:
+      state: on
+      brightness: 191
+      color_temp: 454
  
 - name: Dining Room Dim
   entities:
-    light.dining_room_lamp_east:
+    light.diningroom_ne:
       state: on
-      brightness: 76
-    light.dining_room_lamp_west:
+      brightness: 50
+      color_temp: 454
+    light.diningroom_nw:
       state: on
-      brightness: 76
-    switch.curio_cabinet_lamp:
+      brightness: 50
+      color_temp: 454
+    light.diningroom_se:
+      state: on
+      brightness: 50
+      color_temp: 454
+    light.diningroom_sw:
+      state: on
+      brightness: 50
+      color_temp: 454
+ 
+- name: Dining Room off
+  entities:
+    light.diningroom_ne:
+      state: off
+    light.diningroom_nw:
+      state: off
+    light.diningroom_se:
+      state: off
+    light.diningroom_sw:
       state: off

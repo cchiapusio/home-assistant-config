@@ -1,0 +1,443 @@
+input_boolean:
+  suspend_camera_notifications:
+    name: Suspend Camera Notifications
+    initial: off
+  suspend_camera_notifications_backdoor:
+    name: Suspend Backdoor camera notifications
+    initial: off
+  suspend_camera_notifications_doorbell:
+    name: Suspend Doorbell camera notifications
+    initial: off
+  suspend_camera_notifications_frontyard:
+    name: Suspend Front Yard camera notifications
+    initial: off
+  suspend_camera_notifications_driveway:
+    name: Suspend Driveway camera notifications
+    initial: off
+  suspend_camera_notifications_amcrest2:
+    name: Suspend amcrest2 camera notifications
+    initial: off
+  suspend_camera_notifications_amcrest1:
+    name: Suspend amcrest1 camera notifications
+    initial: off
+
+automation:
+  - alias: backdoor motion notification
+    id: 82f3852a-b4cf-4d7a-8d76-50b7f4b098af
+    initial_state: true
+    mode: parallel
+    max: 25
+    trigger: 
+      - platform: state
+        entity_id: binary_sensor.person_at_back_door
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: backdoor
+      - platform: state
+        entity_id: binary_sensor.person_at_amcrest2
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: amcrest2
+      - platform: state
+        entity_id: binary_sensor.person_in_front_yard
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: frontyard
+      - platform: state
+        entity_id: binary_sensor.vehicle_in_front_yard
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: frontyard
+      - platform: state
+        entity_id: binary_sensor.person_at_front_door
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: doorbell
+      - platform: state
+        entity_id: binary_sensor.vehicle_at_front_door,binary_sensor.front_door_smart_motion_human
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: doorbell
+      - platform: state
+        entity_id: binary_sensor.motion_at_amcrest1
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: amcrest1
+    condition:
+      - condition: state
+        entity_id: input_boolean.suspend_camera_notifications
+        state: "off"
+      - condition: template
+        value_template:  "{{ states('input_boolean.suspend_camera_notifications_' ~ camera_name) == 'off'}}"
+    action:
+      - service: script.camera_activity_notify
+        data_template:
+          camera: "{{ camera_name }}"
+
+
+script:
+  camera_activity_notify:
+    mode: parallel
+    max: 50
+    sequence:
+      - condition: state
+        entity_id: input_boolean.suspend_camera_notifications
+        state: 'off'
+      - variables:
+          action_pause10: "{{ 'PAUSE10' ~ context.id }}"
+          action_pause30: "{{ 'PAUSE30' ~ context.id }}"
+      - service: notify.mobile_app_sm_n986u
+        data:
+          message: "{{ camera }} Alert"
+          data:
+            image: "https://hass.chiapusio.org/local/alerts/{{ states('sensor.' ~ camera ~ '_alert_image') }}"
+            #image: "/api/camera_proxy/{{ 'camera.' ~ camera ~ '_alert_image' }}"
+            channel: Motion
+            sticky: true
+            ttl: 0
+            priority: high
+            clickAction: "https://hass.chiapusio.org/local/alerts/{{ states('sensor.' ~ camera ~ '_alert_image') }}"
+            #clickAction: "/api/camera_proxy/{{ 'camera.' ~ camera ~ '_alert_image' }}"
+            actions:
+              - action: "ALARM"
+                title: "Trigger Alarm"
+              - action: "{{ action_pause10 }}"
+                title: "Pause 10m"
+              - action: "{{ action_pause30 }}"
+                title: "Pause 30m"
+      - wait_for_trigger:
+          - platform: event
+            event_type: mobile_app_notification_action
+            event_data:
+              action: "{{ action_pause10 }}"
+          - platform: event
+            event_type: mobile_app_notification_action
+            event_data:
+              action: "{{ action_pause30 }}"
+        timeout: '00:02:00'
+        continue_on_timeout: false
+      - choose:
+          - conditions: "{{ wait.trigger.event.data.action == action_pause10 }}"
+            sequence:
+              - service: script.camera_pause
+                data_template:
+                  camera: "{{ camera }}"
+                  timeout: 10
+          - conditions: "{{ wait.trigger.event.data.action == action_pause30 }}"
+            sequence:
+              - service: script.camera_pause
+                data_template:
+                  camera: "{{ camera }}"
+                  timeout: 30
+          
+  camera_pause:
+    sequence:
+      - service: input_boolean.turn_on
+        target:
+          entity_id: "{{ 'input_boolean.suspend_camera_notifications_' ~ camera }}"
+      - delay:
+          minutes: "{{ timeout }}"
+      - service: input_boolean.turn_off
+        target:
+          entity_id: "{{ 'input_boolean.suspend_camera_notifications_' ~ camera }}"
+
+  get_snapshot:
+    sequence:
+      - service: camera.snapshot
+        target:
+          entity_id: camera.backdoor_alert_image_2
+        data:
+          filename: '/config/www/alerts/frontyard-latest.jpg'
+
+
+mqtt:
+  binary_sensor:
+
+##
+## Back Door Sessors
+##
+
+#    - name: "Back Door Motion"
+#      unique_id: 340f9f68-6d8b-4540-b376-2455b6316da3
+#      state_topic: BlueIris/sensor/backdoor/motion
+#      payload_on: "ON"
+#      payload_off: "OFF"
+#      device_class: motion
+
+    - name: "Animal at the Back Door "
+      unique_id: ecbdb384-1c13-4524-8fd1-d5069dc9fed0
+      device_class: motion
+      state_topic: "BlueIris/sensor/backdoor/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'cat' in value | lower or 'dog' in value | lower }}"
+
+    - name: "Person at Back Door"
+      unique_id: d89ab007-0171-4638-a1aa-d67bc64989bf
+      device_class: motion
+      state_topic: "BlueIris/sensor/backdoor/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'person' in value | lower or 'bicycle' in value | lower }}"
+
+
+##
+## Front Yard (frontyard) Sensors
+##
+
+#    - name: "Front Yard Motion"
+#      unique_id: 0b30ba4a-b77e-42b4-b3c7-490f5cf4d348
+#      state_topic: BlueIris/sensor/frontyard/motion
+#      payload_on: "ON"
+#      payload_off: "OFF"
+#      device_class: motion
+
+    - name: "Person in front yard"
+      unique_id: 3b9dcc9e-0dd8-4474-8f08-c3c3a33a8b28
+      device_class: motion
+      state_topic: "BlueIris/sensor/frontyard/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'person' in value | lower or 'bicycle' in value | lower }}"
+
+    - name: "Animal in front yard"
+      unique_id: 0b44e289-b84c-40da-83ed-c9ec0ae06ab8
+      device_class: motion
+      state_topic: "BlueIris/sensor/frontyard/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'cat' in value | lower or 'dog' in value | lower }}"
+
+    - name: "Vehicle in front yard"
+      unique_id: 32fb5c73-827c-4cf0-ade6-06b77d2bc94a
+      device_class: motion
+      state_topic: "BlueIris/sensor/frontyard/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'car' in value | lower or 'truck' in value | lower or 'bus' in value | lower }}"
+
+##
+## Doorbell Sensors
+##
+
+#    - name: "Doorbell Motion"
+#      unique_id: 3d135fc2-00f0-4cff-9a05-515ccadba9a5
+#      state_topic: BlueIris/sensor/doorbell/motion
+#      payload_on: "ON"
+#      payload_off: "OFF"
+#      device_class: motion
+
+    - name: "Person at front door"
+      unique_id: f6dc48d6-b95b-4279-a6f0-ef096221960b
+      device_class: motion
+      state_topic: "BlueIris/sensor/doorbell/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'person' in value | lower or 'bicycle' in value | lower }}"
+
+    - name: "Vehicle at Front Door"
+      unique_id: dbafff88-7bd0-45a0-a750-ad14586056c6 
+      device_class: motion
+      state_topic: "BlueIris/sensor/doorbell/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'car' in value | lower or 'truck' in value | lower or 'bus' in value | lower }}"
+
+##
+## Driveway Sensors
+##
+
+
+#    - name: "Driveway Motion"
+#      unique_id: 1e55bdb6-ca0c-46b5-a718-cddfb735bd82
+#      state_topic: BlueIris/sensor/driveway/motion
+#      payload_on: "ON"
+#      payload_off: "OFF"
+#      device_class: motion
+
+    - name: "Person in Driveway"
+      unique_id: 4e1a699b-eb7e-4ba6-af13-e8232d99cc24
+      device_class: motion
+      state_topic: "BlueIris/sensor/driveway/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'person' in value | lower or 'bicycle' in value | lower }}"
+
+    - name: "Vehicle in Driveway"
+      unique_id: 2962c742-5299-42fd-ac47-0f1f64e79c16
+      device_class: motion
+      state_topic: "BlueIris/sensor/driveway/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'car' in value | lower or 'truck' in value | lower or 'bus' in value | lower }}"
+
+##
+## Front Yard (frontyardover) Sensors
+##
+
+#    - name: "Front Yard overwatch Motion"
+#      unique_id: 3f7669ca-5aca-4db2-810c-50a7253a92c1
+#      state_topic: BlueIris/sensor/frontyardover/motion
+#      payload_on: "ON"
+#      payload_off: "OFF"
+#      device_class: motion
+
+    - name: "Person in front yard overwatch"
+      unique_id: ab75c854-1274-4f73-b2a3-462ca3071de7
+      device_class: motion
+      state_topic: "BlueIris/sensor/frontyardover/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'person' in value | lower or 'bicycle' in value | lower }}"
+
+    - name: "Animal in front yard overwatch"
+      unique_id: 202f0e52-8e5b-4c21-9f94-15c33c46fd1e
+      device_class: motion
+      state_topic: "BlueIris/sensor/frontyardover/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'cat' in value | lower or 'dog' in value | lower }}"
+
+    - name: "Vehicle in front yard overwatch"
+      unique_id: 3f03ab51-42da-4a8d-8a16-11c1f22a7662
+      device_class: motion
+      state_topic: "BlueIris/sensor/frontyardover/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'car' in value | lower or 'truck' in value | lower or 'bus' in value | lower }}"
+
+##
+## Skelecam Sensors
+##
+
+#    - name: "Skelecam Motion"
+#      unique_id: 75c379e4-2404-4bd2-b4b2-b476b743f03f
+#      state_topic: BlueIris/sensor/skelecam/motion
+#      payload_on: "ON"
+#      payload_off: "OFF"
+#      device_class: motion
+
+    - name: "Person in Skelecam"
+      unique_id: 5dc1b8ab-521d-46ed-85d1-4f1882ac818b
+      device_class: motion
+      state_topic: "BlueIris/sensor/skelecam/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'person' in value | lower or 'bicycle' in value | lower }}"
+
+##
+## Deck Sensors
+##
+
+#    - name: "Deck Motion"
+#      unique_id: b5a43aa6-4fb6-49b2-a1ee-801811488ba2
+#      state_topic: BlueIris/sensor/deck/motion
+#      payload_on: "ON"
+#      payload_off: "OFF"
+#      device_class: motion
+
+    - name: "Person at Deck"
+      unique_id: 0f30cd1c-065a-45a9-a8e4-a339e3de62db
+      device_class: motion
+      state_topic: "BlueIris/sensor/deck/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'person' in value | lower or 'bicycle' in value | lower }}"
+
+##
+## Kitchen Sensors
+##
+
+#    - name: "Kitchen Motion"
+#      unique_id: efb51db1-0199-4fc7-9704-013d0501d70e
+#      state_topic: BlueIris/sensor/kitchen/motion
+#      payload_on: "ON"
+#      payload_off: "OFF"
+#      device_class: motion
+
+    - name: "person at kitchen"
+      unique_id: 1606973f-f7de-4b96-b94d-01fa61017807
+      device_class: motion
+      state_topic: "BlueIris/sensor/kitchen/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'person' in value | lower or 'bicycle' in value | lower }}"
+
+##
+## Amcrest2 Sensors
+##
+
+#    - name: "Amcrest2 Motion"
+#      unique_id: 19a99e72-9c63-4147-a062-84dce2cd16e9
+#      state_topic: BlueIris/sensor/amcrest2/motion
+#      payload_on: "ON"
+#      payload_off: "OFF"
+#      device_class: motion
+
+    - name: "person at Amcrest2"
+      unique_id: 252b416d-3091-4043-b7d2-57ad35edb17b
+      device_class: motion
+      state_topic: "BlueIris/sensor/amcrest2/ai"
+      payload_on: true
+      payload_off: false
+      value_template: "{{ 'person' in value | lower or 'bicycle' in value | lower }}"
+
+  sensor:
+    - name: frontyard Alert Image
+      unique_id: ecdc266e-573f-48b5-9677-0fa3c19f496f
+      state_topic: "BlueIris/sensor/frontyard/image"
+
+    - name: doorbell Alert Image
+      unique_id: 6c9cbbdf-b224-4e98-afc2-aea110667cd3
+      state_topic: "BlueIris/sensor/doorbell/image"
+
+    - name: backdoor Alert Image
+      unique_id: 5a8bd2d7-9c06-4402-8396-54965c470068
+      state_topic: "BlueIris/sensor/backdoor/image"
+    
+    - name: amcrest2 Alert Image
+      unique_id: dd77c272-2ef0-4da5-a5bc-08ab3ff576e8
+      state_topic: "BlueIris/sensor/amcrest2/image"
+
+  camera:
+    - name: frontyard Alert Image
+      unique_id: 41020a04-5496-401c-b6d5-dac5310e1d56
+      topic: "BlueIris/sensor/frontyard/b64"
+      image_encoding: b64
+
+    - name: doorbell Alert Image
+      unique_id: 402fb731-fda1-4256-b7db-0b0ac7a52971
+      topic: "BlueIris/sensor/doorbell/b64"
+      image_encoding: b64
+
+    - name: backdoor Alert Image
+      unique_id: 1c67ed49-de01-4711-ac24-885250e98df4
+      topic: "BlueIris/sensor/backdoor/b64"
+      image_encoding: b64
+
+    - name: Driveway Alert Image
+      unique_id: 370e9840-048d-4135-866f-8b327399ae1e
+      topic: "BlueIris/sensor/driveway/b64"
+      image_encoding: b64
+    
+    - name: amcrest2 Alert Image
+      unique_id: a66a33df-e91b-43c9-b448-a79939c58eda
+      topic: "BlueIris/sensor/amcrest2/b64"
+      image_encoding: b64
+
+    - name: amcrest1 Alert Image
+      unique_id: f77c0a60-a828-46fe-bfe1-ddb4a8e37d6d
+      topic: "BlueIris/sensor/amcrest1/b64"
+      image_encoding: b64
+
+    - name: deck Alert Image
+      unique_id: bba7a5ff-149c-4ad9-a91e-4e443843dd2c
+      topic: "BlueIris/sensor/deck/b64"
+      image_encoding: b64

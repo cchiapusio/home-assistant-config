@@ -1,52 +1,96 @@
 - alias: turn on kitchen light on motion
   id: 064e899c-2153-497b-9d1e-4a54f5da77a8
+  mode: restart
   trigger: 
-    platform: state
-    entity_id: binary_sensor.person_in_kitchen
-    to: 'on'
-  condition: 
-    condition: and
-    conditions:
-      - condition: state
-        entity_id: switch.hutch_light
-        state:  'off'
-      - condition: state
-        entity_id: sun.sun
-        state:  below_horizon
+    - platform: state
+      entity_id: binary_sensor.kitchen_motion_occupancy
+      to: 'on'
+      id: 'to_on'
+    - platform: state
+      entity_id: binary_sensor.kitchen_motion_occupancy
+      to: 'off'
+      for:
+        minutes: 10
+      id: 'to_off'
+#  condition: 
+#    condition: and
+#    conditions:
+#      - condition: state
+#        entity_id: light.hutch_led
+#        state:  'off'
+#      - condition: state
+#        entity_id: sun.sun
+#        state:  below_horizon
   action:
-    - service: switch.turn_on
-      entity_id: switch.hutch_light
-    - delay:
-        minutes: 5
-    - service: switch.turn_off
-      entity_id: switch.hutch_light
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: light.hutch_led
+          state: 'off'
+        - condition: state
+          entity_id: sun.sun
+          state: below_horizon
+        - condition: state
+          entity_id: light.living_room
+          state: 'off'
+        - condition: trigger
+          id: 'to_on'
+        sequence:
+        - service: scene.turn_on
+          entity_id: scene.kitchen_dim
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: light.hutch_led
+          state: 'off'
+        - condition: state
+          entity_id: sun.sun
+          state: above_horizon
+        - condition: trigger
+          id: 'to_on'
+        sequence:
+        - service: scene.turn_on
+          entity_id: scene.kitchen_dim
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: light.hutch_led
+          state: 'on'
+        - condition: trigger
+          id: 'to_off'
+        - condition: state
+          entity_id: light.living_room
+          state: 'off'
+        sequence:
+        - service: scene.turn_on
+          entity_id: scene.kitchen_off
 
-- alias: Alert that a Cat is locked in the kitchen
-  id: cd5eb362-d7af-435b-b380-d2b689b995a8
-  trigger: 
-    platform: state
-    entity_id: binary_sensor.cat_in_kitchen
-    to: 'on'
-  condition: 
-    condition: and
-    conditions:
-      - condition: state
-        entity_id: switch.hutch_light
-        state:  'off'
-      - condition: state
-        entity_id: sun.sun
-        state:  below_horizon
-  action:
-    - service: notify.master_bedroom_tv
-      data:
-        message: "There is a cat in the kitchen"
-    - service: notify.toris_bedroom_tv
-      data:
-        message: "There is a cat in the kitchen"
-    - service: notify.mobile_app_sm_n986u
-      data:
-        message: "There is a cat in the kitchen"
-        data:
-          sticky: 'true'
-          channel: Alarm
-          importance: high
+#- alias: Alert that a Cat is locked in the kitchen
+#  id: cd5eb362-d7af-435b-b380-d2b689b995a8
+#  trigger: 
+#    platform: state
+#    entity_id: binary_sensor.cat_in_kitchen
+#    to: 'on'
+#  condition: 
+#    condition: and
+#    conditions:
+#      - condition: state
+#        entity_id: switch.hutch_light
+#        state:  'off'
+#      - condition: state
+#        entity_id: sun.sun
+#        state:  below_horizon
+#  action:
+#    - service: notify.master_bedroom_tv
+#      data:
+#        message: "There is a cat in the kitchen"
+#    - service: notify.toris_bedroom_tv
+#      data:
+#        message: "There is a cat in the kitchen"
+#    - service: notify.mobile_app_sm_n986u
+#      data:
+#        message: "There is a cat in the kitchen"
+#        data:
+#          sticky: 'true'
+#          channel: Alarm
+#          importance: high

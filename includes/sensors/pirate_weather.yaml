@@ -1,0 +1,19 @@
+ ## https://pirateweather.net/
+ ## https://github.com/alexander0042/pirate-weather-ha
+ - platform: pirateweather
+   api_key: !secret pirate_weather_api
+   scan_interval: '00:15:00'
+   monitored_conditions:
+     - apparent_temperature
+     - wind_speed
+     - wind_bearing
+     - cloud_cover
+     - hourly_summary
+     - precip_probability
+     - precip_intensity
+     - temperature
+     - humidity
+     - precip_intensity_max
+     - nearest_storm_distance
+     - nearest_storm_bearing
+     - alerts

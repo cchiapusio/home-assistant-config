@@ -8,7 +8,7 @@
   - service: mqtt.publish
     data:
       topic: cmnd/tasmotas/backlog
-      payload: 'Fade ON;Speed 5; OtaUrl http://ota.tasmota.com/tasmota/release-10.1.0/tasmota.bin.gz; so19 0; so8 1;so56 1;so57 1'
+      payload: 'Fade ON;Speed 5; OtaUrl http://ota.tasmota.com/tasmota/release-12.2.0/tasmota.bin.gz; so19 0; so8 1;so56 1;so57 1;NtpServer1 192.168.10.10;NtpServer2 192.168.10.9'
 #     setOption8 show temp in fahrenheight
 #     setOption19 disable homeassistant MQTT autoconf (enable tasmota autoconf)
 #     setOption56 wifi network scan for strongest signal on restart

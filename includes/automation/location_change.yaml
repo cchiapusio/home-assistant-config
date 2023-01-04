@@ -10,7 +10,6 @@
         scene_id: tori_is_home_save
         snapshot_entities:
         - light.wled
-        - light.crystal_castle_2
     - service: scene.turn_on
       entity_id: scene.triumphant_return
     - delay:
@@ -32,14 +31,10 @@
       data_template:
         title: 'Location update {{ states.sensor.time.state }}'
         message: "{{ trigger.to_state.attributes.friendly_name }} {% if trigger.to_state.state == 'not_home' %}has left {{ trigger.from_state.state }}{% endif %}{% if trigger.from_state.state == 'not_home' %}arrived at {{ trigger.to_state.state }}{% endif %}"
-    - service: notify.mobile_app_sm_n950u
-      data_template:
-        title: 'Location update {{ states.sensor.time.state }}'
-        message: "{{ trigger.to_state.attributes.friendly_name }} {% if trigger.to_state.state == 'not_home' %}has left {{ trigger.from_state.state }}{% endif %}{% if trigger.from_state.state == 'not_home' %}arrived at {{ trigger.to_state.state }}{% endif %}"
-    - service: notify.living_room_tv
-      data_template:
-        title: 'Location update {{ states.sensor.time.state }}'
-        message: "{{ trigger.to_state.attributes.friendly_name }} {% if trigger.to_state.state == 'not_home' %}has left {{ trigger.from_state.state }}{% endif %}{% if trigger.from_state.state == 'not_home' %}arrived at {{ trigger.to_state.state }}{% endif %}"
+#    - service: notify.living_room_tv
+#      data_template:
+#        title: 'Location update {{ states.sensor.time.state }}'
+#        message: "{{ trigger.to_state.attributes.friendly_name }} {% if trigger.to_state.state == 'not_home' %}has left {{ trigger.from_state.state }}{% endif %}{% if trigger.from_state.state == 'not_home' %}arrived at {{ trigger.to_state.state }}{% endif %}"
       
 - alias: Cindy arriving Home
   id: 3a1e5e64-2659-4a67-9fac-d3b9801b6a7c
@@ -59,7 +54,7 @@
     - service: timer.start
       data:
         entity_id: timer.alert
-    - service: notify.lg_webos_smart_tv
+    - service: notify.living_room_tv
       data:
         message: "Cindy is home"
 

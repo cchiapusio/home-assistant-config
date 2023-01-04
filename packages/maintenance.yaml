@@ -1,0 +1,31 @@
+script:
+  push_tasmota_settings:
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: cmnd/tasmotas/backlog
+          payload: 'Fade ON;Speed 5; so19 0; so8 1;so56 1;so57 1;NtpServer1 ntp.chip'
+#         setOption8 show temp in fahrenheight
+#         setOption19 disable homeassistant MQTT autoconf (enable tasmota autoconf)
+#         setOption56 wifi network scan for strongest signal on restart
+#         setOption57 wifi network re-scan for stronger signal every 44 minutes
+  tasmota_timezone:
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: cmnd/tasmotas/backlog0
+          payload: 'Timezone 99; TimeStd 0,1,11,1,2,-300; TimeDst 0,2,3,1,2,-240'
+  tasmota_otaurl:
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: cmnd/tasmotas/backlog
+          payload: 'OtaUrl http://ota.tasmota.com/tasmota/release-11.1.0/tasmota.bin.gz'
+
+
+  updgrade_all_tasmota:
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: cmnd/tasmotas/upgrade
+          payload: '1'

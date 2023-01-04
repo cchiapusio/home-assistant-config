@@ -22,14 +22,7 @@
 
 - platform: filter
   name: washer running filter
-  entity_id: sensor.washer_smartenergy_metering
+  entity_id: sensor.washer_power
   filters: 
     - filter: time_simple_moving_average
       window_size: 00:05:00
-
-- platform: filter
-  name: washer running filter10
-  entity_id: sensor.washer_smartenergy_metering
-  filters: 
-    - filter: time_simple_moving_average
-      window_size: 00:10:00

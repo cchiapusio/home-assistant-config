@@ -6,7 +6,7 @@
       color_temp: 423
     light.wled:
       state: on
-      brightness: 122
+      brightness: 60
       effect: Solid
       xy_color:
         - 0.421
@@ -84,7 +84,7 @@
       state: off
     light.wled:
       state: on
-      brightness: 122
+      brightness: 60
       effect: Solid
       xy_color:
         - 0.421
@@ -96,4 +96,19 @@
     switch.skelly:
       state: off
     light.tv_wash_light:
+      state: off
+
+- name: Office off
+  entities:
+    light.office_lamp:
+      state: off
+    light.wled:
+      state: off
+    light.monitor_backlight:
+      state: off
+    switch.skelly:
+      state: off
+    light.tv_wash_light:
+      state: off
+    switch.catroom_lamp:
       state: off

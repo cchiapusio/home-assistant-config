@@ -4,8 +4,10 @@
     platform: time
     at: "18:00:00"
   condition:   
-  - condition: template
-    value_template: '{{ states.sensor.recycling.attributes.days == 1 }}'
+  - condition: numeric_state
+    entity_id: sensor.recycling
+    attribute: days
+    below: 2
   action:
     service: notify.mobile_app_sm_n986u
     data:

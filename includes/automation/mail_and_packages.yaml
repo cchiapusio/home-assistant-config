@@ -28,9 +28,9 @@
     - condition: or
       conditions:
         - condition: template
-          value_template: "{{ ((as_timestamp(now()) - as_timestamp(states.sensor.mail_usps_mail.last_changed)) < 15 and sensor.mail_usps_mail > 0) }}"
+          value_template: "{{ ((as_timestamp(now()) - as_timestamp(state_attr('sensor.mail_usps_mail','last_changed'))) < 15 and sensor.mail_usps_mail > 0) }}"
         - condition: template
-          value_template: "{{ ((as_timestamp(now()) - as_timestamp(states.sensor.mail_packages_in_transit.last_changed)) < 15 and sensor.mail_packages_in_transit > 0) }}"
+          value_template: "{{ ((as_timestamp(now()) - as_timestamp(state_attr('sensor.mail_packages_in_transit','last_changed'))) < 15 and sensor.mail_packages_in_transit > 0) }}"
   action:
     - service: notify.mobile_app_sm_n986u
       data_template:

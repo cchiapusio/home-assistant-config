@@ -4,11 +4,15 @@
   - platform: numeric_state
     entity_id: sun.sun
     value_template: '{{ state.attributes.elevation }}'
-    below: 15
+    below: 20
     id: elevation
   - platform: numeric_state
     entity_id: sensor.dark_sky_cloud_coverage
     above: 85
+    id: cloud_high
+  - platform: numeric_state
+    entity_id: sensor.dark_sky_cloud_coverage
+    above: 98
     id: cloud_high
   - platform: numeric_state
     entity_id: sensor.dark_sky_precip_intensity
@@ -30,13 +34,17 @@
         entity_id: script.turn_on_house_lights
         alias: sunset
     - conditions:
-      - condition: trigger
-        id: intensity_high
-      - condition: trigger
-        id: probability_high
+      - condition: numeric_state
+        entity_id: sensor.dark_sky_precip_intensity
+        above: 0.6
+      - condition: numeric_state
+        entity_id: sensor.dark_sky_precip_probability
+        above: 80
       - condition: state
         entity_id: sun.sun
         state: above_horizon
+      - condition: time
+        after: '08:30:00'
       sequence:
       - service: script.turn_on
         entity_id: script.turn_on_house_lights
@@ -48,7 +56,11 @@
       - condition: state
         entity_id: sun.sun
         state: above_horizon
+      - condition: time
+        after: '08:30:00'
       sequence:
       - service: script.turn_on
         entity_id: script.turn_on_house_lights
         alias: very cloudy
+      - condition: time
+        after: '08:30:00'

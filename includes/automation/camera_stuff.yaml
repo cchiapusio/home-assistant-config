@@ -4,44 +4,21 @@
     platform: event
     event_type: mobile_app_notification_action
     event_data:
-      action: alarm
+      action: ALARM
   action:
+    - service: scene.create
+      data:
+        scene_id: alarm_activated_save
+        snapshot_entities:
+        - light.wled
     - service: scene.turn_on
-      entity_id: scene.all_indoor_lights_on
-
-- alias: pause backdoor motion for ten minutes
-  id: 7d31c562-51ac-4f28-a2a7-25bb761be2f0
-  mode: single
-  max_exceeded: silent
-  trigger:
-    platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: pause10backdoor
-  action:
-    - service: automation.turn_off
-      entity_id: automation.backdoor_motion_notification
+      entity_id: scene.triumphant_return
     - delay:
-        minutes: 10
-    - service: automation.turn_on
-      entity_id: automation.backdoor_motion_notification
-
-- alias: pause backdoor motion for thirty minutes
-  id: ba759530-36dc-48f4-a630-89e11e00028a
-  mode: single
-  max_exceeded: silent
-  trigger:
-    platform: event
-    event_type: mobile_app_notification_action
-    event_data:
-      action: pause30backdoor
-  action:
-    - service: automation.turn_off
-      entity_id: automation.backdoor_motion_notification
-    - delay:
-        minutes: 30
-    - service: automation.turn_on
-      entity_id: automation.backdoor_motion_notification
+        seconds: 10
+    - service: scene.turn_on
+      entity_id: scene.alarm_activated_save
+#    - service: scene.turn_on
+#      entity_id: scene.all_indoor_lights_on
 
 
 - alias: turn on deck floodlights when motion detected at back door
@@ -189,4 +166,14 @@
     - service: automation.turn_on
       entity_id: automation.frontyard_motion_notification
       
-    
+- alias: re-enable doorbell human detection
+  id: a628f4ce-9f5f-4197-ac39-3d3019bc5176 
+  trigger:
+    platform: state
+    entity_id: switch.front_door_smart_motion_detection
+    to: 'off'
+    for:
+      minutes: 30
+  action:
+    - service: switch.turn_on
+      entity_id: switch.front_door_smart_motion_detection

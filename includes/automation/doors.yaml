@@ -2,7 +2,7 @@
   id: fc3a9f22-59bd-41e7-af8e-1124f48162f5
   trigger:
     platform: state
-    entity_id: sensor.back_door
+    entity_id: binary_sensor.back_door
     to: 'on'
     for:
       minutes: 5

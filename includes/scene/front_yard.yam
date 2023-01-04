@@ -53,14 +53,12 @@
       xy_color: [0.581, 0.245] 
     light.flood07:
       state: on
-      brightness: 201 
-      xy_color: [0.136, 0.04] 
+      brightness: 64 
+      xy_color: [0.172, 0.747] 
     light.flood08:
       state: on
       brightness: 217 
       xy_color: [0.136, 0.065] 
-    switch.outdoor_plug_1:
-      state: on
     switch.outdoor_switch_3_1:
       state: on
     switch.outdoor_switch_3_2:
@@ -104,9 +102,9 @@
       state: on
       brightness_pct: 100 
       xy_color: [0.701, 0.299] # red
-    switch.outdoor_switch_3_2:
+    switch.outdoor_switch_5_1:
       state: on
-    switch.outdoor_switch_4_2:
+    switch.outdoor_switch_5_2:
       state: on
 
 - name: yard_light_stpatricks

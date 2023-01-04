@@ -6,12 +6,3 @@
   sort_by: new
   subreddits:
     - gamedeals
-
-- platform: reddit
-  username: !secret reddit_username
-  password: !secret reddit_password
-  client_id: !secret reddit_client_id
-  client_secret: !secret reddit_client_secret
-  sort_by: hot
-  subreddits:
-    - gamedeals

@@ -7,9 +7,12 @@
     platform: time
     at: "23:00:00"
   condition:
-    condition: state
-    entity_id: media_player.living_room_tv
-    state:  'off'
+    - condition: state
+      entity_id: media_player.living_room_tv
+      state:  'off'
+    - condition: state
+      entity_id: person.chip
+      state: home
   action:
     - service: scene.turn_on
       entity_id: scene.livingroom_dim
@@ -44,8 +47,8 @@
       entity_id: scene.livingroom_dim
     - service: scene.turn_on
       entity_id: scene.dining_room_dim
-    - service: switch.turn_off
-      entity_id: switch.curio_cabinet_lamp
+    - service: scene.turn_on
+      entity_id: scene.kitchen_dim
     - service: timer.start
       data:
         entity_id: timer.5m
@@ -58,35 +61,45 @@
     event_data:
       entity_id: timer.5m
   action:
-    service: scene.turn_on
-    entity_id: scene.good_night_lights
+    service: script.turn_on
+    entity_id: script.good_night_lights
 
 - alias: Media player paused/stopped
   id: b239b22a-5bae-4e71-b7cc-99f7c6fecfb2
   trigger:
     - platform: state
-      entity_id: media_player.living_room_shield, media_player.plex_plex_for_lg_lg_75sm8670pua, media_player.plex_plex_for_android_tv_shield_android_tv
-      from: playing
-#      to: idle
+      #entity_id: media_player.living_room_shield, media_player.living_room_tv
+      entity_id: media_player.living_room_shield
+      #from: playing
+      to: idle
+#      for:
+#        seconds: 8
+#        seconds: {{ (states('input_number.light_dim_delay')|int) }}
   condition:
     - condition: state
       entity_id: sun.sun
       state: below_horizon
+    - condition: state
+      entity_id: calendar.green_bay_packers
+      state: "off"
   action:
     service: scene.turn_on
-    entity_id: scene.livingroom_normal
+    entity_id: scene.livingroom_full
 
 - alias: Media player playing
   id: b99dc5b6-0243-4407-86df-1eecc1a00ad3
   trigger:
     - platform: state
-      entity_id: media_player.living_room_shield, media_player.plex_plex_for_android_tv_shield_android_tv
+      entity_id: media_player.living_room_shield
       to: playing
 #      from: idle
   condition:
     - condition: state
       entity_id: sun.sun
       state: below_horizon
+    - condition: state
+      entity_id: calendar.green_bay_packers
+      state: "off"
   action:
     service: scene.turn_on
     entity_id: scene.livingroom_dim
@@ -111,50 +124,50 @@
     service: scene.turn_on
     entity_id: scene.livingroom_normal
 
-- alias: Tori scheduled for work this morning
-  id: ab5c5a72-3831-44d1-a860-3fc9b23168c5
-  trigger:
-    - platform: time_pattern
-      minutes: '/5'
-  condition:
-    condition: and
-    conditions:
-      - condition: time
-        after: "04:30:00"
-        before: "09:00:00"
-      - condition: template
-        value_template: "{{ ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) < 2700) and ((as_timestamp(states.calendar.waterbean_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
-      - condition: state
-        entity_id: person.tori
-        state: home
-      - condition: template
-        value_template: '{{ state_attr("sun.sun", "elevation") < 15 }}'
-      - condition: state
-        entity_id: switch.hutch_light
-        state: 'off'
-  action:
-    - service: scene.turn_on
-      entity_id: scene.livingroom_dim
-    - service: switch.turn_on
-      entity_id: switch.hutch_light
+#- alias: Tori scheduled for work this morning
+#  id: ab5c5a72-3831-44d1-a860-3fc9b23168c5
+#  trigger:
+#    - platform: time_pattern
+#      minutes: '/5'
+#  condition:
+#    condition: and
+#    conditions:
+#      - condition: time
+#        after: "04:30:00"
+#        before: "09:00:00"
+#      - condition: template
+#        value_template: "{{ ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) < 2700) and ((as_timestamp(states.calendar.waterbean_today.attributes.start_time) - as_timestamp(now())) > 0)  }}"
+#      - condition: state
+#        entity_id: person.tori
+#        state: home
+#      - condition: template
+#        value_template: '{{ state_attr("sun.sun", "elevation") < 15 }}'
+#      - condition: state
+#        entity_id: switch.hutch_light
+#        state: 'off'
+#  action:
+#    - service: scene.turn_on
+#      entity_id: scene.livingroom_dim
+#    - service: switch.turn_on
+#      entity_id: switch.hutch_light
 
-- alias: Tori left for work
-  id: 7c8d4f4c-d3f2-426e-a321-c0ea3175bee2
-  trigger:
-    - platform: state
-      entity_id: person.tori
-      from: home
-  condition:
-    - condition: time
-      after: '04:30:00'
-      before: '09:00:00'
-  action:
-    service: homeassistant.turn_off
-    entity_id:
-      - switch.hutch_light
-      - light.living_room_lamp_1
-      - light.living_room_lamp_2
-      - light.foyer_lamp
+#- alias: Tori left for work
+#  id: 7c8d4f4c-d3f2-426e-a321-c0ea3175bee2
+#  trigger:
+#    - platform: state
+#      entity_id: person.tori
+#      from: home
+#  condition:
+#    - condition: time
+#      after: '04:30:00'
+#      before: '09:00:00'
+#  action:
+#    service: homeassistant.turn_off
+#    entity_id:
+#      - switch.hutch_light
+#      - light.living_room_lamp_1
+#      - light.living_room_lamp_2
+#      - light.foyer_lamp
 
 - alias: turn on candle in the morning
   id: 8d184c18-380b-4d4a-9528-460badcd25d9
@@ -168,14 +181,16 @@
       entity_id: light.crystal_castle_1,light.crystal_castle_2
       data:
         brightness: 40
-    - service: wled.preset
-      entity_id: light.crystal_castle_1
+    - service: select.select_option
+      target:
+        entity_id: select.crystal_castle_1_preset
       data:
-        preset: 1
-    - service: wled.preset
-      entity_id: light.crystal_castle_2
+        option: "Purple sweep"
+    - service: select.select_option
+      target:
+        entity_id: select.crystal_castle_2_preset
       data:
-        preset: 1
+        option: "Preset 1"
 
 
 # turn on hyperion wled lights when TV turns on

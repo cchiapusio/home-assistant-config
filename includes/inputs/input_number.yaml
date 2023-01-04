@@ -1,0 +1,45 @@
+box_etherium_tokens:
+  name: Etherium
+  min: 0.001
+  max: 100
+  mode: box
+  initial: 1
+  step: 0.001
+gamedeals_free_index:
+  name: Gamedeals index 
+  min: 0
+  max: 9
+  step: 1
+  mode: slider
+gamedeals_free_score:
+  name: Gamedeals score
+  min: 10
+  max: 200
+  step: 1
+  mode: slider
+light_dim_delay:
+  name: Livingroom light dim delay
+  min: 0
+  max: 20
+  step: 1
+  mode: slider
+battery_min_level:
+  name: Low Battery minimum alert level
+  min: 0
+  max: 100
+  step: 1
+  mode: box
+office_thermostat_on_temp:
+  name: Temperature to turn on office AC
+  min: 70
+  max: 85
+  step: 1
+  mode: slider
+  initial: 75
+office_thermostat_off_temp:
+  name: Temperature to turn off office AC
+  min: 70
+  max: 85
+  step: 1
+  mode: slider
+  initial: 80

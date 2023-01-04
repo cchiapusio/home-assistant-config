@@ -32,11 +32,7 @@
       state: 'Halloween'
   action:
     - service: homeassistant.turn_off
-      entity_id: switch.outdoor_plug_2_outdoor_plug_2
-    - service: homeassistant.turn_off
       entity_id: switch.outdoor_switch_3_1
-    - service: homeassistant.turn_off
-      entity_id: switch.outdoor_switch_5_1
     - service: homeassistant.turn_off
       entity_id: switch.outdoor_switch_5_2
 
@@ -49,8 +45,6 @@
       entity_id: input_select.outdoor_light_scene
       state: 'Halloween'
   action:
-    - service: switch.turn_on
-      entity_id: switch.outdoor_switch_5_1
     - service: switch.turn_on
       entity_id: switch.outdoor_switch_5_2
     - service: switch.turn_on
@@ -74,11 +68,7 @@
       state: 'Halloween'
   action:
     - service: switch.turn_on
-      entity_id: switch.outdoor_plug_1
-    - service: switch.turn_on
       entity_id: switch.outdoor_switch_3_1
-    - service: switch.turn_on
-      entity_id: switch.outdoor_switch_5_1
     - service: switch.turn_on
       entity_id: switch.outdoor_switch_5_2
 

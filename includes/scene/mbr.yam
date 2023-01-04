@@ -8,6 +8,8 @@
       state: off
     light.torch_lamp:
       state: off
+    light.table_lamp:
+      state: off
     light.cinderella:
       state: off
     switch.fairy_lights:
@@ -16,61 +18,53 @@
       state: on
     light.crystal_castle_2:
       state: on
-    switch.salt_lamp:
-      state: on
 
 - name: restore bedroom lights
   entities:
     light.mbr_lamp_east_light:
       state: on
-      color_temp: 460
-      white_value: 125
+      color_temp: 326
     light.mbr_lamp_west_light:
       state: on
-      color_temp: 460
-      white_value: 125
+      color_temp: 326
     light.mbr_lamp_mirror:
       state: on
-      color_temp: 428
-      white_value: 125
+      color_temp: 326
     light.torch_lamp:
       state: on
-      color_temp: 428
-      white_value: 125
+      color_temp: 326
     light.cinderella:
       state: on
-      color_temp: 428
-      white_value: 125
+      color_temp: 326
+    light.table_lamp:
+      state: on
+      color_temp: 326
   
 - name: mbr lights on
   entities:
     light.mbr_lamp_east_light:
       state: on
-      color_temp: 460
-      white_value: 125
+      color_temp: 326
     light.mbr_lamp_west_light:
       state: on
-      color_temp: 460
-      white_value: 125
+      color_temp: 326
     light.mbr_lamp_mirror:
       state: on
-      color_temp: 460
-      white_value: 125
+      color_temp: 326
     light.torch_lamp:
       state: on
-      color_temp: 460
-      white_value: 125
+      color_temp: 326
     light.cinderella:
       state: on
-      color_temp: 460
-      white_value: 125
+      color_temp: 326
+    light.table_lamp:
+      state: on
+      color_temp: 326
     switch.fairy_lights:
       state: on
     light.crystal_castle_1:
       state: on
     light.crystal_castle_2:
-      state: on
-    switch.salt_lamp:
       state: on
 
 - name: mbr lights off
@@ -85,40 +79,45 @@
       state: off
     light.cinderella:
       state: off
+    light.table_lamp:
+      state: off
     switch.fairy_lights:
       state: off
     light.crystal_castle_1:
       state: off
     light.crystal_castle_2:
-      state: off
-    switch.salt_lamp:
       state: off
 
 - name: mbr lights full
   entities:
     light.mbr_lamp_east_light:
       state: on
-      color_temp: 460
+      color_temp: 326
       white_value: 125
       brightness: 255
     light.mbr_lamp_west_light:
       state: on
-      color_temp: 460
+      color_temp: 326
       white_value: 125
       brightness: 255
     light.mbr_lamp_mirror:
       state: on
-      color_temp: 460
+      color_temp: 326
       white_value: 125
       brightness: 255
     light.torch_lamp:
       state: on
-      color_temp: 460
+      color_temp: 326
       white_value: 125
       brightness: 255
     light.cinderella:
       state: on
-      color_temp: 460
+      color_temp: 326
+      white_value: 125
+      brightness: 255
+    light.table_lamp:
+      state: on
+      color_temp: 326
       white_value: 125
       brightness: 255
     switch.fairy_lights:
@@ -126,6 +125,4 @@
     light.crystal_castle_1:
       state: on
     light.crystal_castle_2:
-      state: on
-    switch.salt_lamp:
       state: on

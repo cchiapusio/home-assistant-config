@@ -9,7 +9,7 @@
       state: 'Christmas'
   action:
     - service: switch.turn_on
-      entity_id: switch.ewelink_sa_003_zigbee_on_off
+      entity_id: switch.gecko_led
 
 - alias: turn off indoor christmas lights at midnight
   id: 2f619fa2-30dc-446a-b1ca-d6f6325bcd89
@@ -22,4 +22,4 @@
       state: 'Christmas'
   action:
     - service: homeassistant.turn_off
-      entity_id: switch.ewelink_sa_003_zigbee_on_off
+      entity_id: switch.gecko_led

@@ -18,9 +18,7 @@
       state: on
     light.wled:
       state: on
-    switch.hutch_light:
-      state: on
-    light.desk_lamp:
+    light.hutch_led:
       state: on
     switch.curio_cabinet_lamp:
       state: on
@@ -47,19 +45,15 @@
       state: off
     light.wled:
       state: off
-    switch.hutch_light:
+    light.hutch_led:
       state: off
-    light.desk_lamp:
+    light.hutch_light:
       state: off
     switch.curio_cabinet_lamp:
       state: off
-    light.dining_room_lamp_east:
-      state: off
-    light.dining_room_lamp_west:
-      state: off
     switch.candle_light:
       state: off
-    switch.curio_cabinets:
+    switch.willow_tree:
       state: off
     light.monitor_backlight:
       state: off
@@ -75,6 +69,14 @@
       state: off
     light.flood04:
       state: off
+    light.flood08:
+      state: off
+    switch.front_door_smart_motion_detection:
+      state: on
+    automation.re_enable_doorbell_human_detection:
+      state: on
+    input_boolean.suspend_camera_notifications:
+      state: off 
 
 - name: Housecleaners coming
   entities:
@@ -96,7 +98,7 @@
       state: on
     light.wled:
       state: on
-    switch.hutch_light:
+    light.hutch_led:
       state: on
     switch.curio_cabinet_lamp:
       state: on
@@ -104,7 +106,7 @@
       state: on
       brightness: 255
       color_temp: 153
-    switch.curio_cabinets:
+    switch.willow_tree:
       state: on
     light.dining_room_lamp_east:
       state: on
@@ -125,11 +127,11 @@
       state: off
     switch.catroom_lamp:
       state: off
-    switch.hutch_light:
+    light.hutch_led:
       state: off
     switch.curio_cabinet_lamp:
       state: off
-    switch.curio_cabinets:
+    switch.willow_tree:
       state: off
     light.dining_room_lamp_east:
       state: off

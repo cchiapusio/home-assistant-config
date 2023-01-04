@@ -9,7 +9,7 @@
       state: 'Christmas'
   action:
     - service: homeassistant.turn_off
-      entity_id: switch.outdoor_switch_3_2
+      entity_id: switch.outdoor_switch_5_1
     - service: homeassistant.turn_off
-      entity_id: switch.outdoor_switch_4_2
+      entity_id: switch.outdoor_switch_5_2
     - service: homeassistant.turn_off

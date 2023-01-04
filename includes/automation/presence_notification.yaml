@@ -10,18 +10,6 @@
     data:
       message: "Alert, Margo is here"
 
-- alias: Tommy is here
-  id: 307114cc-6b94-4e32-9dd2-0ce4dd9b8612
-  trigger:
-    platform: state
-    entity_id: device_tracker.galaxy_note10
-    to: home
-  action:
-    service: tts.google_say
-    entity_id: "all"
-    data:
-      message: "Alert, Tommy is here"
-
 - alias: Natalie is here
   id: 4cf0b6ee-2e33-4f10-bb4d-0d22fa68f606
   trigger:
