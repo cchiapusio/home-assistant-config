@@ -4,15 +4,15 @@ Custom integration to integrate Dahua cameras with Home Assistant.
 import asyncio
 from typing import Any, Dict
 import logging
+import ssl
 import time
 
 from datetime import timedelta
 
-from aiohttp import ClientError, ClientResponseError
+from aiohttp import ClientError, ClientResponseError, ClientSession, TCPConnector
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import CALLBACK_TYPE, Config, HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady, PlatformNotReady
-from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 from homeassistant.const import EVENT_HOMEASSISTANT_STOP
 
@@ -98,10 +98,15 @@ class DahuaDataUpdateCoordinator(DataUpdateCoordinator):
                  password: str, name: str, channel: int) -> None:
         """Initialize the coordinator."""
         # Self signed certs are used over HTTPS so we'll disable SSL verification
-        session = async_get_clientsession(hass, verify_ssl=False)
+        ssl_context = ssl.create_default_context()
+        ssl_context.set_ciphers("DEFAULT")
+        ssl_context.check_hostname = False
+        ssl_context.verify_mode = ssl.CERT_NONE
+        connector = TCPConnector(enable_cleanup_closed=True, ssl=ssl_context)
+        self._session = ClientSession(connector=connector)
 
         # The client used to communicate with Dahua devices
-        self.client: DahuaClient = DahuaClient(username, password, address, port, rtsp_port, session)
+        self.client: DahuaClient = DahuaClient(username, password, address, port, rtsp_port, self._session)
 
         self.platforms = []
         self.initialized = False
@@ -162,6 +167,16 @@ class DahuaDataUpdateCoordinator(DataUpdateCoordinator):
         """ Stop anything we need to stop """
         self.dahua_event_thread.stop()
         self.dahua_vto_event_thread.stop()
+        await self._close_session()
+
+    async def _close_session(self) -> None:
+        _LOGGER.debug("Closing Session")
+        if self._session != None:
+            try:
+                await self._session.close()
+                self._session = None
+            except Exception as e:
+                _LOGGER.exception("serverConnect - failed to close session")
 
     async def _async_update_data(self):
         """Reload the camera information"""
@@ -234,13 +249,16 @@ class DahuaDataUpdateCoordinator(DataUpdateCoordinator):
                 is_doorbell = self.is_doorbell()
                 _LOGGER.info("Device is a doorbell=%s", is_doorbell)
 
+                is_amcrest_flood_light = self.is_amcrest_flood_light()
+                _LOGGER.info("Device is an Amcrest floodlight=%s",is_amcrest_flood_light)
+
                 try:
                     await self.client.async_get_config_lighting(self._channel, self._profile_mode)
                     self._supports_lighting = True
                 except ClientError:
                     self._supports_lighting = False
                     pass
-                _LOGGER.info("Device supports lighting=%s", self.supports_infrared_light())
+                _LOGGER.info("Device supports infrared lighting=%s",self.supports_infrared_light())
 
                 if not is_doorbell:
                     # Start the event listeners for IP cameras
@@ -305,7 +323,7 @@ class DahuaDataUpdateCoordinator(DataUpdateCoordinator):
                 if result is not None:
                     data.update(result)
 
-            if self.supports_security_light():
+            if self.supports_security_light() or self.is_amcrest_flood_light():
                 light_v2 = await self.client.async_get_lighting_v2()
                 if light_v2 is not None:
                     data.update(light_v2)
@@ -446,14 +464,14 @@ class DahuaDataUpdateCoordinator(DataUpdateCoordinator):
 
     def translate_event_code(self, event: dict):
         """
-        translate_event_code will try to convert the event code to a more specific event code if the device has a listener for the more specific type
+        translate_event_code will try to convert the event code to a less specific event code if the device doesn't have a listener for the more specific type
         Example event codes: VideoMotion, CrossLineDetection, BackKeyLight, DoorStatus
         """
         code = event.get("Code", "")
 
         # For CrossLineDetection, the event data will look like this... and if there's a human detected then we'll use the SmartMotionHuman code instead
         # {
-        #    "Code": "CrossRegionDetection",
+        #    "Code": "CrossLineDetection",
         #    "Data": {
         #        "Object": {
         #            "ObjectType": "Human",
@@ -463,7 +481,7 @@ class DahuaDataUpdateCoordinator(DataUpdateCoordinator):
         if code == "CrossLineDetection" or code == "CrossRegionDetection":
             data = event.get("data", event.get("Data", {}))
             is_human = data.get("Object", {}).get("ObjectType", "").lower() == "human"
-            if is_human and self._dahua_event_listeners.get(self.get_event_key(code)) is not None:
+            if is_human and self._dahua_event_listeners.get(self.get_event_key(code)) is None:
                 return "SmartMotionHuman"
 
         # Convert doorbell pressed related events to common event name, DoorbellPressed.
@@ -504,11 +522,15 @@ class DahuaDataUpdateCoordinator(DataUpdateCoordinator):
     def is_doorbell(self) -> bool:
         """ Returns true if this is a doorbell (VTO) """
         m = self.model.upper()
-        return m.startswith("VTO") or m.startswith("DHI") or self.is_amcrest_doorbell()
+        return m.startswith("VTO") or m.startswith("DH-VTO") or m.startswith("DHI") or self.is_amcrest_doorbell()
 
     def is_amcrest_doorbell(self) -> bool:
         """ Returns true if this is an Amcrest doorbell """
         return self.model.upper().startswith("AD")
+
+    def is_amcrest_flood_light(self) -> bool:
+        """ Returns true if this camera is an Amcrest Floodlight camera (eg.ASH26-W) """
+        return self.model.upper().startswith("ASH26")
 
     def supports_infrared_light(self) -> bool:
         """
@@ -524,7 +546,7 @@ class DahuaDataUpdateCoordinator(DataUpdateCoordinator):
         Returns true if this camera has an illuminator (white light for color cameras).  For example, the
         IPC-HDW3849HP-AS-PV does
         """
-        return not self.is_amcrest_doorbell() and "table.Lighting_V2[{0}][0][0].Mode".format(self._channel) in self.data
+        return not ( self.is_amcrest_doorbell() or self.is_amcrest_flood_light() ) and "table.Lighting_V2[{0}][0][0].Mode".format(self._channel) in self.data
 
     def is_motion_detection_enabled(self) -> bool:
         """ Returns true if motion detection is enabled for the camera """
@@ -591,6 +613,13 @@ class DahuaDataUpdateCoordinator(DataUpdateCoordinator):
         profile_mode = self.get_profile_mode()
 
         return self.data.get("table.Lighting_V2[{0}][{1}][0].Mode".format(self._channel, profile_mode), "") == "Manual"
+
+    def is_amcrest_flood_light_on(self) -> bool:
+        """Return true if the amcrest flood light light is on"""
+        # profile_mode 0=day, 1=night, 2=scene
+        profile_mode = self.get_profile_mode()
+
+        return self.data.get(f'table.Lighting_V2[{self._channel}][{profile_mode}][1].Mode') == "Manual"
 
     def is_ring_light_on(self) -> bool:
         """Return true if ring light is on for an Amcrest Doorbell"""

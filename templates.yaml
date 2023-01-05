@@ -1,0 +1,44 @@
+- trigger:
+  - platform: event
+    event_type: cube_last_action
+  sensor:
+    - name: "Cube Last Action"
+      unique_id: d46c8a71-3664-444b-bd7b-49b6c0eec477
+      icon: mdi:eye-refresh-outline
+      attributes:
+        friendly_name: "Cube Action"
+      state: >
+        {{ trigger.event.data.friendly_name }} - 
+        {{ trigger.event.data.action }} - 
+        {{ trigger.event.data.side }} frm 
+        {{ trigger.event.data.last_side }}
+- sensor:
+    ##### Low Battery list ##################################
+    - name: "Low Battery Devices"
+      unique_id: 61277d6e-ee1c-4f5b-9620-9ae640a3f955
+      icon: >
+        mdi:battery-low
+      state: >
+        {% set threshold = states('input_number.battery_min_level') | int %}
+        {%- set ns = namespace(sensors=[]) -%}
+        {%- for state in states.sensor 
+          | selectattr('attributes.device_class', 'defined') 
+          | selectattr('attributes.state_class', 'defined') 
+          | selectattr('attributes.device_class', '==', 'battery') 
+          | selectattr('attributes.state_class', '==', 'measurement') 
+          | selectattr('state', 'is_number') -%}
+          {%- if state.state | int <= threshold -%}
+            {% set ns.sensors = ns.sensors + [dict(name = state.name | replace(' battery', '') | replace(' Battery', ''), state = state.state | int)] %}
+          {%- endif -%}
+        {%- endfor -%}
+        {%- set batt = ns.sensors | sort(attribute='state') %}
+        {%- set ns = namespace(batt='') -%}
+        {%- for state in batt -%}
+            {% set ns.batt= ns.batt + (state.name  ~ ' (' ~ state.state ~'%)' ~ "\n") %}
+        {%- endfor -%}
+
+        {% if ns.batt | count > 0 %}
+          {{ ns.batt | truncate(255, true, '...') }}
+        {% else %}
+          {{ 'unavailable' }}
+        {% endif %}

@@ -1,12 +1,3 @@
-#  - platform: flux_led
-#    devices:
-#      192.168.10.165:
-#        name: mbr bed leds
-#        mode: rgb
-#      192.168.10.166:
-#        name: ceiling_south
-#        mode: rgb
-
   - platform: group
     name: Living Room
     entities: 
@@ -15,41 +6,26 @@
     - light.foyer_lamp
 
   - platform: group
-    name: nightstand lights
-    entities: 
-    - light.mbr_lamp_east_light
-    - light.mbr_lamp_west_light
-
-  - platform: group
-    name: mbr lights
-    entities: 
-    - light.mbr_lamp_east_light
-    - light.mbr_lamp_west_light
-    - light.mbr_lamp_mirror
-    - light.torch_lamp
-    - light.cinderella
-
-  - platform: group
     name: office lights
     entities: 
     - light.office_lamp
     - light.tv_wash_light
     - light.monitor_backlight
 
-  - platform: group
-    name: dining room lights
-    entities: 
-    - light.dining_room_lamp_east
-    - light.dining_room_lamp_west
+#  - platform: group
+#    name: Front Yard Floods
+#    entities:
+#      - light.flood02
+#      - light.flood04
+#      - light.flood05
+#      - light.flood06
+#      - light.flood07
+#      - light.flood08
 
   - platform: group
-    name: Front Yard Floods
+    name: Diningroom lights
     entities:
-      - light.flood01
-      - light.flood02
-      - light.flood03
-      - light.flood04
-
-#  - platform: hyperion
-#    host: 192.168.10.24
-#    name: living room ambilight
+      - light.diningroom_ne
+      - light.diningroom_nw
+      - light.diningroom_se
+      - light.diningroom_sw

@@ -1,0 +1,49 @@
+-== Watchman Report ==- 
+
+-== Congratulations, all 33 services from your config are available!
+
+-== Missing 20 entity(ies) from 190 found in your config:
++--------------------------------+---------+--------------------------------------------------------------+
+| Entity ID                      | State   | Location                                                     |
++--------------------------------+---------+--------------------------------------------------------------+
+| sensor.last_boot               | missing | configuration.yaml:88                                        |
+| sensor.date                    | missing | configuration.yaml:89                                        |
+| device_tracker.galaxy_note10   | unavail | configuration.yaml:104                                       |
+| ('Galaxy-Note10')              |         |                                                              |
+| scene.yard_light_halloween     | unknown | includes/automation/front_yard.yaml:38                       |
+| ('yard_light_halloween')       |         |                                                              |
+| scene.yard_light_christmas     | unknown | includes/automation/front_yard.yaml:40                       |
+| ('yard_light_christmas')       |         |                                                              |
+| scene.yard_light_independence  | unknown | includes/automation/front_yard.yaml:44,46                    |
+| ('yard_light_independence')    |         |                                                              |
+| scene.yard_light_greenbay      | unknown | includes/automation/front_yard.yaml:48                       |
+| ('yard_light_greenbay')        |         |                                                              |
+| device_tracker.natalies_iphone | unavail | includes/automation/presence_notification.yaml:29            |
+| ('Natalies-iPhone')            |         |                                                              |
+| scene.housecleaners_coming     | unknown | includes/automation/event_notifications.yaml:29              |
+| ('Housecleaners coming')       |         |                                                              |
+| scene.packers_playing          | unknown | includes/automation/livingroom.yaml:103                      |
+| ('Packers_playing')            |         |                                                              |
+| sensor.mail_deliveries_message | missing | includes/automation/mail_and_packages.yaml:38                |
+| switch.outdoor_plug_2_outdoor_ | missing | includes/automation/front_yard_halloween.yaml:35             |
+| plug_2                         |         |                                                              |
+| switch.outdoor_plug_1          | missing | includes/automation/front_yard_halloween.yaml:77             |
+| switch.ewelink_sa_003_zigbee_o | unavail | includes/automation/indoor_christmas.yaml:12,25              |
+| n_off ('eWeLink SA-003-Zigbee  |         |                                                              |
+| fafd7b1b on_off')              |         |                                                              |
+| scene.all_indoor_lights_on     | unknown | includes/automation/camera_stuff.yaml:10                     |
+| ('All Indoor lights on')       |         |                                                              |
+| binary_sensor.person_in_kitche | unknown | includes/automation/kitchen.yaml:5                           |
+| n ('Person in Kitchen')        |         |                                                              |
+| binary_sensor.cat_in_kitchen   | unknown | includes/automation/kitchen.yaml:28                          |
+| ('Cat in Kitchen')             |         |                                                              |
+| binary_sensor.amcrest1_motion  | unknown | includes/automation/camera_notifications.yaml:6              |
+| ('Amcrest1 Motion')            |         |                                                              |
+| switch.litter_robot_reset_draw | missing | includes/scene/livingroom.yaml:54                            |
+| er                             |         |                                                              |
+| light.desk_lamp                | missing | includes/scene/house.yaml:23,52                              |
++--------------------------------+---------+--------------------------------------------------------------+
+
+-== Report created on 20 Apr 2022 12:12:18
+-== Parsed 82 files in 1.05s., ignored 474 files 
+-== Generated in: 0.00s. Validated in: 0.00s.

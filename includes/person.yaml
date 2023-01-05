@@ -6,13 +6,14 @@
 #    - device_tracker.lg_v30
     - device_tracker.sm_n986u
     - device_tracker.galaxy_note20_ultra_5g
+    - device_tracker.samsung_galaxy_note_20_ultra_tracker
 
 - name: Tori
   id: tori2399
-  device_trackers:
+#  device_trackers:
 #    - device_tracker.toris_iphone # mobile_app
 #    - device_tracker.toris_iphone_3 # unifi
-    - device_tracker.toris_iphone_2 # unifi
+#    - device_tracker.toris_iphone_2 # unifi
 #    - device_tracker.life360_tori
 #    - device_tracker.tori_iphone_mqtt
 
@@ -20,5 +21,6 @@
   id: cindy9371
   user_id: !secret userid_cindy
   device_trackers:
-    - device_tracker.sm_n950u
-    - device_tracker.samsung_sm_n950u
+#    - device_tracker.sm_n950u
+#    - device_tracker.samsung_sm_n950u
+    - device_tracker.sm_s908u

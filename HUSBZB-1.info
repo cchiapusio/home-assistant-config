@@ -1,0 +1,8 @@
+[00:0d:6f:00:15:44:c4:6b]
+[0x0000]
+[<EmberNetworkStatus.JOINED_NETWORK: 2>]
+[<EmberStatus.SUCCESS: 0>, <EmberNodeType.COORDINATOR: 1>, EmberNetworkParameters(extendedPanId=ea:3a:f3:08:84:f6:ee:3e, panId=0x79ce, radioTxPower=8, radioChannel=15, joinMethod=<EmberJoinMethod.USE_MAC_ASSOCIATION: 0>, nwkManagerId=0x0000, nwkUpdateId=0, channels=<Channels.ALL_CHANNELS: 134215680>)]
+[<EmberStatus.SUCCESS: 0>, EmberCurrentSecurityState(bitmask=<EmberCurrentSecurityBitmask.64|32|HAVE_TRUST_CENTER_LINK_KEY|GLOBAL_LINK_KEY: 116>, trustCenterLongAddress=00:0d:6f:00:15:44:c4:6b)]
+Manufacturer: HubZ ZigBee
+Board name: HUSBZB-1
+EmberZNet version: 6.7.8.0 build 373

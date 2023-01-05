@@ -3,15 +3,19 @@ from __future__ import annotations
 
 from typing import Final
 
+from homeassistant.components.binary_sensor import (
+    BinarySensorDeviceClass,
+    BinarySensorEntityDescription,
+)
 from homeassistant.components.sensor import SensorDeviceClass, SensorEntityDescription
-from homeassistant.const import ENTITY_CATEGORY_DIAGNOSTIC
+from homeassistant.helpers.entity import EntityCategory
 
 DOMAIN = "mail_and_packages"
 DOMAIN_DATA = f"{DOMAIN}_data"
-VERSION = "0.3.4-b22"
+VERSION = "0.3.5-b21"
 ISSUE_URL = "http://github.com/moralmunky/Home-Assistant-Mail-And-Packages"
 PLATFORM = "sensor"
-PLATFORMS = ["camera", "sensor"]
+PLATFORMS = ["binary_sensor", "camera", "sensor"]
 DATA = "data"
 COORDINATOR = "coordinator_mail"
 OVERLAY = ["overlay.png", "vignette.png", "white.png"]
@@ -61,7 +65,7 @@ DEFAULT_IMAP_TIMEOUT = 30
 DEFAULT_GIF_DURATION = 5
 DEFAULT_SCAN_INTERVAL = 5
 DEFAULT_GIF_FILE_NAME = "mail_today.gif"
-DEFAULT_AMAZON_FWDS = '""'
+DEFAULT_AMAZON_FWDS = "(none)"
 DEFAULT_ALLOW_EXTERNAL = False
 DEFAULT_CUSTOM_IMG = False
 DEFAULT_CUSTOM_IMG_FILE = "custom_components/mail_and_packages/images/mail_none.gif"
@@ -77,6 +81,7 @@ AMAZON_DOMAINS = [
     "amazon.it",
     "amazon.com.au",
     "amazon.pl",
+    "amazon.es",
 ]
 AMAZON_DELIVERED_SUBJECT = [
     "Delivered: Your",
@@ -84,7 +89,12 @@ AMAZON_DELIVERED_SUBJECT = [
     "Dostarczono:",
     "Geliefert:",
 ]
-AMAZON_SHIPMENT_TRACKING = ["shipment-tracking", "conferma-spedizione"]
+AMAZON_SHIPMENT_TRACKING = [
+    "shipment-tracking",
+    "conferma-spedizione",
+    "confirmar-envio",
+    "versandbestaetigung",
+]
 AMAZON_EMAIL = "order-update@"
 AMAZON_PACKAGES = "amazon_packages"
 AMAZON_ORDER = "amazon_order"
@@ -107,6 +117,8 @@ AMAZON_TIME_PATTERN = [
     "arriving:",
     "Dostawa:",
     "Zustellung:",
+    "Entrega:",
+    "A chegar:",
 ]
 AMAZON_EXCEPTION_SUBJECT = "Delivery update:"
 AMAZON_EXCEPTION_BODY = "running late"
@@ -120,6 +132,12 @@ AMAZON_LANGS = [
     "pl_PL.UTF-8",
     "de_DE",
     "de_DE.UTF-8",
+    "es_ES",
+    "es_ES.UTF-8",
+    "pt_PT",
+    "pt_PT.UTF-8",
+    "pt_BR",
+    "pt_BR.UTF-8",
     "",
 ]
 
@@ -146,6 +164,7 @@ SENSOR_DATA = {
             "USPSInformedDelivery@usps.gov",
             "USPSInformeddelivery@email.informeddelivery.usps.com",
             "USPSInformeddelivery@informeddelivery.usps.com",
+            "USPS Informed Delivery",
         ],
         "subject": ["Your Daily Digest"],
     },
@@ -155,6 +174,8 @@ SENSOR_DATA = {
         "subject": [
             "Your UPS Package was delivered",
             "Your UPS Packages were delivered",
+            "Your UPS Parcel was delivered",
+            "Your UPS Parcels were delivered",
         ],
     },
     "ups_delivering": {
@@ -163,6 +184,7 @@ SENSOR_DATA = {
             "UPS Update: Package Scheduled for Delivery Today",
             "UPS Update: Follow Your Delivery on a Live Map",
             "UPS Pre-Arrival: Your Driver is Arriving Soon! Follow on a Live Map",
+            "UPS Update: Parcel Scheduled for Delivery Today",
         ],
     },
     "ups_exception": {
@@ -192,7 +214,10 @@ SENSOR_DATA = {
     "fedex_tracking": {"pattern": ["\\d{12,20}"]},
     # Canada Post
     "capost_delivered": {
-        "email": ["donotreply@canadapost.postescanada.ca"],
+        "email": [
+            "donotreply@canadapost.postescanada.ca",
+            "donotreply-nepasrepondre@notifications.canadapost-postescanada.ca",
+        ],
         "subject": [
             "Delivery Notification",
         ],
@@ -211,8 +236,13 @@ SENSOR_DATA = {
         "subject": [
             "DHL On Demand Delivery",
             "Powiadomienie o przesyłce",
+            "Ihr DHL Paket wurde zugestellt",
         ],
-        "body": ["has been delivered", "została doręczona"],
+        "body": [
+            "has been delivered",
+            "została doręczona",
+            "ist angekommen",
+        ],
     },
     "dhl_delivering": {
         "email": [
@@ -223,10 +253,14 @@ SENSOR_DATA = {
         ],
         "subject": [
             "DHL On Demand Delivery",
-            "paket kommt heute",
+            "Ihr DHL Paket kommt heute",
             "Powiadomienie o przesyłce",
         ],
-        "body": ["scheduled for delivery TODAY", "zostanie dziś do Państwa doręczona"],
+        "body": [
+            "scheduled for delivery TODAY",
+            "zostanie dziś do Państwa doręczona",
+            "wird Ihnen heute",
+        ],
     },
     "dhl_packages": {},
     "dhl_tracking": {"pattern": ["\\d{10,11}"]},
@@ -370,6 +404,28 @@ SENSOR_DATA = {
     },
     "auspost_packages": {},
     "auspost_tracking": {"pattern": ["\\d{7,10,12}|[A-Za-z]{2}[0-9]{9}AU "]},
+    # Evri
+    "evri_delivered": {
+        "email": ["do-not-reply@evri.com"],
+        "subject": ["successfully delivered"],
+    },
+    "evri_delivering": {
+        "email": ["do-not-reply@evri.com"],
+        "subject": ["is now with your local Evri courier for delivery"],
+    },
+    "evri_packages": {},
+    "evri_tracking": {"pattern": ["H[0-9A-Z]{15}"]},
+    # DHL Parcel NL
+    "dhl_parcel_nl_delivered": {
+        "email": ["noreply@dhlparcel.nl"],
+        "subject": ["Je pakket is bezorgd"],
+    },
+    "dhl_parcel_nl_delivering": {
+        "email": ["noreply@dhlparcel.nl"],
+        "subject": ["We staan vandaag", "We staan vanavond"],
+    },
+    "dhl_parcel_nl_packages": {},
+    "dhl_parcel_nl_tracking": {"pattern": ["[0-9A-Z]{12,24}"]},
 }
 
 # Sensor definitions
@@ -378,7 +434,7 @@ SENSOR_TYPES: Final[dict[str, SensorEntityDescription]] = {
         name="Mail Updated",
         icon="mdi:update",
         key="mail_updated",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
         device_class=SensorDeviceClass.TIMESTAMP,
     ),
     # USPS
@@ -652,6 +708,44 @@ SENSOR_TYPES: Final[dict[str, SensorEntityDescription]] = {
         icon="mdi:package-variant-closed",
         key="gls_packages",
     ),
+    # Evri
+    "evri_delivered": SensorEntityDescription(
+        name="Mail Evri Delivered",
+        native_unit_of_measurement="package(s)",
+        icon="mdi:package-variant-closed",
+        key="evri_delivered",
+    ),
+    "evri_delivering": SensorEntityDescription(
+        name="Mail Evri Delivering",
+        native_unit_of_measurement="package(s)",
+        icon="mdi:truck-delivery",
+        key="evri_delivering",
+    ),
+    "evri_packages": SensorEntityDescription(
+        name="Mail Evri Packages",
+        native_unit_of_measurement="package(s)",
+        icon="mdi:package-variant-closed",
+        key="evri_packages",
+    ),
+    # DHL Parcel NL
+    "dhl_parcel_nl_delivering": SensorEntityDescription(
+        name="DHL Parcel NL Delivering",
+        native_unit_of_measurement="package(s)",
+        icon="mdi:truck-delivery",
+        key="dhl_parcel_nl_delivering",
+    ),
+    "dhl_parcel_nl_delivered": SensorEntityDescription(
+        name="DHL Parcel NL Delivered",
+        native_unit_of_measurement="package(s)",
+        icon="mdi:package-variant",
+        key="dhl_parcel_nl_delivered",
+    ),
+    "dhl_parcel_nl_packages": SensorEntityDescription(
+        name="DHL Parcel NL Packages",
+        native_unit_of_measurement="package(s)",
+        icon="mdi:package-variant-closed",
+        key="dhl_parcel_nl_packages",
+    ),
     ###
     # !!! Insert new sensors above these two !!!
     ###
@@ -674,13 +768,26 @@ IMAGE_SENSORS: Final[dict[str, SensorEntityDescription]] = {
         name="Mail Image System Path",
         icon="mdi:folder-multiple-image",
         key="usps_mail_image_system_path",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
     "usps_mail_image_url": SensorEntityDescription(
         name="Mail Image URL",
         icon="mdi:link-variant",
         key="usps_mail_image_url",
-        entity_category=ENTITY_CATEGORY_DIAGNOSTIC,
+        entity_category=EntityCategory.DIAGNOSTIC,
+    ),
+}
+
+BINARY_SENSORS: Final[dict[str, BinarySensorEntityDescription]] = {
+    "usps_update": BinarySensorEntityDescription(
+        name="USPS Image Updated",
+        key="usps_update",
+        device_class=BinarySensorDeviceClass.UPDATE,
+    ),
+    "amazon_update": BinarySensorEntityDescription(
+        name="Amazon Image Updated",
+        key="amazon_update",
+        device_class=BinarySensorDeviceClass.UPDATE,
     ),
 }
 
@@ -709,4 +816,5 @@ SHIPPERS = [
     "inpost_pl",
     "dpd_com_pl",
     "gls",
+    "dhl_parcel_nl",
 ]

@@ -6,14 +6,12 @@ execute_cast_dropdown:
           entity_id: >
             {% if is_state("input_select.cast_to_screen_dropdown", "Office Display") %}
               media_player.office_display
-            {% elif is_state("input_select.cast_to_screen_dropdown", "Office Chromecast") %}
-              media_player.office_chromecast
             {% elif is_state("input_select.cast_to_screen_dropdown", "MBR Display") %}
               media_player.master_bedroom_display
             {% elif is_state("input_select.cast_to_screen_dropdown", "Master Bedroom TV") %}
-              media_player.shield_3
+              media_player.mbr_shield
             {% elif is_state("input_select.cast_to_screen_dropdown", "Living Room TV") %}
-              media_player.shield_2
+              media_player.living_room_shield
             {% endif %}
           media_content_id: >
             {% if is_state("input_select.camera_dropdown", "Back Door") %}
@@ -32,6 +30,32 @@ execute_cast_dropdown:
           media_content_type: 'image/jpg'
 
 
+learn_string_lights_rf:
+  sequence:
+    - service: remote.learn_command
+      target:
+        entity_id: remote.rm4pro_remote
+      data:
+        device: string_lights
+        command_type: rf
+        command:
+          - turn on
+          - turn off
+          - cool_light
+          - warm_light
+          - percent_25
+          - percent_50
+          - percent_75
+          - percent_100
+          - brighter
+          - dimmer
+          - timer_30
+          - timer_60
+          - timer_120
+          - timer_240
+        
+
+
 learn_projector:
   sequence:
     - service: remote.learn_command
@@ -45,14 +69,110 @@ learn_projector:
           - play
           - turn off
 
+learn_haier_ac:
+  sequence:
+    - service: remote.learn_command
+      target:
+        entity_id: remote.rm4pro_remote
+      data:
+        device: haier_ac
+        command_type: ir
+        command:
+          - power_off
+          - power_on
+          - quiet
+          - high
+          - medium
+          - auto
+          - temp_up
+          - temp_down
+          - fan
+          - enegy_save
+          - sleep
+
 turn_on_house_lights:
   sequence:
     - service: scene.turn_on
       entity_id: scene.livingroom_normal
     - service: scene.turn_on
       entity_id: scene.dining_room_normal
-    - service: homeassistant.turn_on
-      entity_id: 
-        - switch.hutch_light
-        - switch.curio_cabinet_lamp
-        - switch.curio_cabinets
+    - service: scene.turn_on
+      entity_id: scene.kitchen_normal
+
+#litter_bot_reset:
+#  sequence:
+#    - service: button.press
+#      target:
+#        entity_id: button.litterbot_5000_reset_waste_drawer
+
+turn_off_office_ac:
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm3mini1_remote
+      data:
+        device: haier_ac
+        command:
+          - power_off
+        delay_secs: 1
+
+turn_on_office_ac:
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm3mini1_remote
+      data:
+        device: haier_ac
+        command:
+          - power_on
+          - quiet
+        delay_secs: 1
+
+turn_on_string_lights:
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4pro_remote
+      data:
+        device: string_lights
+        command:
+          - turn on
+          - percent_100
+          - warm_light
+
+turn_off_string_lights:
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4pro_remote
+      data:
+        device: string_lights
+        command:
+          - turn off
+
+good_night_lights:
+  sequence:
+    - service: remote.send_command
+      target:
+        entity_id: remote.rm4pro_remote
+      data:
+        device: string_lights
+        command:
+          - turn off
+    - service: scene.turn_on
+      entity_id: scene.livingroom_off
+    - service: scene.turn_on
+      entity_id: scene.dining_room_off
+    - service: scene.turn_on
+      entity_id: scene.kitchen_off
+    - service: scene.turn_on
+      entity_id: scene.office_off
+    - service: light.turn_off
+      entity_id:
+        - light.flood03
+        - light.flood04
+        - light.flood08
+    - service: switch.turn_off
+      entity_id:
+        - switch.shelly_2_5_e8db84d2729c_relay_1
+        - switch.shelly_2_5_8caab55f9707_relay_0

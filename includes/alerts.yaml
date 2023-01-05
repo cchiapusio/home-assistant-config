@@ -1,0 +1,27 @@
+front_door_open:
+  name: Front door is left open
+  message: the Front door is currently open
+  done_message: the Front door has been closed
+  entity_id: binary_sensor.front_door
+  state: "on"
+  repeat:
+    - 30
+    - 60
+  can_acknowledge: true
+  skip_first: true
+  notifiers:
+    - mobile_app_sm_n986u
+
+back_door_open:
+  name: Back door is left open
+  message: the Back door is currently open
+  done_message: the Back door has been closed
+  entity_id: binary_sensor.back_door
+  state: "on"
+  repeat:
+    - 5
+    - 10
+  can_acknowledge: true
+  skip_first: true
+  notifiers:
+    - mobile_app_sm_n986u

@@ -1,6 +1,7 @@
 # Generic ignores
 *.sqlite
 *.log
+*.1
 *.db
 *.db-shm
 *.db-wal
@@ -9,6 +10,8 @@
 __pycache__
 
 # Directory (contents) ignores
+zwscene.xml
+options.xml
 .cloud
 .storage
 deps
@@ -20,6 +23,11 @@ images/mail_and_packages/*
 www/mail_and_packages/*
 www/ds/*
 www/alerts/*
+custom_components
+custom_components/*
+www/community/*
+temp/*
+backups
 
 # Specific file ignores
 .google.token
@@ -46,5 +54,6 @@ OZW_Log.txt
 
 # Specific keeps
 !.gitkeep
-zwscene.xml
-options.xml
+custom_components/mail_and_packages/translations/*
+custom_components/mail_and_packages/images/*
+custom_components/mail_and_packages/*

@@ -29,23 +29,3 @@
   - platform: local_file
     file_path: /config/www/mail_and_packages/mail_today.gif
     name: mail_usps
-
-  - platform: local_file
-    file_path: /config/www/ds/deepstack_object_bi_amcrest1_latest.jpg
-    name: AI amcrest1
-
-  - platform: local_file
-    file_path: /config/www/ds/deepstack_object_bi_backdoor_latest.jpg
-    name: AI backdoor
-
-  - platform: local_file
-    file_path: /config/www/ds/deepstack_object_bi_front_yard_latest.jpg
-    name: AI front_yard
-
-  - platform: local_file
-    file_path: /config/www/ds/deepstack_object_bi_kitchen_latest.jpg
-    name: AI kitchen
-
-  - platform: local_file
-    file_path: /config/ww/ds/bi_amcrest1_latest.jpg
-    name: oreo latest

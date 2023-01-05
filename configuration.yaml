@@ -6,13 +6,15 @@
 
 # https://home-assistant.io/docs/configuration/basic/
 homeassistant:
+  # Packages
+  packages: !include_dir_named packages
 #  name: Home
 #  latitude: !secret home_lat
 #  longitude: !secret home_long
 #  elevation: 1227
 #  unit_system: imperial
 #  time_zone: America/New_York
-#  external_url: !secret base_url_secret
+#  external_url: !secret external_url
 #  internal_url: !secret internal_url
   allowlist_external_dirs:
     - /config/faces/
@@ -32,31 +34,6 @@ homeassistant:
       entity_picture: !secret profile_photo_cindy
     person.tori:
       entity_picture: !secret profile_photo_tori
-    binary_sensor.mbr_bed_2_ias_zone:
-      device_class: motion
-    sensor.download_speed_mean:
-      friendly_name: 'Speedtest Download Average'
-      icon: mdi:speedometer
-    sensor.upload_speed_mean:
-      friendly_name: 'Speedtest Upload Average'
-      icon: mdi:speedometer
-    sensor.ping_time_mean:
-      friendly_name: 'Speedtest Ping Average'
-      icon: mdi:clock-fast
-    sensor.wan_traffic_in_mean:
-      friendly_name: 'WAN Download Average'
-      icon: mdi:download
-    sensor.wan_traffic_out_mean:
-      friendly_name: 'WAN Upload Average'
-      icon: mdi:upload
-    sensor.zplug3_smartenergy_metering:
-      device_class: power
-      state_class: measurement
-#      last_reset: '1970-01-01T00:00:00+00:00'
-    sensor.zplug4_smartenergy_metering:
-      device_class: power
-      state_class: measurement
-#      last_reset: '1970-01-01T00:00:00+00:00'
     binary_sensor.front_door:
       friendly_name: Front Door
     binary_sensor.back_door:
@@ -100,8 +77,6 @@ recorder:
       - updater
     entities:
       - sun.sun
-      - sensor.last_boot
-      - sensor.date
     entity_globs:
       - sensor.weather_*
     event_types:
@@ -117,23 +92,15 @@ recorder:
       - climate
     entities:
       - device_tracker.galaxy_note10 # unifi
-      - device_tracker.lg_h931
-      - device_tracker.lg_v30
-      - device_tracker.samsung_sm_n950u # unifi
-      - device_tracker.sm_n950u # HA App
-      - media_player.lg_webos_smart_tv
-      - media_player.plex_shield_android_tv
+      - device_tracker.sm_s908u # Cindys S22 Ultra
       - media_player.living_room_shield
+      - media_player.living_room_tv
       - media_player.toris_bedroom_tv
-      - media_player.plex_linus3006_plex_for_lg_lg_55un7300aud
+      - media_player.mbr_shield
+      - media_player.master_bedroom_tv
       - device_tracker.toris_iphone_2 # unifi
-      - device_tracker.toris_iphone # HA App
-      - device_tracker.galaxy_note20_ultra_5 # unifi 
       - device_tracker.sm_n986u # HA App
       - device_tracker.wled_jeep # unifi
-#      - device_tracker.life360_tori
-#      - device_tracker.life360_cindy
-#      - device_tracker.life360_chip
       - automation.backdoor_motion_notification
       - automation.frontyard_motion_notification
 
@@ -152,7 +119,9 @@ http:
 # https://home-assistant.io/components/logger/
 logger:
   default: info
-#  logs:
+  logs:
+    homeassistant.components.notify: debug
+#    homeassistant.components.google_assistant: debug
 #    homeassistant.core: debug
 #    homeassistant.components.zha: debug
 #    bellows.zigbee.application: debug
@@ -210,37 +179,23 @@ binary_sensor: !include binary_sensor.yaml
 media_player: !include media_player.yaml
 person: !include includes/person.yaml
 switch: !include includes/switch.yaml
-input_select: !include input_select.yaml
-input_number: !include input_number.yaml
-input_boolean: !include input_boolean.yaml
-image_processing: !include image_processing.yaml
+input_select: !include includes/inputs/input_select.yaml
+input_number: !include includes/inputs/input_number.yaml
+#input_boolean: !include includes/inputs/input_boolean.yaml
+input_text: !include includes/inputs/input_text.yaml
+#image_processing: !include image_processing.yaml
+template: !include templates.yaml
+alert: !include includes/alerts.yaml
+#https://www.home-assistant.io/components/mqtt/
+mqtt: !include mqtt.yaml
+
+
+
 # https://www.home-assistant.io/integrations/stream
 stream:
 
 # https://www.home-assistant.io/integrations/camera/
 camera: !include camera.yaml
-
-# https://www.home-assistant.io/integrations/webostv/
-#webostv:
-#  - name: Living Room TV
-#    host: 192.168.10.20
-#  - name: Master Bedroom TV
-#    host: 192.168.10.25
-#  - name: Toris Bedroom Tv
-#    host: 192.168.10.254
-    
-
-# https://www.home-assistant.io/integrations/directv/
-#directv:
-#    host: 192.168.10.22
-
-# https://www.home-assistant.io/integrations/influxdb/
-#influxdb:
-#  host: 192.168.10.4
-#  database: home_assistant
-#  username: !secret influx_user
-#  password: !secret influx_pass
-#  ssl: false
 
 # https://www.home-assistant.io/integrations/frontend/
 frontend: 
@@ -249,6 +204,12 @@ frontend:
 
 # https://www.home-assistant.io/integrations/cloud/
 cloud:
+
+# https://www.home-assistant.io/integrations/backup/
+backup:
+
+# https://www.home-assistant.io/integrations/bluetooth/
+bluetooth:
 
 # https://www.home-assistant.io/integrations/google_assistant/
 google_assistant:
@@ -262,6 +223,7 @@ google_assistant:
     - cover
     - group
     - scene
+    - script
   expose_by_default: true
   
 # Discover some devices automatically
@@ -273,31 +235,11 @@ conversation:
 # https://www.home-assistant.io/integrations/python_script
 python_script:
 
-
-
-# https://www.home-assistant.io/components/tts/Text to speech
+# Text to speech
+# https://www.home-assistant.io/components/tts/  
 tts:
   - platform: google_translate
     service_name: google_say
-    base_url: http://192.168.10.4:8123
-
-#https://www.home-assistant.io/components/mqtt/
-mqtt:
-
-#https://www.home-assistant.io/components/tplink/
-#tplink:
-# discovery: true
-
-# light:
-#  - host: 192.168.10.205 # office-lamp
-#  - host: 192.168.10.201 # desk-lamp
-
-# switch:
-#  - host: 192.168.10.203 # desk-lights
-#  - host: 192.168.10.204 # curio-cabinets
-#  - host: 192.168.10.206 # catroom-lamp
-#  - host: 192.168.10.207 # office skelly
-#  - host: 192.168.10.208 # office bats 
 
 #https://www.home-assistant.io/components/eufy/
 #eufy:
@@ -321,18 +263,6 @@ mqtt:
 #   icon: mdi:lightbulb-on
 #   url: http://192.168.10.4:9541
 
-#https://community.home-assistant.io/t/custom-component-hacs/121727
-#hacs:
-#  token: !secret github_token
-#  theme: true
-
-#https://www.home-assistant.io/components/life360/
-#life360:
-#  accounts:
-#      username: !secret life360_username
-#      password: !secret life360_password
-#  show_as_state: [driving, moving]
-
 timer:
   alert:
     duration: '00:00:10'
@@ -350,15 +280,9 @@ timer:
 ##
 ## https://www.home-assistant.io/integrations/calendar.google/
 ##
-google:
-  client_id: !secret google_oauth_user
-  client_secret: !secret google_oauth_pass
-
-# https://github.com/joshjcarrier/homeassistant-litter-robot
-#litter_robot:
-#  username: !secret litter_robot_user
-#  password: !secret litter_robot_pass
-#  scan_interval: 120
+#google:
+#  client_id: !secret google_oauth_user
+#  client_secret: !secret google_oauth_pass
 
 # https://www.home-assistant.io/integrations/weather.darksky/
 weather:
@@ -367,25 +291,27 @@ weather:
     latitude: !secret home_lat
     longitude: !secret home_long
 
+# https://github.com/alexander0042/pirate-weather-ha
+# https://pirateweather.net/
+  - platform: pirateweather
+    api_key: !secret pirate_weather_api
+    # Additional optional values:
+    latitude: !secret home_lat
+    longitude: !secret home_long
+#   mode: "hourly" (default) or "daily"
+    mode: "hourly"
+    name: Pirate Weather
 
 # https://www.home-assistant.io/integrations/spotify/
-spotify:
-  client_id: !secret spotify_client_id
-  client_secret: !secret spotify_client_secret
+#spotify:
+#  client_id: !secret spotify_client_id
+#  client_secret: !secret spotify_client_secret
 
-#pi_hole:
-#  - host: 192.168.10.10
-#    name: 'pi-hole raspi1'
-#    api_key: !secret piholeraspi_api
-#  - host: 192.168.10.9
-#    name: 'pi-hole VM'
-#    api_key: !secret piholevm_api
-
-zha:
-  zigpy_config:
-    ota:
-      ikea_provider: true
-      ledvance_provider: true
-    network:
-      channel: 15
-      channels: [15, 20, 25]
+#zha:
+#  zigpy_config:
+#    ota:
+#      ikea_provider: true
+#      ledvance_provider: true
+#    network:
+#      channel: 15
+#      channels: [15, 20, 25]
