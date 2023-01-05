@@ -46,6 +46,7 @@ includes/zones.yaml
 .ps4-games.json
 OZW_Log.txt
 .HA_VERSION
+home-assistant-integrati-72eed-cc2245778156.json
 
 # Ignore files created by IDE's
 .vscode
@@ -54,6 +55,3 @@ OZW_Log.txt
 
 # Specific keeps
 !.gitkeep
-custom_components/mail_and_packages/translations/*
-custom_components/mail_and_packages/images/*
-custom_components/mail_and_packages/*

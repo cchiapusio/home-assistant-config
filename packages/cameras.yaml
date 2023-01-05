@@ -82,6 +82,180 @@ automation:
           camera: "{{ camera_name }}"
 
 
+  - alias: reenable motion notifications after six hours
+    id: 7cb6b9f6-abeb-437b-aae9-5ba0711cb3b3
+    trigger: 
+    - platform: state
+      entity_id: input_boolean.suspend_camera_notifications
+      from: "off"
+      to: "on"
+      for:
+        hours: 6
+    action:
+    - service: input_boolean.turn_off
+
+  - alias: disable back camera when door opens
+    id: 28e2c714-b59c-41e4-981a-2d2390e82467
+    trigger:
+    - platform: state
+      entity_id: binary_sensor.back_door
+      from: 'off'
+      to: 'on'
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.suspend_camera_notifications_backdoor
+      - delay:
+          minutes: 10
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.suspend_camera_notifications_backdoor
+
+
+  - alias: Sound the alarm
+    id: ed4395ce-3ebd-4769-883c-198436d3fbe4
+    trigger:
+      platform: event
+      event_type: mobile_app_notification_action
+      event_data:
+        action: ALARM
+    action:
+      - service: scene.create
+        data:
+          scene_id: alarm_activated_save
+          snapshot_entities:
+          - light.wled
+      - service: scene.turn_on
+        entity_id: scene.triumphant_return
+      - delay:
+          seconds: 10
+      - service: scene.turn_on
+        entity_id: scene.alarm_activated_save
+  #    - service: scene.turn_on
+  #      entity_id: scene.all_indoor_lights_on
+
+
+  - alias: turn on deck floodlights when motion detected at back door
+    id: 052b5cec-b075-45bf-a08a-a178e59939fd
+    trigger: 
+      - platform: state
+        entity_id: binary_sensor.back_door_motion
+        from: 'off'
+        to: 'on'
+    condition:
+      - condition: and
+        conditions:
+          - condition: state
+            entity_id: sun.sun
+            state: below_horizon
+          - condition: state
+            entity_id: light.dining_room_lamp_west
+            state: 'off'
+    action:
+      - service: switch.turn_on
+        entity_id: switch.shelly_2_5_e8db84d2729c_relay_1
+      - delay:
+          minutes: 5
+      - service: switch.turn_off
+        entity_id: switch.shelly_2_5_e8db84d2729c_relay_1
+      
+
+  - alias: turn on lights when person detected at back door
+    id: df789665-dffa-4637-a48f-ef5c725a2b53
+    trigger: 
+      - platform: state
+        entity_id: binary_sensor.person_at_back_door
+        from: 'off'
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.front_door_smart_motion_human
+        from: 'off'
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
+      - condition: state
+        entity_id: input_boolean.suspend_camera_notifications
+        state: "off"
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: switch.shelly_2_5_e8db84d2729c_relay_1
+            state: 'off'
+          - condition: state
+            entity_id: group.persons
+            state:  'not_home'
+    action:
+      - service: scene.create
+        data:
+          scene_id: entryway_motion_save
+          snapshot_entities:
+          - light.dining_room_lights
+          - switch.hutch_light
+          - light.foyer_lamp
+          - light.living_room_lamp_1
+          - light.living_room_lamp_2
+          - light.crystal_castle_2
+      - service: light.turn_on
+        entity_id: light.crystal_castle_2
+        data:
+          rgb_color: [0,0,255]
+          brightness: 130
+      - service: light.turn_on
+        data:
+          entity_id: light.dining_room_lights
+          brightness: 255
+      - service: light.turn_on
+        data:
+          entity_id: light.foyer_lamp
+          brightness: 255
+      - delay:
+          seconds: 15
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamp_1
+          brightness: 255
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamp_2
+          brightness: 255
+      - service: switch.turn_on
+        entity_id: switch.hutch_light
+      - delay:
+          minutes: 1
+      - service: light.turn_on
+        data:
+          entity_id: light.dining_room_lights
+          brightness: 100
+      - service: light.turn_on
+        data:
+          entity_id: light.foyer_lamp
+          brightness: 100
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamp_1
+          brightness: 100
+      - service: light.turn_on
+        data:
+          entity_id: light.living_room_lamp_2
+          brightness: 100
+      - delay:
+          minutes: 5
+      - service: scene.turn_on
+        entity_id: scene.entryway_motion_save
+
+
+  - alias: re-enable doorbell human detection
+    id: a628f4ce-9f5f-4197-ac39-3d3019bc5176 
+    trigger:
+      platform: state
+      entity_id: switch.front_door_smart_motion_detection
+      to: 'off'
+      for:
+        minutes: 30
+    action:
+      - service: switch.turn_on
+        entity_id: switch.front_door_smart_motion_detection
+
 script:
   camera_activity_notify:
     mode: parallel
