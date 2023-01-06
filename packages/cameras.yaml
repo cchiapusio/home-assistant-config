@@ -22,7 +22,7 @@ input_boolean:
     initial: off
 
 automation:
-  - alias: backdoor motion notification
+  - alias: camera motion notification
     id: 82f3852a-b4cf-4d7a-8d76-50b7f4b098af
     initial_state: true
     mode: parallel
@@ -41,25 +41,13 @@ automation:
         variables:
           camera_name: amcrest2
       - platform: state
-        entity_id: binary_sensor.person_in_front_yard
+        entity_id: binary_sensor.person_in_front_yard,binary_sensor.vehicle_in_front_yard
         from: 'off'
         to: 'on'
         variables:
           camera_name: frontyard
       - platform: state
-        entity_id: binary_sensor.vehicle_in_front_yard
-        from: 'off'
-        to: 'on'
-        variables:
-          camera_name: frontyard
-      - platform: state
-        entity_id: binary_sensor.person_at_front_door
-        from: 'off'
-        to: 'on'
-        variables:
-          camera_name: doorbell
-      - platform: state
-        entity_id: binary_sensor.vehicle_at_front_door,binary_sensor.front_door_smart_motion_human
+        entity_id: binary_sensor.person_at_front_door,binary_sensor.vehicle_at_front_door,binary_sensor.front_door_smart_motion_human
         from: 'off'
         to: 'on'
         variables:
@@ -70,6 +58,12 @@ automation:
         to: 'on'
         variables:
           camera_name: amcrest1
+      - platform: state
+        entity_id: binary_sensor.person_in_driveway
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: driveway
     condition:
       - condition: state
         entity_id: input_boolean.suspend_camera_notifications
