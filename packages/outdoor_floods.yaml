@@ -29,6 +29,7 @@ input_select:
       - Independence Day
       - Memorial Day
       - Green Bay Packers
+      - Miami Dolphins
     icon: mdi:string-lights
 
 ##
@@ -66,6 +67,9 @@ automation:
         - condition: state
           entity_id: 'input_select.outdoor_light_scene'
           state: 'Green Bay Packers'
+        - condition: state
+          entity_id: 'input_select.outdoor_light_scene'
+          state: 'Miami Dolphins'
     action:
       - service: scene.turn_on
         data_template:
@@ -84,6 +88,8 @@ automation:
               scene.yard_light_independence
             {% elif is_state( "input_select.outdoor_light_scene", "Green Bay Packers" ) %}
               scene.yard_light_greenbay
+            {% elif is_state( "input_select.outdoor_light_scene", "Miami Dolphins" ) %}
+              scene.yard_light_dolphins
             {% endif %}
 
   - alias: floods_off_at_dawn
@@ -164,7 +170,6 @@ automation:
         entity_id: switch.outdoor_switch_5_1
       - service: homeassistant.turn_off
         entity_id: switch.outdoor_switch_5_2
-      - service: homeassistant.turn_off
 ##
 ## Halloween
 ##
@@ -505,3 +510,30 @@ scene:
         state: on
         brightness_pct: 100 
         xy_color: [0.461, 0.502] # Yellow
+
+  - name: yard_light_dolphins
+    entities:
+      light.flood02:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.612, 0.374] # Orange-ish
+      light.flood04:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.141, 0.137] # Light Blue
+      light.flood05:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.141, 0.137] # Light Blue
+      light.flood06:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.612, 0.374] # Orange-ish
+      light.flood07:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.141, 0.137] # Light Blue
+      light.flood08:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.612, 0.374] # Orange-ish
