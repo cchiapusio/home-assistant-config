@@ -12,6 +12,7 @@
         {{ trigger.event.data.action }} - 
         {{ trigger.event.data.side }} frm 
         {{ trigger.event.data.last_side }}
+
 - sensor:
     ##### Low Battery list ##################################
     - name: "Low Battery Devices"
