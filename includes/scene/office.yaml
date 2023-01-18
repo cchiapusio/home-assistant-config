@@ -1,9 +1,7 @@
 - name: Office Normal
   entities:
-    light.office_lamp:
+    switch.office_lamp:
       state: on
-      brightness: 255
-      color_temp: 423
     light.wled:
       state: on
       brightness: 60
@@ -22,10 +20,8 @@
 
 - name: Office Dim
   entities:
-    light.office_lamp:
+    switch.office_lamp:
       state: on
-      brightness: 61
-      color_temp: 423
     light.wled:
       state: on
       effect: Solid
@@ -58,10 +54,8 @@
 
 - name: Office Videoconf
   entities:
-    light.office_lamp:
+    switch.office_lamp:
       state: on
-      brightness: 61
-      color_temp: 423
     light.wled:
       state: on
       brightness: 158
@@ -80,7 +74,7 @@
 
 - name: Office desk only
   entities:
-    light.office_lamp:
+    switch.office_lamp:
       state: off
     light.wled:
       state: on
@@ -100,7 +94,7 @@
 
 - name: Office off
   entities:
-    light.office_lamp:
+    switch.office_lamp:
       state: off
     light.wled:
       state: off
