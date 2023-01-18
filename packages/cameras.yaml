@@ -90,6 +90,7 @@ automation:
 
   - alias: disable back camera when door opens
     id: 28e2c714-b59c-41e4-981a-2d2390e82467
+    mode: restart
     trigger:
     - platform: state
       entity_id: binary_sensor.back_door
@@ -98,10 +99,33 @@ automation:
     action:
       - service: input_boolean.turn_on
         entity_id: input_boolean.suspend_camera_notifications_backdoor
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.suspend_camera_notifications_driveway
+      - delay:
+          minutes: 5
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.suspend_camera_notifications_backdoor
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.suspend_camera_notifications_driveway
+
+  - alias: disable front cameras when door opens
+    id: 576da596-0398-429c-ab29-fdfa281763a8
+    trigger:
+    - platform: state
+      entity_id: binary_sensor.front_door
+      from: 'off'
+      to: 'on'
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.suspend_camera_notifications_doorbell
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.suspend_camera_notifications_frontyard
       - delay:
           minutes: 10
       - service: input_boolean.turn_off
-        entity_id: input_boolean.suspend_camera_notifications_backdoor
+        entity_id: input_boolean.suspend_camera_notifications_doorbell
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.suspend_camera_notifications_frontyard
 
 
   - alias: Sound the alarm
