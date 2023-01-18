@@ -68,9 +68,6 @@
       state: on
       brightness: 255
       color_name: green  
-    light.living_room_ambilight:
-      state: on
-      effect: "Green mood blobs"
  
 - name: Livingroom off
   entities:
@@ -83,8 +80,6 @@
     switch.willow_tree:
       state: off
     light.crystal_wall:
-      state: off
-    light.living_room_ambilight:
       state: off
     light.lg75_wled:
       state: off
