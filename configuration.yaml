@@ -48,6 +48,7 @@ homeassistant:
 
 # https://home-assistant.io/components/config/
 config:
+default_config:
 
 # https://www.home-assistant.io/integrations/my/
 my:
@@ -214,7 +215,7 @@ bluetooth:
 # https://www.home-assistant.io/integrations/google_assistant/
 google_assistant:
   project_id: home-assistant-integrati-72eed
-  service_account: !include home-assistant-integrati-72eed-cc2245778156.json
+  service_account: !include home-assistant-integrati-72eed-e13ed1e9b9c9.json
 #  api_key: !secret google_assistant_api
   report_state: true
   exposed_domains:
@@ -242,14 +243,14 @@ tts:
     service_name: google_say
 
 #https://www.home-assistant.io/components/eufy/
-#eufy:
-#  username: !secret eufy_username
-#  password: !secret eufy_password
-#  devices:
-#    - address: 192.168.10.202
-#      access_token: !secret eufy_access_token
-#      type: T1201
-#      name: Eufy Switch
+eufy:
+  username: !secret eufy_username
+  password: !secret eufy_password
+  devices:
+    - address: 192.168.10.202
+      access_token: !secret eufy_access_token
+      type: T1201
+      name: Eufy Switch
 
 
 #https://www.home-assistant.io/components/panel_iframe/
@@ -315,3 +316,10 @@ weather:
 #    network:
 #      channel: 15
 #      channels: [15, 20, 25]
+# Example LL-HLS configuration.yaml entry.
+
+## LL-HLS
+#stream:
+#  ll_hls: true
+#  part_duration: 0.75
+#  segment_duration: 6
