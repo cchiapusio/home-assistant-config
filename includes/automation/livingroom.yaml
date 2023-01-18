@@ -80,7 +80,7 @@
       entity_id: sun.sun
       state: below_horizon
     - condition: state
-      entity_id: calendar.green_bay_packers
+      entity_id: calendar.nfl_schedule_green_bay_packers
       state: "off"
   action:
     service: scene.turn_on
@@ -98,7 +98,7 @@
       entity_id: sun.sun
       state: below_horizon
     - condition: state
-      entity_id: calendar.green_bay_packers
+      entity_id: calendar.nfl_schedule_green_bay_packers
       state: "off"
   action:
     service: scene.turn_on
