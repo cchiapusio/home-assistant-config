@@ -1,0 +1,43 @@
+automation:
+  - alias: PlexMetaManager problem
+    id: 1445a678-bb43-477d-aea8-95cb314ab7f9
+    trigger:
+      - platform: webhook
+        webhook_id: pmm_error
+    action:
+      - service: notify.mobile_app_sm_n986u
+        data_template:
+          message: "PMM Error: {{ trigger.json.error }}"
+
+script:
+  Sync_tasmota_configuration:
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: cmnd/tasmotas/backlog
+          payload: 'Fade ON;Speed 5; OtaUrl http://ota.tasmota.com/tasmota/release-12.2.0/tasmota.bin.gz; so19 0; so8 1;so56 1;so57 1;NtpServer1 192.168.10.10;NtpServer2 192.168.10.9'
+#     setOption8 show temp in fahrenheight
+#     setOption19 disable homeassistant MQTT autoconf (enable tasmota autoconf)
+#     setOption56 wifi network scan for strongest signal on restart
+#     setOption57 wifi network re-scan for stronger signal every 44 minutes
+
+  Upgrade_all_tasmota_devices:
+    sequence:
+      - service: mqtt.publish
+        data:
+          topic: cmnd/tasmotas/upgrade
+          payload: '1'#- alias: commute alert
+#  id: 8da8616e-bee1-44b5-a009-3e4dabc886de
+#  trigger:   
+#    platform: template
+#    value_template: "{{ ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) < 3600) and ((as_timestamp(states.calendar.work_today.attributes.start_time) - as_timestamp(now())) > 3500 )}}"
+#  action:
+#    - service: homeassistant.update_entity
+#      entity_id: sensor.toris_commute_to_work_today
+#    - service: tts.google_say
+#      entity_id: media_player.toris_room_speaker
+#      data_template:
+#        message: 'Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
+#    - service: notify.toris_bedroom_tv
+#      data:
+#        message: 'Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
