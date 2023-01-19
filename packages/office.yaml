@@ -1,0 +1,237 @@
+automation:
+  - alias: York Ghost Sale imminent
+    id: e33336a5-3634-4d59-a4c7-1d194e0aecc4
+    trigger:   
+    - platform: state
+      entity_id: calendar.york_ghost_merchants
+      to: "on"
+    action:
+    - service: scene.create
+      data:
+        scene_id: york
+        snapshot_entities:
+        - light.monitor_backlight
+    - service: light.turn_on
+      target:
+        entity_id: light.monitor_backlight
+      data:
+        transition: 10
+        xy_color: [0.216, 0.077] # purple
+        brightness: 200
+#    - delay:
+#        seconds: 10
+    - service: notify.google_assistant_sdk
+      data:
+        message: There is a York Ghost Merchant Sale about to begin
+        target:
+          - Office
+          - Kitchen
+    - service: scene.turn_on
+      target:
+        entity_id: scene.york##
+  ## Turn on lights at sunset
+  ##
+  - alias: turn on office lights at sunset
+    id: 328d28db-1038-4f23-b233-60a7d0049ef0
+    trigger:
+      platform: numeric_state
+      entity_id: sun.sun
+      value_template: '{{ state.attributes.elevation }}'
+      below: 15
+    condition:
+      condition: template
+      value_template: '{{ is_state_attr("sun.sun", "rising", false) }}'
+    action:
+      service: homeassistant.turn_on
+      entity_id: 
+        - switch.office_lamp
+        - switch.catroom_lamp
+        - light.tv_wash_light
+
+  ##
+  ## Turn off lights at midnight
+  ##
+  #- alias: turn off office lights at midnight
+  #  trigger:
+  #    platform: time
+  #    at: "00:00:00"
+  #  action:
+  #    service: homeassistant.turn_off
+  #    entity_id: 
+  #      - light.office_lamp
+  #      - switch.catroom_lamp
+  #      - light.wled
+  #      - light.monitor_backlight
+  #      - switch.desk_lights
+
+
+  - alias: turn on desk lights for work
+    id: 917f0150-640e-460a-ad5b-86675cd7db78
+    trigger:
+      platform: time
+      at: "08:00:00"
+    condition:
+      condition: state
+      entity_id: person.chip
+      state: home
+    action:
+      service: scene.turn_on
+      entity_id: scene.desk_normal
+
+  - alias: toggle office AC
+    id: 108f44db-37cd-48cb-a3b1-e432b676f0bc
+    trigger:
+      - platform: template
+        value_template: "{{ state_attr('weather.pirate_weather','temperature') > states('input_number.office_thermostat_on_temp')|int }}"
+        for:
+          minutes: 30
+        id: warmed_up
+      - platform: template
+        value_template: "{{ state_attr('weather.pirate_weather','temperature') < states('input_number.office_thermostat_off_temp')|int }}"
+        for:
+          minutes: 30
+        id: cooled_off_outside
+      - platform: state
+        entity_id: sun.sun
+        to: below_horizon
+      - platform: state
+        entity_id: sun.sun
+        to: above_horizon
+      - platform: template
+        value_template: "{{ states('sensor.office_climate_temperature')|int > states('input_number.office_thermostat_on_temp') | int }}"
+        for:
+          minutes: 30
+        id: warmed_up
+    action:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: sun.sun
+          state: below_horizon
+        - condition: template
+          value_template: "{{ states('sensor.office_climate_temperature') < states('input_number.office_temperature_off_temp') }}"
+        sequence:
+        - service: script.turn_on
+          entity_id: script.turn_off_office_ac
+          alias: turn off AC at night
+      - conditions:
+        - condition: state
+          entity_id: sun.sun
+          state: above_horizon
+        - condition: trigger
+          id: warmed_up
+          #value_template: "{{ states('sensor.office_climate_temperature') > states('input_number.office_thermostat_on_temp') }}"
+        sequence:
+        - service: script.turn_on
+          entity_id: script.turn_on_office_ac
+          alias: turn on AC during the day if it gets warm inside
+
+scene:
+  - name: Office Normal
+    entities:
+      switch.office_lamp:
+        state: on
+      light.wled:
+        state: on
+        brightness: 60
+        effect: Solid
+        xy_color:
+          - 0.421
+          - 0.364
+      light.monitor_backlight:
+        state: on
+        brightness: 127
+        color_temp: 423
+      light.tv_wash_light:
+        state: on
+        brightness: 255
+        color_temp: 423
+
+  - name: Office Dim
+    entities:
+      switch.office_lamp:
+        state: on
+      light.wled:
+        state: on
+        effect: Solid
+        brightness: 60
+        xy_color:
+          - 0.421
+          - 0.364
+      light.monitor_backlight:
+        state: on
+        brightness: 107
+        color_temp: 423
+      light.tv_wash_light:
+        state: on
+        brightness: 107
+        color_temp: 423
+
+  - name: Desk Normal
+    entities:
+      light.wled:
+        state: on
+        effect: Solid
+        brightness: 36
+        xy_color:
+          - 0.421
+          - 0.364
+      light.monitor_backlight:
+        state: on
+        brightness: 107
+        color_temp: 423
+
+  - name: Office Videoconf
+    entities:
+      switch.office_lamp:
+        state: on
+      light.wled:
+        state: on
+        brightness: 158
+        effect: Solid
+        xy_color:
+          - 0.328
+          - 0.333
+      light.monitor_backlight:
+        state: on
+        brightness: 255
+        color_temp: 319
+      light.tv_wash_light:
+        state: on
+        brightness: 61
+        color_temp: 423
+
+  - name: Office desk only
+    entities:
+      switch.office_lamp:
+        state: off
+      light.wled:
+        state: on
+        brightness: 60
+        effect: Solid
+        xy_color:
+          - 0.421
+          - 0.364
+      light.monitor_backlight:
+        state: on
+        brightness: 107
+        color_temp: 423
+      switch.skelly:
+        state: off
+      light.tv_wash_light:
+        state: off
+
+  - name: Office off
+    entities:
+      switch.office_lamp:
+        state: off
+      light.wled:
+        state: off
+      light.monitor_backlight:
+        state: off
+      switch.skelly:
+        state: off
+      light.tv_wash_light:
+        state: off
+      switch.catroom_lamp:
+        state: off
