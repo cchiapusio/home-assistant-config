@@ -10,7 +10,7 @@ automation:
           message: "PMM Error: {{ trigger.json.error }}"
 
 script:
-  Sync_tasmota_configuration:
+  sync_tasmota_configuration:
     sequence:
       - service: mqtt.publish
         data:
@@ -21,12 +21,14 @@ script:
 #     setOption56 wifi network scan for strongest signal on restart
 #     setOption57 wifi network re-scan for stronger signal every 44 minutes
 
-  Upgrade_all_tasmota_devices:
+  upgrade_all_tasmota_devices:
     sequence:
       - service: mqtt.publish
         data:
           topic: cmnd/tasmotas/upgrade
-          payload: '1'#- alias: commute alert
+          payload: '1'
+
+#- alias: commute alert
 #  id: 8da8616e-bee1-44b5-a009-3e4dabc886de
 #  trigger:   
 #    platform: template

@@ -28,9 +28,11 @@ automation:
           - Kitchen
     - service: scene.turn_on
       target:
-        entity_id: scene.york##
-  ## Turn on lights at sunset
-  ##
+        entity_id: scene.york
+
+##
+## Turn on lights at sunset
+##
   - alias: turn on office lights at sunset
     id: 328d28db-1038-4f23-b233-60a7d0049ef0
     trigger:
@@ -47,23 +49,6 @@ automation:
         - switch.office_lamp
         - switch.catroom_lamp
         - light.tv_wash_light
-
-  ##
-  ## Turn off lights at midnight
-  ##
-  #- alias: turn off office lights at midnight
-  #  trigger:
-  #    platform: time
-  #    at: "00:00:00"
-  #  action:
-  #    service: homeassistant.turn_off
-  #    entity_id: 
-  #      - light.office_lamp
-  #      - switch.catroom_lamp
-  #      - light.wled
-  #      - light.monitor_backlight
-  #      - switch.desk_lights
-
 
   - alias: turn on desk lights for work
     id: 917f0150-640e-460a-ad5b-86675cd7db78
@@ -131,6 +116,8 @@ scene:
     entities:
       switch.office_lamp:
         state: on
+      switch.tv_wash:
+        state: on
       light.wled:
         state: on
         brightness: 60
@@ -150,6 +137,8 @@ scene:
   - name: Office Dim
     entities:
       switch.office_lamp:
+        state: on
+      switch.tv_wash:
         state: on
       light.wled:
         state: on
@@ -185,6 +174,8 @@ scene:
     entities:
       switch.office_lamp:
         state: on
+      switch.tv_wash:
+        state: on
       light.wled:
         state: on
         brightness: 158
@@ -205,6 +196,8 @@ scene:
     entities:
       switch.office_lamp:
         state: off
+      switch.tv_wash:
+        state: off
       light.wled:
         state: on
         brightness: 60
@@ -224,6 +217,8 @@ scene:
   - name: Office off
     entities:
       switch.office_lamp:
+        state: off
+      switch.tv_wash:
         state: off
       light.wled:
         state: off

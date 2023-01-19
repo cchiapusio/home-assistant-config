@@ -1,7 +1,7 @@
   # -- Define the statistics enabled counters
   - platform: statistics
     name: Internet WAN In Counter
-    entity_id: sensor.1_1_1_ifinoctets
+    entity_id: sensor.gate_interface_opt3_inbytes
     state_characteristic: mean
     sampling_size: 2
     max_age:
@@ -9,7 +9,7 @@
   - platform: statistics
     name: Internet WAN Out Counter
     state_characteristic: mean
-    entity_id: sensor.1_1_1_ifoutoctets
+    entity_id: sensor.gate_interface_opt3_outbytes
     sampling_size: 2
     max_age:
       minutes: 5
