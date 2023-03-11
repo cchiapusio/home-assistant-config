@@ -1,35 +1,4 @@
 automation:
-  - alias: York Ghost Sale imminent
-    id: e33336a5-3634-4d59-a4c7-1d194e0aecc4
-    trigger:   
-    - platform: state
-      entity_id: calendar.york_ghost_merchants
-      to: "on"
-    action:
-    - service: scene.create
-      data:
-        scene_id: york
-        snapshot_entities:
-        - light.monitor_backlight
-    - service: light.turn_on
-      target:
-        entity_id: light.monitor_backlight
-      data:
-        transition: 10
-        xy_color: [0.216, 0.077] # purple
-        brightness: 200
-#    - delay:
-#        seconds: 10
-    - service: notify.google_assistant_sdk
-      data:
-        message: There is a York Ghost Merchant Sale about to begin
-        target:
-          - Office
-          - Kitchen
-    - service: scene.turn_on
-      target:
-        entity_id: scene.york
-
 ##
 ## Turn on lights at sunset
 ##
@@ -110,6 +79,23 @@ automation:
         - service: script.turn_on
           entity_id: script.turn_on_office_ac
           alias: turn on AC during the day if it gets warm inside
+
+  - alias: charge watch reminder
+    trigger:
+      - platform: state
+        entity_id: sensor.samsung_galaxy_note_20_ultra_room_presence
+        to: 'Office'
+      - platform: numeric_state
+        entity_id: sensor.galaxy_watch5_pro_9czb_battery_level
+        below: 20
+    condition:
+      condition: state
+      entity_id: sensor.galaxy_watch5_pro_9czb_battery_state
+      state: discharging
+    action:
+     - service: notify.mobile_app_sm_n986u
+       data:
+         message: "Charge the watch now"
 
 scene:
   - name: Office Normal
