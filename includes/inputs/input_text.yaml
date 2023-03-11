@@ -1,7 +1,7 @@
-last_new_gamedeal_title:
-  name: Last new Gamedeals title
-  max: 255
-  initial: "nothing"
+#last_new_gamedeal_title:
+#  name: Last new Gamedeals title
+#  max: 255
+#  initial: "nothing"
 
 crystal_wall_switch_last_event:
   name: Last event from Crystal Wall Switch

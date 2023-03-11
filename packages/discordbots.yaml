@@ -1,0 +1,66 @@
+automation:
+  - alias: realtime free game posts
+    id: 5f2665ad-01be-48a8-bc93-4a3fc3908c55
+    trigger:
+      - platform: state
+        entity_id: sensor.reddit_gamedeals
+    condition:
+      - condition: state
+        entity_id: binary_sensor.new_gamedeals_free
+        state: 'on'
+      - condition: template
+        value_template: "{{ states('sensor.last_gamedeal') != state_attr('sensor.reddit_gamedeals', 'posts')[ states('input_number.gamedeals_free_index')|int ].title }}"
+    action:
+      - service: notify.freebie_llama_chipsworld
+        data:
+          message: ""
+  #        target: ["961330364478001165","633522789231362067"]
+          target: ["633522789231362067"]
+          data:
+            embed:
+              title: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ states('input_number.gamedeals_free_index')|int ].title }} "
+              description: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ states('input_number.gamedeals_free_index')|int ].body }}"
+              url: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ states('input_number.gamedeals_free_index')|int ].url }}"
+              footer: 
+                text: "Score: {{ state_attr('sensor.reddit_gamedeals', 'posts')[ states('input_number.gamedeals_free_index')|int ].score }}"
+  #    - service: input_text.set_value
+  #      target:
+  #        entity_id: input_text.last_new_gamedeal_title
+  #      data:
+  #        value: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ states('input_number.gamedeals_free_index')|int ].title }}"
+      - service: mqtt.publish
+        data:
+          payload_template: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ states('input_number.gamedeals_free_index')|int ].title }}"
+          topic: homeassistant/sensor/last_gamedeal/name
+          retain: true
+
+sensor:
+
+  - platform: reddit
+    username: !secret reddit_username
+    password: !secret reddit_password
+    client_id: !secret reddit_client_id
+    client_secret: !secret reddit_client_secret
+    sort_by: new
+    subreddits:
+      - gamedeals
+
+input_number:
+  gamedeals_free_index:
+    name: Gamedeals index 
+    min: 0
+    max: 9
+    step: 1
+    mode: slider
+  gamedeals_free_score:
+    name: Gamedeals score
+    min: 10
+    max: 200
+    step: 1
+    mode: slider
+  
+input_text:
+  last_new_gamedeal_title:
+    name: Last new Gamedeals title
+    max: 255
+    initial: "nothing"
