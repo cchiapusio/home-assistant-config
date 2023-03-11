@@ -29,3 +29,11 @@
       - light.diningroom_nw
       - light.diningroom_se
       - light.diningroom_sw
+  
+  - platform: group
+    name: Toris room lamps
+    entities:
+      - light.nightstand_1
+      - light.nightstand_2
+      - light.dresser_lamp
+      - light.tplb01
