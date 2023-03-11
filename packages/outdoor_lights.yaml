@@ -1,0 +1,50 @@
+script:
+  learn_string_lights_rf:
+    alias: learn string lights rf
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: string_lights
+          command_type: rf
+          command:
+            - turn on
+            - turn off
+            - 2700k
+            - 4000k
+            - 5000k
+            - percent_25
+            - percent_50
+            - percent_75
+            - percent_100
+            - brighter
+            - dimmer
+            - timer_30
+            - timer_60
+            - timer_120
+            - timer_240
+
+  turn_on_string_lights:
+    alias: turn on string lights
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: string_lights
+          command:
+            - turn on
+            - percent_100
+            - 2700k
+
+  turn_off_string_lights:
+    alias: turn off string lights
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: string_lights
+          command:
+            - turn off
