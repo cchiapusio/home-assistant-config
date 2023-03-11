@@ -1,27 +1,3 @@
-- alias: Margo is here
-  id: 7426f12b-0e03-44f0-b1af-3f883f85d3a6
-  trigger:
-    platform: state
-    entity_id: device_tracker.galaxy_note10
-    to: home
-  action:
-    service: tts.google_say
-    entity_id: "all"
-    data:
-      message: "Alert, Margo is here"
-
-- alias: Natalie is here
-  id: 4cf0b6ee-2e33-4f10-bb4d-0d22fa68f606
-  trigger:
-    platform: state
-    entity_id: device_tracker.natalies_iphone
-    to: home
-  action:
-    service: tts.google_say
-    entity_id: media_player.office_display
-    data:
-      message: "Alert, Natalie is here"
-
 - alias: Suspend camera notifications when Chip comes home
   id: 73f5932d-2ad6-45b5-b96d-6e5ec506124a
   trigger:
