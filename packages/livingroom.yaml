@@ -1,4 +1,43 @@
 automation:
+
+##
+## turn off house lights
+##
+  - alias: turn off house lights
+    id: turn off house lights
+    trigger:
+      - platform: time
+        at: "23:00:00"
+        id: 'eleven'
+      - platform: state
+        entity_id: media_player.living_room_tv
+        to: 'off'
+        id: 'tv_off'
+    action:
+      - choose:
+        - conditions:
+          - condition: trigger
+            id: 'eleven'
+          - condition: state
+            entity_id: person.cindy
+            state: not_home
+          - condition: state
+            entity_id: person.chip
+            state: not_home
+          sequence:
+            - service: scene.turn_on
+              entity_id: scene.livingroom_dim
+            - service: scene.turn_on
+              entity_id: scene.dining_room_dim
+            - service: scene.turn_on
+              entity_id: scene.kitchen_dim
+            - service: scene.turn_on
+              entity_id: scene.mbr_lights_off
+            - service: timer.start
+              data:
+                entity_id: timer.5m
+
+
 ##
 ## Turn off lights at midnight if the TV is off
 ##
@@ -6,21 +45,18 @@ automation:
     id: 277b1ae2-1b04-4656-8d6c-ce23f7c84ab4
     trigger:
       platform: time
-      at: "23:00:00"
+      at: "00:00:00"
     condition:
       - condition: state
         entity_id: media_player.living_room_tv
         state:  'off'
-      - condition: state
-        entity_id: person.chip
-        state: home
     action:
       - service: scene.turn_on
         entity_id: scene.livingroom_dim
       - service: scene.turn_on
         entity_id: scene.dining_room_dim
-      - service: switch.turn_off
-        entity_id: switch.curio_cabinet_lamp
+      - service: scene.turn_on
+        entity_id: scene.kitchen_dim
       - service: timer.start
         data:
           entity_id: timer.5m
@@ -229,85 +265,85 @@ scene:
   - name: Livingroom_Normal
     entities:
       light.living_room_lamp_1:
-        state: on
+        state: 'on'
         brightness: 255
         color_temp: 454
       light.living_room_lamp_2:
-        state: on
+        state: 'on'
         brightness: 255
         color_temp: 454
       light.foyer_lamp:
-        state: on
+        state: 'on'
         brightness: 255
         color_temp: 454
       switch.willow_tree:
-        state: on
+        state: 'on'
       light.crystal_wall:
-        state: on
+        state: 'on'
         brightness: 255
   
   - name: Livingroom_Full
     entities:
       light.living_room_lamp_1:
-        state: on
+        state: 'on'
         brightness: 255
       light.living_room_lamp_2:
-        state: on
+        state: 'on'
         brightness: 255
       light.foyer_lamp:
-        state: on
+        state: 'on'
         brightness: 255
       switch.willow_tree:
-        state: on
+        state: 'on'
       light.crystal_wall:
-        state: on
+        state: 'on'
         brightness: 255
   
   - name: Livingroom_Dim
     entities:
       light.living_room_lamp_1:
-        state: on
+        state: 'on'
         brightness: 76
       light.living_room_lamp_2:
-        state: on
+        state: 'on'
         brightness: 76
       light.foyer_lamp:
-        state: on
+        state: 'on'
         brightness: 76
       switch.willow_tree:
-        state: on
+        state: 'on'
       light.crystal_wall:
-        state: on
+        state: 'on'
         brightness: 76
 
   - name: Packers_playing
     entities:
       light.living_room_lamp_1:
-        state: on
+        state: 'on'
         brightness: 255
         color_name: green
       light.living_room_lamp_2:
-        state: on
+        state: 'on'
         brightness: 255
         xy_color:
         - 0.461
         - 0.502
       light.foyer_lamp:
-        state: on
+        state: 'on'
         brightness: 255
         color_name: green  
   
   - name: Livingroom off
     entities:
       light.living_room_lamp_1:
-        state: off
+        state: 'off'
       light.living_room_lamp_2:
-        state: off
+        state: 'off'
       light.foyer_lamp:
-        state: off
+        state: 'off'
       switch.willow_tree:
-        state: off
+        state: 'off'
       light.crystal_wall:
-        state: off
+        state: 'off'
       light.lg75_wled:
-        state: off
+        state: 'off'
