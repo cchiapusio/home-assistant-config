@@ -30,29 +30,29 @@ execute_cast_dropdown:
           media_content_type: 'image/jpg'
 
 
-learn_string_lights_rf:
-  sequence:
-    - service: remote.learn_command
-      target:
-        entity_id: remote.rm4pro_remote
-      data:
-        device: string_lights
-        command_type: rf
-        command:
-          - turn on
-          - turn off
-          - cool_light
-          - warm_light
-          - percent_25
-          - percent_50
-          - percent_75
-          - percent_100
-          - brighter
-          - dimmer
-          - timer_30
-          - timer_60
-          - timer_120
-          - timer_240
+#learn_string_lights_rf:
+#  sequence:
+#    - service: remote.learn_command
+#      target:
+#        entity_id: remote.rm4pro_remote
+#      data:
+#        device: string_lights
+#        command_type: rf
+#        command:
+#          - turn on
+#          - turn off
+#          - cool_light
+#          - warm_light
+#          - percent_25
+#          - percent_50
+#          - percent_75
+#          - percent_100
+#          - brighter
+#          - dimmer
+#          - timer_30
+#          - timer_60
+#          - timer_120
+#          - timer_240
         
 
 
@@ -128,27 +128,27 @@ turn_on_office_ac:
           - quiet
         delay_secs: 1
 
-turn_on_string_lights:
-  sequence:
-    - service: remote.send_command
-      target:
-        entity_id: remote.rm4pro_remote
-      data:
-        device: string_lights
-        command:
-          - turn on
-          - percent_100
-          - warm_light
+#turn_on_string_lights:
+#  sequence:
+#    - service: remote.send_command
+#      target:
+#        entity_id: remote.rm4pro_remote
+#      data:
+#        device: string_lights
+#        command:
+#          - turn on
+#          - percent_100
+#          - warm_light
 
-turn_off_string_lights:
-  sequence:
-    - service: remote.send_command
-      target:
-        entity_id: remote.rm4pro_remote
-      data:
-        device: string_lights
-        command:
-          - turn off
+#turn_off_string_lights:
+#  sequence:
+#    - service: remote.send_command
+#      target:
+#        entity_id: remote.rm4pro_remote
+#      data:
+#        device: string_lights
+#        command:
+#          - turn off
 
 good_night_lights:
   sequence:
@@ -169,10 +169,12 @@ good_night_lights:
       entity_id: scene.office_off
     - service: light.turn_off
       entity_id:
-        - light.flood03
         - light.flood04
+        - light.flood07
         - light.flood08
     - service: switch.turn_off
       entity_id:
         - switch.shelly_2_5_e8db84d2729c_relay_1
         - switch.shelly_2_5_8caab55f9707_relay_0
+    - service: script.turn_on
+      entity_id: script.turn_off_string_lights
