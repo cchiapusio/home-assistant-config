@@ -7,19 +7,19 @@
     below: 20
     id: elevation
   - platform: numeric_state
-    entity_id: sensor.dark_sky_cloud_coverage
+    entity_id: sensor.pirateweather_cloud_coverage
     above: 85
     id: cloud_high
   - platform: numeric_state
-    entity_id: sensor.dark_sky_cloud_coverage
+    entity_id: sensor.pirateweather_cloud_coverage
     above: 98
     id: cloud_high
   - platform: numeric_state
-    entity_id: sensor.dark_sky_precip_intensity
+    entity_id: sensor.pirateweather_precip_intensity
     above: 0.6
     id: intensity_high
   - platform: numeric_state
-    entity_id: sensor.dark_sky_precip_probability
+    entity_id: sensor.pirateweather_precip_probability
     above: 80
     id: probability_high
   action:
@@ -35,10 +35,10 @@
         alias: sunset
     - conditions:
       - condition: numeric_state
-        entity_id: sensor.dark_sky_precip_intensity
+        entity_id: sensor.pirateweather_precip_intensity
         above: 0.6
       - condition: numeric_state
-        entity_id: sensor.dark_sky_precip_probability
+        entity_id: sensor.pirateweather_precip_probability
         above: 80
       - condition: state
         entity_id: sun.sun
@@ -51,7 +51,7 @@
         alias: storm coming
     - conditions:
       - condition: numeric_state
-        entity_id: sensor.dark_sky_cloud_coverage
+        entity_id: sensor.pirateweather_cloud_coverage
         above: 85
       - condition: state
         entity_id: sun.sun
