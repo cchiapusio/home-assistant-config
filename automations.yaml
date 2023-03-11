@@ -20,3 +20,14 @@
         type: brightness_decrease
       button_up_double_press: true
       button_down_double_press: true
+- id: '1673987869852'
+  alias: Unavailable entity detection
+  description: ''
+  use_blueprint:
+    path: gmlupatelli/unavailable_entities_notification.yaml
+    input:
+      actions:
+      - service: notify.chip_email
+        data:
+          message: '{{entities}}'
+          title: Unavailable Entities
