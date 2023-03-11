@@ -105,7 +105,7 @@ automation:
           minutes: 5
       - service: input_boolean.turn_off
         entity_id: input_boolean.suspend_camera_notifications_backdoor
-      - service: input_boolean.turn_on
+      - service: input_boolean.turn_off
         entity_id: input_boolean.suspend_camera_notifications_driveway
 
   - alias: disable front cameras when door opens
@@ -124,7 +124,7 @@ automation:
           minutes: 10
       - service: input_boolean.turn_off
         entity_id: input_boolean.suspend_camera_notifications_doorbell
-      - service: input_boolean.turn_on
+      - service: input_boolean.turn_off
         entity_id: input_boolean.suspend_camera_notifications_frontyard
 
 
@@ -184,7 +184,7 @@ automation:
         from: 'off'
         to: 'on'
       - platform: state
-        entity_id: binary_sensor.front_door_smart_motion_human
+        entity_id: binary_sensor.person_at_front_door
         from: 'off'
         to: 'on'
     condition:
