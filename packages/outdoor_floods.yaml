@@ -25,6 +25,7 @@ input_select:
       - Normal
       - Halloween
       - Christmas
+      - Valentines Day
       - St Patricks
       - Independence Day
       - Memorial Day
@@ -57,6 +58,9 @@ automation:
           state: 'Christmas'
         - condition: state
           entity_id: 'input_select.outdoor_light_scene'
+          state: 'Valentines Day'
+        - condition: state
+          entity_id: 'input_select.outdoor_light_scene'
           state: 'St Patricks'
         - condition: state
           entity_id: 'input_select.outdoor_light_scene'
@@ -80,6 +84,8 @@ automation:
               scene.yard_light_halloween
             {% elif is_state( "input_select.outdoor_light_scene", "Christmas" ) %}
               scene.yard_light_christmas
+            {% elif is_state( "input_select.outdoor_light_scene", "Valentines Day" ) %}
+              scene.yard_light_valentines
             {% elif is_state( "input_select.outdoor_light_scene", "St Patricks" ) %}
               scene.yard_light_stpatricks
             {% elif is_state( "input_select.outdoor_light_scene", "Independence Day" ) %}
@@ -405,6 +411,41 @@ scene:
         state: on
         brightness_pct: 100 
         xy_color: [0.172, 0.747] # green
+      light.flood07:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.701, 0.299] # red
+      light.flood08:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.701, 0.299] # red
+      switch.outdoor_switch_5_1:
+        state: on
+      switch.outdoor_switch_5_2:
+        state: on
+
+  - name: yard_light_valentines
+    entities:
+      light.flood02:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.701, 0.299] # red
+      light.flood03:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.701, 0.299] # red
+      light.flood04:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.701, 0.299] # red
+      light.flood05:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.701, 0.299] # red
+      light.flood06:
+        state: on
+        brightness_pct: 100 
+        xy_color: [0.701, 0.299] # red
       light.flood07:
         state: on
         brightness_pct: 100 
