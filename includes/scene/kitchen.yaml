@@ -23,5 +23,3 @@
   entities:
     light.hutch_led:
       state: off
-    switch.candle_light:
-      state: off
