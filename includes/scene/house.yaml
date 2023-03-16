@@ -22,14 +22,6 @@
       state: on
     switch.curio_cabinet_lamp:
       state: on
-    light.dining_room_lamp_east:
-      state: on
-      brightness: 255
-      color_temp: 454
-    light.dining_room_lamp_west:
-      state: on
-      brightness: 255
-      color_temp: 454
 
 - name: good night lights
   entities:
@@ -46,8 +38,6 @@
     light.wled:
       state: off
     light.hutch_led:
-      state: off
-    light.hutch_light:
       state: off
     switch.curio_cabinet_lamp:
       state: off
@@ -132,10 +122,6 @@
     switch.curio_cabinet_lamp:
       state: off
     switch.willow_tree:
-      state: off
-    light.dining_room_lamp_east:
-      state: off
-    light.dining_room_lamp_west:
       state: off
     light.wled:
       state: on
