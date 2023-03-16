@@ -1,0 +1,118 @@
+automation:
+  - alias: turn on house lights
+    id: de260dc5-3e3f-4168-8bf7-8eef528a12de
+    trigger:
+    - platform: numeric_state
+      entity_id: sun.sun
+      value_template: '{{ state.attributes.elevation }}'
+      below: 20
+      id: elevation
+    - platform: numeric_state
+      entity_id: sensor.pirateweather_cloud_coverage
+      above: 85
+      id: cloud_high
+    - platform: numeric_state
+      entity_id: sensor.pirateweather_cloud_coverage
+      above: 98
+      id: cloud_high
+    - platform: numeric_state
+      entity_id: sensor.pirateweather_precip_intensity
+      above: 0.6
+      id: intensity_high
+    - platform: numeric_state
+      entity_id: sensor.pirateweather_precip_probability
+      above: 80
+      id: probability_high
+    action:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: elevation 
+        - condition: template
+          value_template: '{{ is_state_attr("sun.sun", "rising", false) }}'
+        sequence:
+        - service: script.turn_on
+          entity_id: script.turn_on_house_lights
+          alias: sunset
+      - conditions:
+        - condition: numeric_state
+          entity_id: sensor.pirateweather_precip_intensity
+          above: 0.6
+        - condition: numeric_state
+          entity_id: sensor.pirateweather_precip_probability
+          above: 80
+        - condition: state
+          entity_id: sun.sun
+          state: above_horizon
+        - condition: time
+          after: '08:30:00'
+        sequence:
+        - service: script.turn_on
+          entity_id: script.turn_on_house_lights
+          alias: storm coming
+      - conditions:
+        - condition: numeric_state
+          entity_id: sensor.pirateweather_cloud_coverage
+          above: 85
+        - condition: state
+          entity_id: sun.sun
+          state: above_horizon
+        - condition: time
+          after: '08:30:00'
+        sequence:
+        - service: script.turn_on
+          entity_id: script.turn_on_house_lights
+          alias: very cloudy
+        - condition: time
+          after: '08:30:00'
+
+  - alias: take out recycling bin
+    id: b30798c5-ba5c-4322-900a-64cc1fc35f7e
+    trigger:
+      platform: time
+      at: "18:00:00"
+    condition:   
+    - condition: numeric_state
+      entity_id: sensor.recycling
+      attribute: days
+      below: 1
+    action:
+      service: notify.mobile_app_sm_n986u
+      data:
+        message: "Take out Recycling bin tonight"
+
+  - alias: Turn on lights for maids
+    id: 44bce5d9-e0e0-447b-850f-93e080ea0b9f
+    trigger:
+      - platform: calendar
+        event: start
+        entity_id: calendar.maids
+        offset: -01:00:00
+        id: maids_start
+      - platform: calendar
+        event: end
+        entity_id: calendar.maids
+        offset: +01:00:00
+        id: maids_end
+    action:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: maids_start
+        sequence:
+        - service: scene.turn_on
+          entity_id: scene.housecleaners_coming
+        - service: notify.mobile_app_sm_n986u
+          data:
+            message: "Prepare the house for the Maids"
+      - conditions:
+        - condition: trigger
+          id: maids_end
+        sequence:
+        - service: scene.turn_on
+          entity_id: scene.housecleaners_gone
+
+#script:
+#  housecleaners_coming:
+#    sequence:
+      
