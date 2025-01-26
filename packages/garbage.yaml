@@ -1,0 +1,92 @@
+input_boolean:
+  garbage_tag_scanned:
+    name: Garbage NFC tag scanned
+  garbage_out:
+    name: Garbage cans have been taken out
+
+template:
+  - sensor:
+      - name: garbage_day
+        state: >-
+          {{ ((state_attr('calendar.garbage','start_time')| as_timestamp - today_at('00:00') | as_timestamp) / 86400) | int}}
+
+  - sensor:
+      - name: trash_bins
+        state: >-
+          {{ state_attr('calendar.garbage','message') }}
+
+
+script:
+  ai_test2:
+    sequence:
+      - service: camera.snapshot
+        target:
+          entity_id: camera.driveway
+        data:
+          filename: "/config/tmp/snapshots/trash-check.jpg"
+      - service: google_generative_ai_conversation.generate_content
+        metadata: {}
+        data:
+          image_filename: "/config/tmp/snapshots/trash-check.jpg"
+          prompt: >-
+            using only a single whole number and no text, tell me how many garbage bins
+        response_variable: generated_content
+      - condition: template
+        value_template: "{{ generated_content['text']|int > 2 }}"
+      - service: notify.mobile_app_chip
+        data:
+          message: "I see {{ generated_content.text }} bins, did you remember to take out the garbage?"
+
+  check_garbage_cans:
+    sequence:
+      - service: camera.snapshot
+        target:
+          entity_id: camera.driveway
+        data:
+          filename: "/config/tmp/snapshots/trash-check.jpg"
+      - service: google_generative_ai_conversation.generate_content
+        metadata: {}
+        data:
+          image_filename: "/config/tmp/snapshots/trash-check.jpg"
+          prompt: >-
+            using only a single whole number and no text, tell me how many garbage bins
+        response_variable: generated_content
+      - condition: template
+        value_template: "{{ generated_content['text']|int < 3 }}"
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.garbage_out
+
+automation:
+
+  - alias: check if the garbage has been taken out
+    id: b30798c5-ba5c-4322-900a-64cc1fc35f7e
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.person_in_driveway,binary_sensor.person_in_front_yard
+        from: 'off'
+        to: 'on'
+    condition:   
+    - condition: time
+      after: "18:00:00"
+    - condition: numeric_state
+      entity_id: sensor.garbage_day
+      below: 2
+      above: 0
+    - condition: state
+      entity_id: input_boolean.garbage_out
+      state: "off"
+    action:
+      service: script.check_garbage_cans
+
+  - alias: reset garbage_out bool
+    id: f3010d8e-12c6-4f23-8268-4cc33536e75f
+    trigger:
+      - platform: time
+        at: "06:00:00"
+    condition:
+      - condition: time
+        weekday:
+          - tue
+    action:
+      service: input_boolean.turn_off
+      entity_id: input_boolean.garbage_out
