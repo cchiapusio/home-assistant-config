@@ -1,0 +1,30 @@
+execute_cast_dropdown:
+  alias: Press to execute
+  sequence:
+    - service: media_player.play_media
+      data_template:
+        entity_id: >
+          {% if is_state("input_select.cast_to_screen_dropdown", "Office Display") %}
+            media_player.office_display
+          {% elif is_state("input_select.cast_to_screen_dropdown", "MBR Display") %}
+            media_player.master_bedroom_display
+          {% elif is_state("input_select.cast_to_screen_dropdown", "Master Bedroom TV") %}
+            media_player.mbr_shield
+          {% elif is_state("input_select.cast_to_screen_dropdown", "Living Room TV") %}
+            media_player.living_room_shield
+          {% endif %}
+        media_content_id: >
+          {% if is_state("input_select.camera_dropdown", "Back Door") %}
+            http://bigblue.home.llamas.net/mjpg/backdoorhd/video.mjpg
+          {% elif is_state("input_select.camera_dropdown", "Front Yard") %}
+            http://bigblue.home.llamas.net/mjpg/frontyard/video.mjpg
+          {% elif is_state("input_select.camera_dropdown", "Mr. Lizard") %}
+            http://bigblue.home.llamas.net/mjpg/amcrest1/video.mjpg
+          {% elif is_state("input_select.camera_dropdown", "Front Window") %}
+            http://bigblue.home.llamas.net/mjpg/catroom/video.mjpg
+          {% elif is_state("input_select.camera_dropdown", "Cycle Cameras") %}
+            http://bigblue.home.llamas.net/mjpg/@HD?/video.mjpg
+          {% elif is_state("input_select.camera_dropdown", "All Cameras") %}
+            http://bigblue.home.llamas.net/mjpg/HD?/video.mjpg
+          {% endif %}
+        media_content_type: 'image/jpg'

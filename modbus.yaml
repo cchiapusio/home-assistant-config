@@ -1,0 +1,15 @@
+- name: mbr_closet_motion
+  type: tcp
+  host: 192.168.10.38
+  port: 502
+  sensors:
+    - name: mbr_closet_motion
+      unique_id: mbr_closet_motion
+      address: 802
+      scan_interval: 10
+    - name: mbr_closet_NoPerson_time
+      unique_id: mbr_closet_noperson_time
+      address: 832
+    - name: mbr_closet_motion_firmware_version
+      unique_id: mbr_closet_motion_firmware_version
+      address: 29

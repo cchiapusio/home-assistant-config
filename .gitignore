@@ -7,6 +7,7 @@
 *.db-wal
 *.pyc
 ._*
+*.yam
 __pycache__
 
 # Directory (contents) ignores
@@ -18,15 +19,14 @@ deps
 tts
 LAB
 SAMPLES
-custom_components/auto_backup/*
-images/mail_and_packages/*
-www/mail_and_packages/*
+*images/mail_and_packages/*
+*www/mail_and_packages/*
 www/ds/*
 www/alerts/*
-custom_components
-custom_components/*
+*custom_components*
 www/community/*
 temp/*
+tmp/*
 backups
 
 # Specific file ignores
@@ -47,6 +47,7 @@ includes/zones.yaml
 OZW_Log.txt
 .HA_VERSION
 home-assistant-integrati-72eed-cc2245778156.json
+home-assistant-integrati-72eed-e13ed1e9b9c9.json
 
 # Ignore files created by IDE's
 .vscode
@@ -55,3 +56,4 @@ home-assistant-integrati-72eed-cc2245778156.json
 
 # Specific keeps
 !.gitkeep
+custom_components/deepstack_face/__init__.py
