@@ -1,0 +1,35 @@
+>
+  {%- macro getDishwasher() -%}
+    Make sure the doors are locked and the dishwasher is started.  Good Night.
+  {%- endmacro -%}
+
+  {%- macro getOfficeTemp() -%}
+    It's warm, turn on the fan
+  {%- endmacro -%}
+
+  {# a macro that removes all newline characters, empty spaces, and returns formatted text #}
+  {%- macro cleanup(data) -%}
+    {%- for item in data.split("\n")  if item | trim != "" -%}
+      {{ item | trim }} {% endfor -%}
+  {%- endmacro -%}
+
+  {%- macro getHumidity() -%}
+    {% if states.sensor.my_ecobee_current_humidity.state | int > 55 %}
+      The House humidity is high, is the dehumidifier running?
+    {% endif %}
+  {%- endmacro -%}
+
+  {%- macro getWatchBattery() -%}
+    {% if states.sensor.galaxy_watch5_pro_9czb_battery_level_2.state | int < 20 %}
+      Put your watch on the charger, dipshit.
+    {% endif %}
+  {%- endmacro -%}
+
+  {# a macro to call all macros :)  #}
+  {%- macro mother_of_all_macros() -%}
+    {{ getWatchBattery() }}
+    {{ getHumidity() }}
+  {%- endmacro -%}
+    
+    {# Call the macro  #}
+  {{- cleanup(mother_of_all_macros()) -}}
