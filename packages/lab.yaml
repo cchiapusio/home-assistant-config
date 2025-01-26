@@ -1,0 +1,47 @@
+script:
+  test_googlemsg_announce:
+    sequence:
+    - service: tts.clear_cache
+    - service: media_player.volume_set
+      data_template:
+        entity_id:
+          - media_player.charcoal_mini
+        volume_level: 0.5
+    - service: tts.speak
+      target:
+        entity_id: tts.piper
+      data:
+        cache: true 
+        media_player_entity_id: media_player.charcoal_mini
+        message: "There is a York Ghost Merchant Sale about to begin"
+
+  briefing_test_offce:
+    sequence:
+    - service: tts.clear_cache
+    - service: media_player.volume_set
+      data_template:
+        entity_id:
+          - media_player.charcoal_mini
+        volume_level: 0.5
+    - service: tts.speak 
+      target: 
+        entity_id: tts.piper
+      data: 
+        cache: true 
+        media_player_entity_id: media_player.charcoal_mini
+        message: !include ../templates/speech/morning_briefing.yaml
+
+
+
+#automation:
+#  - alias: Calendar testin
+#    id: 1fc8de36-9740-4f4f-a8ca-520bfeaaba22
+#    trigger:   
+#      - platform: calendar
+#        entity_id: calendar.york_ghost_merchants
+#        event: start
+#        offset: -00:05:00
+#    action:
+#      - service: script.find_and_alert_chip
+#        data_template:
+#          where: 'york'

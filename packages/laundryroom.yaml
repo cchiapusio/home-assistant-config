@@ -1,0 +1,70 @@
+automation:
+  - alias: Washer finished notification
+    id: bc778f63-3ff8-4486-9adb-39effc0dd76c
+    trigger: 
+      - platform: state
+        entity_id: binary_sensor.washer_running
+        to: 'off'
+        for:
+          minutes: 6
+    action:
+      - service: notify.mobile_app_chip
+        data_template:
+          message: "The washer is done"
+
+  - alias: Dryer finished notification
+    id: 27c1fec7-0631-4569-974c-7ed54093a0d2
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dryer_vibration
+        to: 'off'
+        from: 'on'
+        id: "finishing"
+      - platform: state
+        entity_id: binary_sensor.dryer_vibration
+        to: 'on'
+        for:
+          minutes: 10
+        id: "starting"
+    action:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: 'starting'
+        sequence:
+        - service: input_boolean.turn_on
+          entity_id: input_boolean.dryer_running
+      - conditions:
+        - condition: state
+          entity_id: binary_sensor.dryer_vibration
+          state: 'off'
+        - condition: state
+          entity_id: input_boolean.dryer_running
+          state: 'on'
+        sequence:
+        - service: notify.mobile_app_chip
+          data_template:
+            message: "The dryer is done"
+        - service: input_boolean.turn_off
+          entity_id: input_boolean.dryer_running
+
+input_boolean:
+  dryer_running:
+    name: Dryer is running
+    initial: off
+
+sensor:
+  - platform: filter
+    name: washer running filter
+    entity_id: sensor.washer_power
+    filters: 
+      - filter: time_simple_moving_average
+        window_size: 00:02:00
+
+binary_sensor:
+  - platform: threshold
+    entity_id: sensor.washer_running_filter
+    name: Washer running
+    device_class: running
+    upper: 3
+#    hysteresis: 0.5

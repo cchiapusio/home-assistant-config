@@ -1,3 +1,30 @@
+input_number:
+  office_fan_on_temp:
+    name: Office fan turn on temperature
+    min: 70
+    max: 85
+    step: 1
+    mode: slider
+    initial: 75
+  office_thermostat_on_temp:
+    name: Temperature to turn on office AC
+    min: 70
+    max: 85
+    step: 1
+    mode: slider
+    initial: 75
+  office_thermostat_off_temp:
+    name: Temperature to turn off office AC
+    min: 70
+    max: 85
+    step: 1
+    mode: slider
+    initial: 80
+
+input_boolean:
+  office_fan_state:
+    name: Office fan state
+
 automation:
 ##
 ## Turn on lights at sunset
@@ -13,24 +40,29 @@ automation:
       condition: template
       value_template: '{{ is_state_attr("sun.sun", "rising", false) }}'
     action:
-      service: homeassistant.turn_on
-      entity_id: 
-        - switch.office_lamp
-        - switch.catroom_lamp
-        - light.tv_wash_light
+      service: scene.turn_on
+      entity_id: scene.office_normal
 
   - alias: turn on desk lights for work
     id: 917f0150-640e-460a-ad5b-86675cd7db78
     trigger:
-      platform: time
-      at: "08:00:00"
+      - platform: time
+        at: "08:00:00"
+      - platform: state
+        entity_id: sensor.espresence_chip_s24u
+        to: 'office'
     condition:
-      condition: state
-      entity_id: person.chip
-      state: home
+      - condition: state
+        entity_id: person.chip
+        state: home
+      - condition: state
+        entity_id: light.office_lamp_1
+        state: 'off'
     action:
-      service: scene.turn_on
-      entity_id: scene.desk_normal
+     - service: scene.turn_on
+       entity_id: scene.office_dim
+     - service: switch.turn_on
+       entity_id: switch.skeleton_head
 
   - alias: toggle office AC
     id: 108f44db-37cd-48cb-a3b1-e432b676f0bc
@@ -81,49 +113,140 @@ automation:
           alias: turn on AC during the day if it gets warm inside
 
   - alias: charge watch reminder
+    id: ccc92370-b0a6-4707-bc01-5654edb83692
     trigger:
       - platform: state
-        entity_id: sensor.samsung_galaxy_note_20_ultra_room_presence
-        to: 'Office'
+        entity_id: sensor.espresence_chip_s24u
+        to: 'office'
+      - platform: state
+        entity_id: sensor.espresence_chip_s24u
+        to: 'mbr'
       - platform: numeric_state
-        entity_id: sensor.galaxy_watch5_pro_9czb_battery_level
-        below: 20
+        entity_id: sensor.galaxy_watch5_pro_9czb_battery_level_2
+        below: 15
     condition:
       condition: state
-      entity_id: sensor.galaxy_watch5_pro_9czb_battery_state
+      entity_id: sensor.galaxy_watch5_pro_9czb_battery_state_2
       state: discharging
     action:
-     - service: notify.mobile_app_sm_n986u
+     - service: notify.mobile_app_galaxy_watch5_pro_9czb
        data:
-         message: "Charge the watch now"
+         message: TTS
+         data:
+           tts_text: "Charge the watch now, dimwit"
+           media_stream: "alarm_stream"
+
+  - alias: Turn on office lights when chip enters
+    id: 98b3de53-9a23-42be-8d99-028d7084e9a4
+    trigger:
+      - platform: state
+        entity_id: sensor.espresence_chip_s24u
+        to: 'office'
+    action:
+      service: script.turn_on
+      entity_id: script.turn_on_office_lights
+
+  - alias: Turn on fan when temp limit exceeded
+    id: 4d026ddb-0a3a-442b-a7f0-49fabc02160e
+    trigger:
+      - platform: template
+        value_template: "{{ states('sensor.office_temperature')|int > states('input_number.office_fan_on_temp') | int }}"
+        for:
+          minutes: 10
+    action:
+      service: script.turn_on
+      entity_id: script.turn_on_office_fan
+
+  - id: 346454c5-2e88-499f-ad5f-6dd6772ede58
+    alias: Office Cube (z2m)
+    description: ''
+    use_blueprint:
+      path: SirGoodenough/Zigbee2MQTT - Xiaomi Cube Controller.yaml
+      input:
+        remote: sensor.office_cube_last_action
+        doubletap_any:
+        - target:
+            entity_id: scene.office_videoconf
+          metadata: {}
+          action: scene.turn_on
+          data: {}
+        flipped90_any:
+        - choose:
+          - conditions:
+            - condition: state
+              entity_id: light.office_lights
+              state: 'off'
+            sequence:
+            - target:
+                entity_id: scene.office_normal
+              metadata: {}
+              action: scene.turn_on
+              data: {}
+          - conditions:
+            - condition: and
+              conditions:
+              - condition: state
+                entity_id: light.office_lights
+                state: 'on'
+              - condition: template
+                value_template: '{{ state_attr(''light.office_lights'', ''brightness'')
+                  > 100 }}'
+            sequence:
+            - target:
+                entity_id: scene.office_dim
+              metadata: {}
+              action: scene.turn_on
+              data: {}
+          - conditions:
+            - condition: and
+              conditions:
+              - condition: state
+                entity_id: light.office_lights
+                state: 'on'
+              - condition: template
+                value_template: '{{ state_attr(''light.office_lights'', ''brightness'')
+                  < 100 }}'
+            sequence:
+            - target:
+                entity_id: scene.office_desk_only
+              metadata: {}
+              action: scene.turn_on
+              data: {}
+          default: []
+        rotate_cw_any:
+        - data:
+            brightness_step_pct: 20
+          target:
+            entity_id: light.office_lights
+          action: light.turn_on
+        rotate_ccw_any:
+        - data:
+            brightness_step_pct: -20
+          target:
+            entity_id: light.office_lights
+          action: light.turn_on
+        topic: zigbee2mqtt/office_cube
 
 scene:
   - name: Office Normal
     entities:
-      switch.office_lamp:
-        state: on
       switch.tv_wash:
         state: on
-      light.wled:
+      switch.skeleton_head:
         state: on
-        brightness: 60
-        effect: Solid
-        xy_color:
-          - 0.421
-          - 0.364
-      light.monitor_backlight:
-        state: on
-        brightness: 127
-        color_temp: 423
-      light.tv_wash_light:
+      light.office_lamp_1:
         state: on
         brightness: 255
         color_temp: 423
+      light.office_lamp_2:
+        state: on
+        brightness: 255
+        color_temp: 423
+      light.office_digquad_master:
+        state: on
 
   - name: Office Dim
     entities:
-      switch.office_lamp:
-        state: on
       switch.tv_wash:
         state: on
       light.wled:
@@ -133,14 +256,16 @@ scene:
         xy_color:
           - 0.421
           - 0.364
-      light.monitor_backlight:
+      light.office_lamp_1:
         state: on
-        brightness: 107
+        brightness: 60
         color_temp: 423
-      light.tv_wash_light:
+      light.office_lamp_2:
         state: on
-        brightness: 107
+        brightness: 60
         color_temp: 423
+      light.office_digquad_master:
+        state: on
 
   - name: Desk Normal
     entities:
@@ -151,39 +276,26 @@ scene:
         xy_color:
           - 0.421
           - 0.364
-      light.monitor_backlight:
-        state: on
-        brightness: 107
-        color_temp: 423
 
   - name: Office Videoconf
     entities:
-      switch.office_lamp:
+      switch.skeleton_head:
         state: on
       switch.tv_wash:
-        state: on
-      light.wled:
-        state: on
-        brightness: 158
-        effect: Solid
-        xy_color:
-          - 0.328
-          - 0.333
-      light.monitor_backlight:
+        state: off
+      light.office_lamp_1:
         state: on
         brightness: 255
         color_temp: 319
-      light.tv_wash_light:
+      light.office_lamp_2:
         state: on
-        brightness: 61
+        brightness: 10
         color_temp: 423
+      light.office_digquad_master:
+        state: on
 
   - name: Office desk only
     entities:
-      switch.office_lamp:
-        state: off
-      switch.tv_wash:
-        state: off
       light.wled:
         state: on
         brightness: 60
@@ -191,28 +303,96 @@ scene:
         xy_color:
           - 0.421
           - 0.364
-      light.monitor_backlight:
+      light.office_lamp_1:
+        state: off
+      light.office_lamp_2:
+        state: off
+      light.office_digquad_master:
         state: on
-        brightness: 107
-        color_temp: 423
-      switch.skelly:
-        state: off
-      light.tv_wash_light:
-        state: off
 
   - name: Office off
     entities:
-      switch.office_lamp:
+      switch.skeleton_head:
         state: off
       switch.tv_wash:
         state: off
-      light.wled:
+      light.office_lamp_1:
         state: off
-      light.monitor_backlight:
+      light.office_lamp_2:
         state: off
-      switch.skelly:
+      light.office_digquad_master:
         state: off
-      light.tv_wash_light:
-        state: off
-      switch.catroom_lamp:
-        state: off
+
+script:
+  turn_off_office_ac:
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini1
+        data:
+          device: haier_ac
+          command:
+            - power_off
+          delay_secs: 1
+
+  turn_on_office_ac:
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini1
+        data:
+          device: haier_ac
+          command:
+            - power_on
+            - auto
+          delay_secs: 1
+
+  turn_on_office_fan:
+    sequence:
+      - condition: state
+        entity_id: input_boolean.office_fan_state
+        state: 'off'
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: office_fan
+          command:
+            - toggle_fan
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.office_fan_state
+
+  turn_off_office_fan:
+    sequence:
+      - condition: state
+        entity_id: input_boolean.office_fan_state
+        state: 'on'
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: office_fan
+          command:
+            - toggle_fan
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.office_fan_state
+          
+          
+
+  turn_on_office_lights:
+    sequence:
+    - condition: state
+      entity_id: light.office_lamp_2
+      state: 'off'
+    - service: scene.turn_on
+      entity_id: scene.office_dim
+    
+# Add this template trigger to create a sensor to monitor
+#  the actions that the Blueprint is reacting to.
+# This is an optional thing for training the cube operator,
+#  and not required for the function of the device.
+#
+# This could be used as a package, or import the code into 
+#  your own configuration.yaml as you see fit.
+#
+# https://www.home-assistant.io/integrations/template/#trigger-based-template-binary-sensors-buttons-numbers-selects-and-sensors

@@ -1,0 +1,26 @@
+scene:
+  - name: library_normal
+    entities:
+      light.library_floor_lamp_1:
+        state: on
+        color_temp: 326
+        white_value: 125
+      light.library_lamp:
+        state: on
+
+  - name: library_off
+    entities:
+      light.library_floor_lamp_1:
+        state: off
+      light.library_lamp:
+        state: off
+
+  - name: library_full
+    entities:
+      light.library_floor_lamp_1:
+        state: on
+        color_temp: 326
+        white_value: 125
+        brightness: 255
+      light.library_lamp:
+        state: on

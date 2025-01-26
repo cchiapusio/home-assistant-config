@@ -1,6 +1,0 @@
-  - platform: cryptoinfo
-    id: "main wallet"
-    cryptocurrency_name: "ethereum"
-    currency_name: "usd"
-    multiplier: 1
-    update_frequency: 15

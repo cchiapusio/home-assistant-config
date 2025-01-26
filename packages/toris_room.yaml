@@ -1,0 +1,20 @@
+scene:
+  - name: tori_normal
+    entities:
+      light.toris_room_lamps:
+        state: on
+        color_temp: 326
+        white_value: 125
+
+  - name: tori_off
+    entities:
+      light.toris_room_lamps:
+        state: off
+
+  - name: tori_full
+    entities:
+      light.toris_room_lamps:
+        state: on
+        color_temp: 326
+        white_value: 125
+        brightness: 255

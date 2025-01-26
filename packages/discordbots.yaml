@@ -30,7 +30,7 @@ automation:
   #        value: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ states('input_number.gamedeals_free_index')|int ].title }}"
       - service: mqtt.publish
         data:
-          payload_template: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ states('input_number.gamedeals_free_index')|int ].title }}"
+          payload: "{{ state_attr('sensor.reddit_gamedeals', 'posts')[ states('input_number.gamedeals_free_index')|int ].title }}"
           topic: homeassistant/sensor/last_gamedeal/name
           retain: true
 

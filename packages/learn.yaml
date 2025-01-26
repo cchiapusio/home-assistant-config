@@ -1,0 +1,246 @@
+script:
+  #learn_string_lights_rf:
+  #  sequence:
+  #    - service: remote.learn_command
+  #      target:
+  #        entity_id: remote.rm4pro_remote
+  #      data:
+  #        device: string_lights
+  #        command_type: rf
+  #        command:
+  #          - turn on
+  #          - turn off
+  #          - cool_light
+  #          - warm_light
+  #          - percent_25
+  #          - percent_50
+  #          - percent_75
+  #          - percent_100
+  #          - brighter
+  #          - dimmer
+  #          - timer_30
+  #          - timer_60
+  #          - timer_120
+  #          - timer_240
+          
+
+
+  learn_projector:
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm3mini2
+        data:
+          device: projector
+          command:
+            - power toggle
+            - select
+            - down
+            - play
+
+  learn_sony42:
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm3mini2
+        data:
+          device: sony42
+          command:
+            - power toggle
+            - input select
+            - up
+            - down
+            - left
+            - right
+
+  learn_kitchen_samsung65:
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm3mini2
+        data:
+          device: kitchen_samsung65
+          command:
+            - power toggle
+            - input 
+            - select
+            - up
+            - down
+            - left
+            - right
+
+  learn_haier_ac:
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: haier_ac
+          command_type: ir
+          command:
+            - power_off
+            - power_on
+            - quiet
+            - high
+            - medium
+            - auto
+            - temp_up
+            - temp_down
+            - fan
+            - enegy_save
+            - sleep
+
+  learn_office_hunter_fan:
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: office_fan
+          command_type: rf
+          command:
+            - toggle_light
+            - toggle_fan
+            - fan_speed_up
+            - fan_speed_down
+
+  learn_lr_fan:
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: lr_fan
+          command_type: rf
+          command:
+            - toggle light
+            - fan off
+            - fan high
+            - fan med
+            - fan low
+            - timer 1h
+            - timer 2h
+            - timer 4h
+            - timer 8h
+
+  learn_denon_remote:
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm3mini1
+        data:
+          device: denon_remote
+          command_type: ir
+          command:
+            - power toggle
+            - main cblsat
+            - main dvd
+            - main bluray
+            - main game
+            - main aux
+            - main media player
+            - main ipod
+            - main cd
+            - main fm
+            - main network
+            - main tv audio
+            - main internet radio
+            - zone2 cblsat
+            - zone2 dvd
+            - zone2 bluray
+            - zone2 game
+            - zone2 aux
+            - zone2 media player
+            - zone2 ipod
+            - zone2 cd
+            - zone2 fm
+            - zone2 network
+            - zone2 tv audio
+            - zone2 internet radio
+
+
+  #litter_bot_reset:
+  #  sequence:
+  #    - service: button.press
+  #      target:
+  #        entity_id: button.litterbot_5000_reset_waste_drawer
+
+  #turn_off_office_ac:
+  #  sequence:
+  #    - service: remote.send_command
+  #      target:
+  #        entity_id: remote.rm3mini1
+  #      data:
+  #        device: haier_ac
+  #        command:
+  #          - power_off
+  #        delay_secs: 1
+
+  #turn_on_office_ac:
+  #  sequence:
+  #    - service: remote.send_command
+  #      target:
+  #        entity_id: remote.rm3mini1
+  #      data:
+  #        device: haier_ac
+  #        command:
+  #          - power_on
+  #          - quiet
+  #        delay_secs: 1
+
+  #turn_on_string_lights:
+  #  sequence:
+  #    - service: remote.send_command
+  #      target:
+  #        entity_id: remote.rm4pro_remote
+  #      data:
+  #        device: string_lights
+  #        command:
+  #          - turn on
+  #          - percent_100
+  #          - warm_light
+
+  #turn_off_string_lights:
+  #  sequence:
+  #    - service: remote.send_command
+  #      target:
+  #        entity_id: remote.rm4pro_remote
+  #      data:
+  #        device: string_lights
+  #        command:
+  #          - turn off
+
+  learn_tealight_remote:
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm3mini4
+        data:
+          device: tea_light
+          command_type: ir
+          command:
+            - power on
+            - power off
+            - timer 4h
+            - timer 6h
+            - timer 8h
+
+  learn_rf_tapers:
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: rf_tapers
+          command_type: rf
+          command:
+            - power on
+            - power off
+            - timer 2h
+            - timer 4h
+            - timer 6h
+            - timer 8h
+            - mode candle
+            - mode light
+            - dimmer
+            - brighter

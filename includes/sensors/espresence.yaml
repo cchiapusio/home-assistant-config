@@ -1,0 +1,20 @@
+  - platform: mqtt_room
+    device_id: "iBeacon:2f21b01b-fd0c-4bcd-b8d1-c16f3e934cc7-100-1"
+    name: 'ESPresence Note20U'
+    state_topic: 'espresense/devices/iBeacon:2f21b01b-fd0c-4bcd-b8d1-c16f3e934cc7-100-1'
+    timeout: 10
+    away_timeout: 120
+
+  - platform: mqtt_room
+    device_id: "iBeacon:87737abd-bc54-4e05-b9af-388fd8311532-100-40004"
+    name: 'ESPresence Cindy S22U'
+    state_topic: 'espresense/devices/iBeacon:87737abd-bc54-4e05-b9af-388fd8311532-100-40004'
+    timeout: 10
+    away_timeout: 120
+
+  - platform: mqtt_room
+    device_id: "iBeacon:c3b34399-bc57-4df7-8870-1f61d42bd227-100-40004"
+    name: 'ESPresence Chip S24U'
+    state_topic: 'espresense/devices/iBeacon:c3b34399-bc57-4df7-8870-1f61d42bd227-100-40004'
+    timeout: 10
+    away_timeout: 120

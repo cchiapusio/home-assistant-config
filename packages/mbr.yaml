@@ -39,7 +39,12 @@ automation:
             state: 'below_horizon'
           sequence:
           - service: light.turn_on
-            entity_id: light.bed_led
+            entity_id: light.bed_led1
+            data:
+              rgb_color: [255,0,0]
+              brightness: 70
+          - service: light.turn_on
+            entity_id: light.bed_led2
             data:
               rgb_color: [255,0,0]
               brightness: 70
@@ -54,33 +59,9 @@ automation:
             state: 'off'
           sequence:
           - service: light.turn_off
-            entity_id: light.bed_led
-
-  - alias: nebulizer running
-    id: 9754e6ba-c1c6-4640-bd7f-c7ab0f749873
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.nebulizer_running
-        id: is_off
-        to: 'off'
-      - platform: state
-        entity_id: binary_sensor.nebulizer_running
-        id: is_on
-        to: 'on'
-    action:
-      - choose:
-        - conditions:
-          - condition: trigger
-            id: is_on
-          sequence:
-          - service: switch.turn_on
-            entity_id: switch.salt_lamp
-        - conditions:
-          - condition: trigger
-            id: is_off
-          sequence:
-          - service: switch.turn_off
-            entity_id: switch.salt_lamp
+            entity_id: light.bed_led1
+          - service: light.turn_off
+            entity_id: light.bed_led2
 
   - id: 037edbbf-3951-42a0-aaa1-4bd980950735
     alias: MBR Cube (z2m)
@@ -104,7 +85,7 @@ automation:
                 entity_id: light.bedroom_lamps
                 state: 'off'
               - condition: state
-                entity_id: switch.fairy_lights
+                entity_id: switch.zplug5
                 state: 'off'
             sequence:
             - service: scene.turn_on
@@ -118,7 +99,7 @@ automation:
                 entity_id: light.bedroom_lamps
                 state: 'on'
               - condition: state
-                entity_id: switch.fairy_lights
+                entity_id: switch.zplug5
                 state: 'on'
             sequence:
             - service: scene.turn_on
@@ -132,7 +113,7 @@ automation:
                 entity_id: light.bedroom_lamps
                 state: 'off'
               - condition: state
-                entity_id: switch.fairy_lights
+                entity_id: switch.zplug5
                 state: 'on'
             sequence:
             - service: scene.turn_on
@@ -152,83 +133,185 @@ automation:
             brightness_step_pct: -15
           target:
             entity_id: light.bedroom_lamps
+        topic: zigbee2mqtt/mbr_cube
 
   - alias: York Ghost Sale imminent
     id: e33336a5-3634-4d59-a4c7-1d194e0aecc4
     trigger:   
-    - platform: calendar
-      entity_id: calendar.york_ghost_merchants
-      event: start
-      offset: -00:05:00
+      - platform: calendar
+        entity_id: calendar.york_ghost_merchants
+        event: start
+        offset: -00:05:00
     action:
-    - service: scene.create
-      data:
-        scene_id: york
-        snapshot_entities:
-        - light.monitor_backlight
-        - light.bedroom_lamps
-    - service: light.turn_on
-      target:
-        entity_id: 
-          - light.monitor_backlight
+      - service: scene.create
+        data:
+          scene_id: york
+          snapshot_entities:
           - light.bedroom_lamps
-      data:
-        transition: 10
-        xy_color: [0.216, 0.077] # purple
-        brightness: 200
-#    - delay:
-#        seconds: 10
-    - service: notify.google_assistant_sdk
-      data:
-        message: There is a York Ghost Merchant Sale about to begin
+      - service: light.turn_on
         target:
-          - Office
-          - Kitchen
-          - Master Bedroom
-    - service: scene.turn_on
-      target:
-        entity_id: scene.york
+          entity_id: 
+            - light.bedroom_lamps
+        data:
+          transition: 10
+          xy_color: [0.216, 0.077] # purple
+          brightness: 200
+      - delay:
+          seconds: 5
+#      - service: script.york_ghost_announce
+#      - delay:
+#          seconds: 5
+      - service: scene.turn_on
+        entity_id: scene.mood_lighting
 
-  - alias: Need help button pressed
+  - id: 4ee65efb-36be-4b68-bd8a-4f0a36b2b47c
+    alias: bathroom help button
+    description: bathroom Call for help buttons
+    triggers:
+    - domain: mqtt
+      device_id: bd17d5ab66306df0c2f795f67b0fe710
+      type: action
+      subtype: single
+      trigger: device
+    conditions: []
+    actions:
+    - action: script.find_and_alert_chip
+      data_template:
+        where: 'bathroom'
+
+  - id: db7938b2-69f7-4532-8455-d9d4fbfa2255
+    alias: bedroom help buttons
+    description: bedroom Call for help buttons
+    triggers:
+    - domain: mqtt
+      device_id: 6193cdff805f0c15add25cb700a6303b
+      type: action
+      subtype: single
+      trigger: device
+    conditions: []
+    actions:
+    - action: script.find_and_alert_chip
+      data_template:
+        where: 'office'
+
+# turn on hyperion wled lights when TV turns on
+#
+  - alias: master bedroom tv ambilight
+    id: cf51de3f-891c-412e-867b-aebdc9fe8d15
     trigger:
       - platform: state
-        entity_id: sensor.bathroom_button_action
-        from: 'none'
-        variables:
-          location: Bathroom
+        entity_id: remote.mbr_shield
+        to: 'on'
+        id: 'to_on'
       - platform: state
-        entity_id: sensor.bedroom_button_action
-        from: 'none'
-        variables:
-          location: Bedroom
+        entity_id: remote.mbr_shield
+        to: 'off'
+        id: 'to_off'
+    action:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: light.mbr_bias
+          state: 'off'
+        - condition: trigger
+          id: 'to_on'
+        sequence:
+        - service: light.turn_on
+          data:
+            entity_id: light.mbr_bias
+            brightness: 255
+      - conditions:
+        - condition: trigger
+          id: 'to_off'
+        sequence:
+        - service: light.turn_off
+          entity_id: light.mbr_bias
+
+  - alias: closet motion light
+    id: cb565aa8-1a4d-4a07-bc37-f3abc97a9560
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.mmwave1_presence
+        from: 'off'
+        to: 'on'
+        id: 'motion'
+      - platform: state
+        entity_id: binary_sensor.mmwave1_presence
+        from: 'on'
+        to: 'off'
+        for: '00:01:00'
+        id: 'nomotion'
+    condition:
+    - condition: state
+      entity_id: binary_sensor.shelly1minig3_dcda0ce6a6ac_input_0_input
+      state: 'on'
     action:
       - choose:
         - conditions:
-          - condition: state
-            entity_id: sensor.bedroom_button_action
-            state: "hold"  # single double hold
-        sequence:
-          - service: script.find_and_alert_chip
-            data_template:
-              location: "{{ location }}"
+          - condition: trigger
+            id: motion
+          sequence:
+          - service: switch.turn_on
+            entity_id: switch.shelly1minig3_dcda0ce6a6ac_switch_0
+        - conditions:
+          - condition: trigger
+            id: nomotion
+          sequence:
+          - service: switch.turn_off
+            entity_id: switch.shelly1minig3_dcda0ce6a6ac_switch_0
 
-binary_sensor:
-  - platform: threshold
-    entity_id: sensor.zplug3_power
-    name: Nebulizer running
-    device_class: running
-    upper: 10
+  - alias: mbr motion light
+    id: 65f2ef96-89ef-4b87-b899-3793dc6d8824
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.mbr_bathroom_motion_occupancy
+        from: 'off'
+        to: 'on'
+        id: 'motion'
+      - platform: state
+        entity_id: binary_sensor.mbr_bathroom_motion_occupancy
+        from: 'on'
+        to: 'off'
+        for: '00:03:00'
+        id: 'nomotion'
+    action:
+      - choose:
+        - conditions:
+          - condition: trigger
+            id: motion
+          sequence:
+          - service: switch.turn_on
+            entity_id: switch.usb_a
+          - service: switch.turn_on
+            entity_id: switch.outlet_1
+        - conditions:
+          - condition: trigger
+            id: nomotion
+          sequence:
+          - service: switch.turn_off
+            entity_id: switch.usb_a
+          - service: switch.turn_off
+            entity_id: switch.outlet_1
 
 scene:
   - name: mood lighting
     entities:
       light.bedroom_lamps:
         state: off
-      switch.fairy_lights:
+      switch.zplug5:
         state: on
-      light.crystal_castle_1:
+      light.mirror_fairy:
         state: on
       light.crystal_castle_2:
+        state: on
+      light.vanity_fairy:
+        state: on
+      light.cinderella:
+        state: on
+        brightness: 25
+      switch.fairy_lights:
         state: on
 
   - name: restore bedroom lights
@@ -242,22 +325,29 @@ scene:
       light.bedroom_lamps:
         state: on
         color_temp: 326
-      switch.fairy_lights:
-        state: on
-      light.crystal_castle_1:
+      switch.zplug5:
         state: on
       light.crystal_castle_2:
         state: on
+      light.vanity_fairy:
+        state: on
+      switch.fairy_lights:
+        state: on
+
 
   - name: mbr lights off
     entities:
       light.bedroom_lamps:
         state: off
-      switch.fairy_lights:
-        state: off
-      light.crystal_castle_1:
+      switch.zplug5:
         state: off
       light.crystal_castle_2:
+        state: off
+      light.vanity_fairy:
+        state: off
+      light.mirror_fairy:
+        state: off
+      switch.fairy_lights:
         state: off
 
   - name: mbr lights full
@@ -267,16 +357,70 @@ scene:
         color_temp: 326
         white_value: 125
         brightness: 255
-      switch.fairy_lights:
-        state: on
-      light.crystal_castle_1:
+      switch.zplug5:
         state: on
       light.crystal_castle_2:
+        state: on
+      light.vanity_fairy:
+        state: on
+      switch.fairy_lights:
         state: on
 
 script:
   find_and_alert_chip:
     sequence:
-      - service: notify.mobile_app_sm_n986u
+      - service: notify.notify_chip
         data:
-          message: "Cindy needs help in the {{ location }}"
+          message: "Cindy needs help in the {{ where }}"
+          data:
+            priority: 1
+
+  turn_on_tea_lights:
+    sequence: 
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini3
+        data:
+          device: tea_light
+          command:
+            - power on
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini4
+        data:
+          device: tea_light
+          command:
+            - power on
+
+  turn_off_tea_lights:
+    sequence: 
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini3
+        data:
+          device: tea_light
+          command:
+            - power off
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini4
+        data:
+          device: tea_light
+          command:
+            - power off
+
+#  york_ghost_announce:
+#    sequence:
+#    - service: tts.clear_cache
+#    - service: media_player.volume_set
+#      data_template:
+#        entity_id:
+#          - media_player.all
+#        volume_level: 0.5
+#    - service: tts.speak
+#      target:
+#        entity_id: tts.piper
+#      data:
+#        cache: true 
+#        media_player_entity_id: media_player.all
+#        message: "There is a York Ghost Merchant Sale about to begin"

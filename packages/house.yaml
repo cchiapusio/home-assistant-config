@@ -1,19 +1,29 @@
+input_boolean:
+  housecleaners_present:
+    name: Housecleaners present
+    initial: off
+  evening_lights:
+    name: Evening Lights on
+
 automation:
   - alias: turn on house lights
     id: de260dc5-3e3f-4168-8bf7-8eef528a12de
     trigger:
+    - platform: state
+      entity_id: binary_sensor.lr_motion_occupancy, binary_sensor.family_room_motion_occupancy, binary_sensor.kitchen_motion_occupancy
+      to: 'on'
     - platform: numeric_state
       entity_id: sun.sun
       value_template: '{{ state.attributes.elevation }}'
-      below: 20
+      below: 25
       id: elevation
     - platform: numeric_state
       entity_id: sensor.pirateweather_cloud_coverage
       above: 85
       id: cloud_high
     - platform: numeric_state
-      entity_id: sensor.pirateweather_cloud_coverage
-      above: 98
+      entity_id: sensor.home_cloud_cover
+      above: 90
       id: cloud_high
     - platform: numeric_state
       entity_id: sensor.pirateweather_precip_intensity
@@ -23,13 +33,26 @@ automation:
       entity_id: sensor.pirateweather_precip_probability
       above: 80
       id: probability_high
+    - platform: numeric_state
+      entity_id: sensor.family_room_motion_illuminance
+      above: 80
+      id: lux_high
+    - platform: numeric_state
+      entity_id: sensor.kitchen_motion_illuminance
+      above: 60
+      id: lux_high
     action:
     - choose:
       - conditions:
-        - condition: trigger
-          id: elevation 
+        - condition: numeric_state
+          entity_id: sun.sun
+          value_template: '{{ state.attributes.elevation }}'
+          below: 20
         - condition: template
           value_template: '{{ is_state_attr("sun.sun", "rising", false) }}'
+        - condition: state
+          entity_id: input_boolean.evening_lights
+          state: 'off'
         sequence:
         - service: script.turn_on
           entity_id: script.turn_on_house_lights
@@ -46,6 +69,9 @@ automation:
           state: above_horizon
         - condition: time
           after: '08:30:00'
+        - condition: state
+          entity_id: input_boolean.evening_lights
+          state: 'off'
         sequence:
         - service: script.turn_on
           entity_id: script.turn_on_house_lights
@@ -59,60 +85,227 @@ automation:
           state: above_horizon
         - condition: time
           after: '08:30:00'
+        - condition: numeric_state
+          entity_id: sensor.family_room_motion_illuminance
+          below: 60
+        - condition: state
+          entity_id: input_boolean.evening_lights
+          state: 'off'
         sequence:
         - service: script.turn_on
           entity_id: script.turn_on_house_lights
           alias: very cloudy
+      - conditions:
+        - condition: trigger
+          id: lux_high 
+        - condition: numeric_state
+          entity_id: sensor.pirateweather_cloud_coverage
+          below: 50
+        - condition: state
+          entity_id: sun.sun
+          state: above_horizon
         - condition: time
           after: '08:30:00'
-
-  - alias: take out recycling bin
-    id: b30798c5-ba5c-4322-900a-64cc1fc35f7e
-    trigger:
-      platform: time
-      at: "18:00:00"
-    condition:   
-    - condition: numeric_state
-      entity_id: sensor.recycling
-      attribute: days
-      below: 1
-    action:
-      service: notify.mobile_app_sm_n986u
-      data:
-        message: "Take out Recycling bin tonight"
+        - condition: numeric_state
+          entity_id: sensor.family_room_motion_illuminance
+          above: 100
+        - condition: numeric_state
+          entity_id: sensor.kitchen_motion_illuminance
+          above: 100
+        - condition: state
+          entity_id: input_boolean.housecleaners_present
+          state: 'off'
+        - condition: state
+          entity_id: input_boolean.evening_lights
+          state: 'off'
+        sequence:
+        - service: script.turn_on
+          entity_id: script.housecleaners_gone
+          alias: not very cloudy
 
   - alias: Turn on lights for maids
     id: 44bce5d9-e0e0-447b-850f-93e080ea0b9f
     trigger:
       - platform: calendar
         event: start
-        entity_id: calendar.maids
-        offset: -01:00:00
-        id: maids_start
+        entity_id: calendar.maids_today
+        offset: -01:30:00
+        id: 'maids_start'
       - platform: calendar
         event: end
-        entity_id: calendar.maids
+        entity_id: calendar.maids_today
         offset: +01:00:00
-        id: maids_end
+        id: 'maids_end'
     action:
     - choose:
       - conditions:
         - condition: trigger
-          id: maids_start
+          id: 'maids_start'
         sequence:
-        - service: scene.turn_on
-          entity_id: scene.housecleaners_coming
-        - service: notify.mobile_app_sm_n986u
+        - service: script.turn_on
+          entity_id: script.housecleaners_coming
+        - service: notify.mobile_app_chip
           data:
             message: "Prepare the house for the Maids"
       - conditions:
         - condition: trigger
-          id: maids_end
+          id: 'maids_end'
         sequence:
-        - service: scene.turn_on
-          entity_id: scene.housecleaners_gone
+        - service: script.turn_on
+          entity_id: script.housecleaners_gone
 
-#script:
-#  housecleaners_coming:
-#    sequence:
-      
+  - alias: level audio on cast
+    id: a3b9865c-1895-4cb3-b298-3e98d38d659c
+    trigger:
+      - platform: state
+        entity_id: media_player.home_music_group
+        to: playing
+        id: 'home_music_group'
+      - platform: state
+        entity_id: media_player.master_bedroom_pair_2
+        to: playing
+        id: 'all_mbr'
+    action:
+      - choose:
+        - conditions:
+          - condition: trigger
+            id: home_music_group
+          - condition: template
+            value_template: "{{ state_attr('media_player.home_music_group','app_name') == 'Spotify'}}"
+          sequence:
+          - service: media_player.volume_set
+            data_template:
+              entity_id: media_player.home_music_group
+              volume_level: 0.5
+        - conditions:
+          - condition: trigger
+            id: all_mbr
+          - condition: template
+            value_template: "{{ state_attr('media_player.master_bedroom_pair_2','app_name') == 'Spotify'}}"
+          sequence:
+          - service: media_player.volume_set
+            data_template:
+              entity_id: media_player.master_bedroom_pair_2
+              volume_level: 0.5
+
+
+
+script:
+  housecleaners_coming:
+    sequence:
+      - service: scene.turn_on
+        entity_id: scene.livingroom_full 
+      - service: scene.turn_on
+        entity_id: scene.family_room_full
+      - service: scene.turn_on
+        entity_id: scene.kitchen_full 
+      - service: scene.turn_on
+        entity_id: scene.office_full 
+      - service: scene.turn_on
+        entity_id: scene.library_full 
+      - service: scene.turn_on
+        entity_id: scene.tori_full 
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.housecleaners_present
+    
+  housecleaners_gone:
+    sequence:
+      - service: scene.turn_on
+        entity_id: scene.livingroom_off 
+      - service: scene.turn_on
+        entity_id: scene.family_room_off
+      - service: scene.turn_on
+        entity_id: scene.library_off 
+      - service: scene.turn_on
+        entity_id: scene.tori_off 
+      - service: scene.turn_on
+        entity_id: scene.office_normal 
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.housecleaners_present
+      - service: scene.turn_on
+        entity_id: scene.kitchen_off
+
+  turn_on_house_lights:
+    sequence:
+      - service: scene.turn_on
+        entity_id: scene.livingroom_normal
+      - service: scene.turn_on
+        entity_id: scene.family_room_normal
+      - service: scene.turn_on
+        entity_id: scene.kitchen_normal
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.evening_lights
+
+  good_night_lights:
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: string_lights
+          command:
+            - turn off
+      - service: scene.turn_on
+        entity_id: scene.livingroom_off
+      - service: scene.turn_on
+        entity_id: scene.family_room_off
+      - service: scene.turn_on
+        entity_id: scene.kitchen_off
+      - service: scene.turn_on
+        entity_id: scene.office_off
+      - service: scene.turn_on
+        entity_id: scene.library_off
+      - service: scene.turn_on
+        entity_id: scene.tori_off
+      - service: scene.turn_on
+        entity_id: scene.yard_light_night
+      - service: switch.turn_off
+        entity_id:
+          - switch.shellyplus2pm_c4d8d5565bac_switch_1
+          - switch.shelly_2_5_8caab55f9707_relay_0
+      - service: script.turn_on
+        entity_id: script.turn_off_string_lights
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.suspend_camera_notifications
+#      - service: switch.turn_on
+#        entity_id: switch.front_door_smart_motion_detection
+#      - service: automation.turn_on
+#        entity_id: automation.re_enable_doorbell_human_detection
+      - service: switch.turn_off
+        entity_id: switch.candle_light
+      - service: light.turn_off
+        entity_id: light.crystal_wall
+      - service: script.turn_on
+        entity_id: script.turn_off_rf_tapers
+      - service: script.turn_on
+        entity_id: script.turn_off_office_fan
+      - service: light.turn_off
+        entity_id: light.lg75_wled
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.evening_lights
+      - service: select.select_option
+        target:
+          entity_id: select.family_room_motion_motion_sensitivity
+        data:
+          option: "low"
+
+
+  turn_on_rf_tapers:
+    sequence: 
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: rf_tapers
+          command:
+            - power on
+
+  turn_off_rf_tapers:
+    sequence: 
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: rf_tapers
+          command:
+            - power off

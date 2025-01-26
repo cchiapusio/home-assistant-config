@@ -29,3 +29,19 @@ script:
         data:
           topic: cmnd/tasmotas/upgrade
           payload: '1'
+
+automation:
+  - alias: reset booleans
+    id: cfeeb263-5942-4971-9005-804b0df6c77d
+    trigger: 
+      - platform: time
+        at: '03:00:00'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.good_morning_report
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.good_night_report
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.preparing_for_bedtime
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.housecleaners_present

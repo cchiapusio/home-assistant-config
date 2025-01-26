@@ -10,7 +10,7 @@ automation:
         at: "23:00:00"
         id: 'eleven'
       - platform: state
-        entity_id: media_player.living_room_tv
+        entity_id: remote.living_room_shield_remote
         to: 'off'
         id: 'tv_off'
     action:
@@ -28,7 +28,7 @@ automation:
             - service: scene.turn_on
               entity_id: scene.livingroom_dim
             - service: scene.turn_on
-              entity_id: scene.dining_room_dim
+              entity_id: scene.family_room_dim
             - service: scene.turn_on
               entity_id: scene.kitchen_dim
             - service: scene.turn_on
@@ -48,18 +48,23 @@ automation:
       at: "00:00:00"
     condition:
       - condition: state
-        entity_id: media_player.living_room_tv
-        state:  'off'
+        entity_id: remote.living_room_shield_remote
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.preparing_for_bedtime
+        state: 'off'
     action:
       - service: scene.turn_on
         entity_id: scene.livingroom_dim
       - service: scene.turn_on
-        entity_id: scene.dining_room_dim
+        entity_id: scene.family_room_dim
       - service: scene.turn_on
         entity_id: scene.kitchen_dim
       - service: timer.start
         data:
           entity_id: timer.5m
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.preparing_for_bedtime
 
 ##
 ## Turn off Lights if TV turns off after midnight
@@ -68,38 +73,61 @@ automation:
     id: 9608670a-5061-44ca-9827-239f19ba9b23
     trigger:
       platform: state
-      entity_id: media_player.living_room_tv
+      entity_id: remote.living_room_shield_remote
       to: 'off'
     condition:
       condition: and
       conditions:
         - condition: time
-          after: "23:00:00"
+          after: "22:00:00"
           before: "05:00:00"
         - condition: state
           entity_id: sun.sun 
           state: below_horizon
     action:
       - service: scene.turn_on
-        entity_id: scene.livingroom_dim
-      - service: scene.turn_on
-        entity_id: scene.dining_room_dim
-      - service: scene.turn_on
-        entity_id: scene.kitchen_dim
-      - service: timer.start
         data:
-          entity_id: timer.5m
+          entity_id: scene.livingroom_dim
+          transition: 10
+      - service: scene.turn_on
+        data:
+          entity_id: scene.family_room_dim
+          transition: 10
+      - service: scene.turn_on
+        data:
+          entity_id: scene.kitchen_dim
+          transition: 10
+#      - service: timer.start
+#        data:
+#          entity_id: timer.5m
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.preparing_for_bedtime
 
   - alias: turn off living room lights after timer
     id: 8767441e-27d8-4d10-a652-6651c84041d7
     trigger:
-      platform: event
-      event_type: timer.finished
-      event_data:
-        entity_id: timer.5m
+      - platform: event
+        event_type: timer.finished
+        event_data:
+          entity_id: timer.5m
+      - platform: state
+        entity_id: sensor.espresence_chip_s24u
+        to: 'mbr'
+        for: '00:05:00'
+    condition:
+      - condition: state
+        entity_id: input_boolean.preparing_for_bedtime
+        state: 'on'
     action:
-      service: script.turn_on
-      entity_id: script.good_night_lights
+      - service: script.turn_on
+        entity_id: script.good_night_lights
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.evening_lights
+      - service: script.lr_fan_with_timer
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.preparing_for_bedtime
+
+
 
   - alias: Media player paused/stopped
     id: b239b22a-5bae-4e71-b7cc-99f7c6fecfb2
@@ -117,11 +145,13 @@ automation:
         entity_id: sun.sun
         state: below_horizon
       - condition: state
-        entity_id: calendar.nfl_schedule_green_bay_packers
+        entity_id: calendar.green_bay_packers
         state: "off"
     action:
       service: scene.turn_on
-      entity_id: scene.livingroom_full
+      data:
+        entity_id: scene.livingroom_full
+        transition: 10
 
   - alias: Media player playing
     id: b99dc5b6-0243-4407-86df-1eecc1a00ad3
@@ -135,11 +165,19 @@ automation:
         entity_id: sun.sun
         state: below_horizon
       - condition: state
-        entity_id: calendar.nfl_schedule_green_bay_packers
+        entity_id: calendar.green_bay_packers
         state: "off"
+      - condition: not
+        conditions:
+          - condition: state
+            entity_id: sensor.espresence_cindy_s22u
+            state: 'living_room'
     action:
-      service: scene.turn_on
-      entity_id: scene.livingroom_dim
+      - service: scene.turn_on
+        data:
+          entity_id: scene.livingroom_dim
+          transition: 10
+
 
   - alias: Packers Playing
     id: 76271bea-d291-4264-81bc-9fe2fcde508d
@@ -149,7 +187,9 @@ automation:
       to: "on"
     action:
       service: scene.turn_on
-      entity_id: scene.packers_playing
+      data:
+        entity_id: scene.packers_playing
+        transition: 10
 
   - alias: Packers done Playing
     id: 6404c369-15d4-4450-b6e1-9d114c135482
@@ -159,7 +199,9 @@ automation:
       to: "off"
     action:
       service: scene.turn_on
-      entity_id: scene.livingroom_normal
+      data:
+        entity_id: scene.livingroom_normal
+        transition: 10
 
   #- alias: Tori scheduled for work this morning
   #  id: ab5c5a72-3831-44d1-a860-3fc9b23168c5
@@ -206,29 +248,22 @@ automation:
   #      - light.living_room_lamp_2
   #      - light.foyer_lamp
 
-  - alias: turn on candle in the morning
-    id: 8d184c18-380b-4d4a-9528-460badcd25d9
+  - alias: Turn on TV when chip enters
+    id: 5c0add28-374a-4f86-a005-ee9b6fb0f156
     trigger:
-      platform: time
-      at: "09:00:00"
+      - platform: state
+        entity_id: sensor.espresence_chip_s24u
+        to: 'living_room'
+    condition:
+      - condition: state
+        entity_id: remote.living_room_shield_remote
+        state: 'off'
+      - condition: time
+        after: '17:00:00'
+        before: '21:00:00'
     action:
-      - service: switch.turn_on
-        entity_id: switch.candle_light
-      - service: light.turn_on
-        entity_id: light.crystal_castle_1,light.crystal_castle_2
-        data:
-          brightness: 40
-      - service: select.select_option
-        target:
-          entity_id: select.crystal_castle_1_preset
-        data:
-          option: "Purple sweep"
-      - service: select.select_option
-        target:
-          entity_id: select.crystal_castle_2_preset
-        data:
-          option: "Preset 1"
-
+      service: media_player.turn_on
+      entity_id: media_player.living_room_shield
 
 # turn on hyperion wled lights when TV turns on
 #
@@ -236,7 +271,7 @@ automation:
     id: 03e16f89-e328-4051-93e4-f7f6fc96003a
     trigger:
       platform: state
-      entity_id: media_player.living_room_tv
+      entity_id: remote.living_room_shield_remote
       to: 'on'
     action:
     - choose:
@@ -260,22 +295,127 @@ automation:
           target:
             entity_id: timer.5m
 
+  - alias: turn on EC Fan when TV turns off
+    id: 96020937-4b3e-41c9-9a57-98f77150f1eb
+    trigger:
+      - platform: state
+        #entity_id: media_player.living_room_tv
+        entity_id: remote.living_room_shield_remote
+        to: 'on'
+      - platform: state
+        entity_id: remote.living_room_shield_remote
+        to: 'off'
+#      - platform: template
+#        value_template: "{{ states('sensor.lizard_climate_temperature')|int < states('input_number.ec_fan_off_threshold')|int }}"
+#      - platform: template
+#        value_template: "{{ states('sensor.lizard_climate_temperature')|int > states('input_number.ec_fan_on_threshold')|int }}"
+    action:
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: remote.living_room_shield_remote
+          state: 'on'
+        - condition: template
+          value_template: "{{ states('sensor.lizard_climate_temperature')|int < states('input_number.ec_fan_off_threshold')|int }}"
+        sequence:
+          - service: switch.turn_off
+            entity_id: switch.ec_fan
+      - conditions:
+        - condition: state
+          entity_id: remote.living_room_shield_remote
+          state: 'off'
+        - condition: template
+          value_template: "{{ states('sensor.lizard_climate_temperature')|int > states('input_number.ec_fan_on_threshold')|int }}"
+        sequence:
+          - service: switch.turn_on
+            entity_id: switch.ec_fan
+
+  - alias: turn on living room lights on motion
+    id: c5d59e04-351a-4add-bb25-3196e52b09af
+    mode: restart
+    trigger: 
+      - platform: state
+        entity_id: binary_sensor.lr_motion_occupancy
+        to: 'on'
+        id: 'to_on'
+      - platform: state
+        entity_id: binary_sensor.lr_motion_occupancy
+        to: 'off'
+        for: '00:05:00'
+        id: 'to_off'
+    action:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.living_room
+            state: 'off'
+          - condition: state
+            entity_id: sun.sun
+            state: above_horizon
+          - condition: numeric_state
+            entity_id: sensor.lr_motion_illuminance
+            below: 35
+          - condition: trigger
+            id: 'to_on'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.livingroom_normal
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.living_room
+            state: 'off'
+          - condition: state
+            entity_id: sun.sun
+            state: below_horizon
+          - condition: trigger
+            id: 'to_on'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.livingroom_dim
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.living_room
+            state: 'off'
+          - condition: trigger
+            id: 'to_on'
+          - condition: state
+            entity_id: input_boolean.evening_lights
+            state: 'on'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.livingroom_normal
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.living_room
+            state: 'on'
+          - condition: trigger
+            id: 'to_off'
+          - condition: state
+            entity_id: input_boolean.evening_lights
+            state: 'off'
+          - condition: state
+            entity_id: input_boolean.housecleaners_present
+            state: 'off'
+          - condition: not
+            conditions:
+            - condition: state
+              entity_id: input_select.outdoor_light_scene
+              state: 'Halloween'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.livingroom_off
+
 
 scene:
   - name: Livingroom_Normal
     entities:
-      light.living_room_lamp_1:
+      light.livingroom_lamps:
         state: 'on'
         brightness: 255
-        color_temp: 454
-      light.living_room_lamp_2:
-        state: 'on'
-        brightness: 255
-        color_temp: 454
-      light.foyer_lamp:
-        state: 'on'
-        brightness: 255
-        color_temp: 454
+        color_temp: 333
       switch.willow_tree:
         state: 'on'
       light.crystal_wall:
@@ -284,13 +424,7 @@ scene:
   
   - name: Livingroom_Full
     entities:
-      light.living_room_lamp_1:
-        state: 'on'
-        brightness: 255
-      light.living_room_lamp_2:
-        state: 'on'
-        brightness: 255
-      light.foyer_lamp:
+      light.livingroom_lamps:
         state: 'on'
         brightness: 255
       switch.willow_tree:
@@ -301,15 +435,9 @@ scene:
   
   - name: Livingroom_Dim
     entities:
-      light.living_room_lamp_1:
+      light.livingroom_lamps:
         state: 'on'
-        brightness: 76
-      light.living_room_lamp_2:
-        state: 'on'
-        brightness: 76
-      light.foyer_lamp:
-        state: 'on'
-        brightness: 76
+        brightness: 5
       switch.willow_tree:
         state: 'on'
       light.crystal_wall:
@@ -321,29 +449,55 @@ scene:
       light.living_room_lamp_1:
         state: 'on'
         brightness: 255
-        color_name: green
+        xy_color: [0.172, 0.747] # green
       light.living_room_lamp_2:
         state: 'on'
         brightness: 255
-        xy_color:
-        - 0.461
-        - 0.502
+        xy_color: [0.461, 0.502] # Yellow/gold?
       light.foyer_lamp:
         state: 'on'
         brightness: 255
-        color_name: green  
+        xy_color: [0.172, 0.747] # green
   
   - name: Livingroom off
     entities:
-      light.living_room_lamp_1:
-        state: 'off'
-      light.living_room_lamp_2:
-        state: 'off'
-      light.foyer_lamp:
+      light.livingroom_lamps:
         state: 'off'
       switch.willow_tree:
         state: 'off'
-      light.crystal_wall:
-        state: 'off'
       light.lg75_wled:
         state: 'off'
+
+
+script:
+  lr_fan_with_timer:
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm4pro_remote
+        data:
+          device: lr_fan
+          command:
+            - fan low
+            - timer 4h
+
+input_number:
+  ec_fan_on_threshold:
+    name: Temperature to turn on entertainment center fan
+    min: 70
+    max: 90
+    step: 1
+    mode: slider
+    initial: 80
+  
+  ec_fan_off_threshold:
+    name: Temperature to turn off entertainment center fan
+    min: 70
+    max: 90
+    step: 1
+    mode: slider
+    initial: 75
+
+input_boolean:
+  preparing_for_bedtime:
+    name: Preparing for bedtime

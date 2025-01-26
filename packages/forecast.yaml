@@ -1,0 +1,30 @@
+template:
+  - trigger:
+      - platform: time_pattern
+        hours: /1
+      - platform: homeassistant
+        event: start
+    action:
+      - service: weather.get_forecasts
+        data:
+          type: hourly
+        target:
+          entity_id: weather.pirate_weather
+        response_variable: hourly
+    sensor:
+      - name: Weather Hourly
+        state: "{{ states('weather.pirate_weather') }}"
+        attributes:
+          temperature: "{{ state_attr('weather.pirate_weather', 'temperature') }}"
+          dew_point: "{{ state_attr('weather.pirate_weather', 'dew_point') }}"
+          temperature_unit: "{{ state_attr('weather.pirate_weather', 'temperature_unit') }}"
+          humidity: "{{ state_attr('weather.pirate_weather', 'humidity') }}"
+          cloud_coverage: "{{ state_attr('weather.pirate_weather', 'cloud_coverage') }}"
+          pressure: "{{ state_attr('weather.pirate_weather', 'pressure') }}"
+          pressure_unit: "{{ state_attr('weather.pirate_weather', 'pressure_unit') }}"
+          wind_bearing: "{{ state_attr('weather.pirate_weather', 'wind_bearing') }}"
+          wind_speed: "{{ state_attr('weather.pirate_weather', 'wind_speed') }}"
+          wind_speed_unit: "{{ state_attr('weather.pirate_weather', 'wind_speed_unit') }}"
+          visibility_unit: "{{ state_attr('weather.pirate_weather', 'visibility_unit') }}"
+          precipitation_unit: "{{ state_attr('weather.pirate_weather', 'precipitation_unit') }}"
+          forecast: "{{ hourly['weather.pirate_weather'].forecast }}"

@@ -4,18 +4,30 @@ automation:
     trigger:
       - platform: webhook
         webhook_id: pmm_error
+        local_only: true
     action:
-      - service: notify.mobile_app_sm_n986u
+      - service: notify.mobile_app_chip
         data_template:
           message: "PMM Error: {{ trigger.json.error }}"
 
+  - id: '1673987869852'
+    alias: Unavailable entity detection
+    description: ''
+    use_blueprint:
+      path: gmlupatelli/unavailable_entities_notification.yaml
+      input:
+        actions:
+        - service: notify.chip_email
+          data:
+            message: '{{entities}}'
+            title: Unavailable Entities
 script:
   sync_tasmota_configuration:
     sequence:
       - service: mqtt.publish
         data:
           topic: cmnd/tasmotas/backlog
-          payload: 'Fade ON;Speed 5; OtaUrl http://ota.tasmota.com/tasmota/release-12.2.0/tasmota.bin.gz; so19 0; so8 1;so56 1;so57 1;NtpServer1 192.168.10.10;NtpServer2 192.168.10.9'
+          payload: 'Fade ON;Speed 5; OtaUrl http://ota.tasmota.com/tasmota/release-13.0.0/tasmota.bin.gz; so19 0; so8 1;so56 1;so57 1;NtpServer1 192.168.10.10;NtpServer2 192.168.10.9'
 #     setOption8 show temp in fahrenheight
 #     setOption19 disable homeassistant MQTT autoconf (enable tasmota autoconf)
 #     setOption56 wifi network scan for strongest signal on restart
@@ -43,3 +55,45 @@ script:
 #    - service: notify.toris_bedroom_tv
 #      data:
 #        message: 'Your commute will be {{ (states("sensor.toris_commute_to_work_today")|int) + 4 }} minutes today.'
+  audio_security_mode:
+    sequence: 
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini1
+        data:
+          device: denon_remote
+          command:
+            - main dvd
+            - zone2 dvd
+
+  audio_performance_mode:
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini1
+        data:
+          device: denon_remote
+          command:
+            - main bluray
+            - zone2 cblsat
+
+  audio_work_mode:
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini1
+        data:
+          device: denon_remote
+          command:
+            - main dvd
+            - zone2 cblsat
+
+  audio_off:
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini1
+        data:
+          device: denon_remote
+          command:
+            - power toggle

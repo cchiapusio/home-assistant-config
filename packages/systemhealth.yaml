@@ -30,6 +30,6 @@
 #        for:
 #          minutes: 10
 #    action:
-#      - service: notify.mobile_app_sm_n986u
+#      - service: notify.mobile_app_s928986u
 #        data:
 #          message: "Room Assistant Node offline {{trigger.event}}" 

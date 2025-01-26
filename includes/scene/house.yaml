@@ -1,27 +1,3 @@
-- name: All Indoor lights on
-  entities:
-    light.living_room_lamp_1:
-      state: on
-      brightness: 255
-      color_temp: 454
-    light.living_room_lamp_2:
-      state: on
-      brightness: 255
-      color_temp: 454
-    light.foyer_lamp:
-      state: on
-      brightness: 255
-      color_temp: 454
-    light.office_lamp:
-      state: on
-    switch.catroom_lamp:
-      state: on
-    light.wled:
-      state: on
-    light.hutch_led:
-      state: on
-    switch.curio_cabinet_lamp:
-      state: on
 
 - name: good night lights
   entities:
@@ -31,38 +7,22 @@
       state: off
     light.foyer_lamp:
       state: off
-    light.office_lamp:
-      state: off
-    switch.catroom_lamp:
-      state: off
     light.wled:
       state: off
     light.hutch_led:
-      state: off
-    switch.curio_cabinet_lamp:
       state: off
     switch.candle_light:
       state: off
     switch.willow_tree:
       state: off
-    light.monitor_backlight:
-      state: off
     light.lg75_wled:
       state: off 
-    switch.shelly_2_5_e8db84d2729c_relay_1:
-      state: off
     switch.shelly_2_5_8caab55f9707_relay_0:
-      state: off
-    light.tv_wash_light:
-      state: off
-    light.flood03:
       state: off
     light.flood04:
       state: off
     light.flood08:
       state: off
-    switch.front_door_smart_motion_detection:
-      state: on
     automation.re_enable_doorbell_human_detection:
       state: on
     input_boolean.suspend_camera_notifications:
@@ -82,27 +42,26 @@
       state: on
       brightness: 255
       color_temp: 454
-    light.office_lamp:
-      state: on
-    switch.catroom_lamp:
-      state: on
     light.wled:
       state: on
     light.hutch_led:
       state: on
-    switch.curio_cabinet_lamp:
-      state: on
-    light.monitor_backlight:
-      state: on
       brightness: 255
-      color_temp: 153
     switch.willow_tree:
       state: on
-    light.dining_room_lamp_east:
+    light.diningroom_ne:
       state: on
       brightness: 255
       color_temp: 454
-    light.dining_room_lamp_west:
+    light.diningroom_nw:
+      state: on
+      brightness: 255
+      color_temp: 454
+    light.diningroom_se:
+      state: on
+      brightness: 255
+      color_temp: 454
+    light.diningroom_sw:
       state: on
       brightness: 255
       color_temp: 454
@@ -115,45 +74,38 @@
       state: off
     light.foyer_lamp:
       state: off
-    switch.catroom_lamp:
-      state: off
-    light.hutch_led:
-      state: off
-    switch.curio_cabinet_lamp:
-      state: off
     switch.willow_tree:
       state: off
     light.wled:
-      state: on
-      effect: Solid
-      brightness: 122
-      xy_color:
-        - 0.421
-        - 0.364
-    light.monitor_backlight:
-      state: on
-      brightness: 107
-      color_temp: 423
-    light.office_lamp:
-      state: on
-      brightness: 255
+      state: off
+    light.hutch_led:
+      state: off
+    light.diningroom_ne:
+      state: off
+    light.diningroom_nw:
+      state: off
+    light.diningroom_se:
+      state: off
+    light.diningroom_sw:
+      state: off
+    
 
 - name: cold_case
   entities:
-    light.wled:
+    light.office_lamp_1:
       state: on
       effect: Solid
       xy_color: [0.126, 0.04] # blue
-    light.office_lamp:
+    light.office_lamp_2:
       state: on
       xy_color: [0.126, 0.04] # blue
 
 - name: warm_up
   entities:
-    light.wled:
+    light.office_lamp_1:
       state: on
       effect: Solid
       xy_color: [0.701, 0.299] # red
-    light.office_lamp:
+    light.office_lamp_2:
       state: on
       xy_color: [0.701, 0.299] # red

@@ -1,0 +1,162 @@
+automation:
+  - alias: turn on family room lights on motion
+    id: 55a907c9-2525-4f1f-b88e-f5f151c68ad9
+    mode: restart
+    trigger: 
+      - platform: state
+        entity_id: binary_sensor.family_room_motion_occupancy
+        to: 'on'
+        id: 'to_on'
+      - platform: state
+        entity_id: binary_sensor.family_room_motion_occupancy
+        to: 'off'
+        for: '00:15:00'
+        id: 'to_off'
+    action:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.family_room
+            state: 'off'
+          - condition: state
+            entity_id: sun.sun
+            state: above_horizon
+          - condition: numeric_state
+            entity_id: sensor.family_room_motion_illuminance
+            below: 60
+          - condition: trigger
+            id: 'to_on'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.family_room_normal
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.family_room
+            state: 'off'
+          - condition: state
+            entity_id: sun.sun
+            state: below_horizon
+          - condition: trigger
+            id: 'to_on'
+          - condition: state
+            entity_id: input_boolean.evening_lights
+            state: 'off'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.family_room_dim
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.family_room
+            state: 'off'
+          - condition: trigger
+            id: 'to_on'
+          - condition: state
+            entity_id: input_boolean.evening_lights
+            state: 'on'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.family_room_normal
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.family_room
+            state: 'on'
+          - condition: trigger
+            id: 'to_off'
+          - condition: state
+            entity_id: input_boolean.evening_lights
+            state: 'off'
+          - condition: state
+            entity_id: input_boolean.housecleaners_present
+            state: 'off'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.family_room_off
+
+  - alias: Dehumidifier stopped running
+    id: daf38cf5-516b-4ee5-bcb7-855a6bc746b3
+    trigger: 
+      - platform: numeric_state
+        entity_id: sensor.zplug4_power
+        below: 200
+        for:
+          minutes: 10
+    action:
+      - service: notify.mobile_app_chip
+        data_template:
+          message: "The Dehumidifier might need to be emptied"
+
+  - alias: turn on candle in the morning
+    id: 8d184c18-380b-4d4a-9528-460badcd25d9
+    trigger:
+      platform: time
+      at: "09:00:00"
+    action:
+      - service: switch.turn_on
+        entity_id: switch.candle_light
+      - service: scene.turn_on
+        entity_id: scene.mood_lighting
+      - service: select.select_option
+        target:
+          entity_id: select.family_room_motion_motion_sensitivity
+        data:
+          option: "high"
+      - service: light.turn_on
+        entity_id: light.crystal_wall
+
+scene:
+  - name: Family Room Normal
+    entities:
+      light.hutch_led:
+        state: on
+        brightness: 191
+        color_temp: 454
+      light.diningroom_se:
+        state: on
+        brightness: 191
+        color_temp: 454
+      light.diningroom_sw:
+        state: on
+        brightness: 191
+        color_temp: 454
+  
+  - name: Family Room Dim
+    entities:
+      light.hutch_led:
+        state: on
+        brightness: 5
+        color_temp: 322
+      light.diningroom_se:
+        state: on
+        brightness: 50
+        color_temp: 454
+      light.diningroom_sw:
+        state: on
+        brightness: 50
+        color_temp: 454
+  
+  - name: Family Room off
+    entities:
+      light.hutch_led:
+        state: off
+      light.diningroom_se:
+        state: off
+      light.diningroom_sw:
+        state: off
+
+  - name: Family Room Full
+    entities:
+      light.hutch_led:
+        state: on
+        brightness: 255
+        color_temp: 454
+      light.diningroom_se:
+        state: on
+        brightness: 255
+        color_temp: 454
+      light.diningroom_sw:
+        state: on
+        brightness: 255
+        color_temp: 454

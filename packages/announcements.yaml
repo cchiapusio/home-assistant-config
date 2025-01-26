@@ -1,0 +1,123 @@
+input_boolean:
+  good_morning_report:
+    name: Good Morning Report
+    initial: off
+  good_night_report:
+    name: Good Night Report
+    initial: off
+
+automation:
+- alias: Good Morning Report
+  id: 389b268f-556a-4bdb-93f2-7f1dd932b61e
+  initial_state: true
+  trigger:
+    - platform: state
+      entity_id: sensor.espresence_chip_s24u
+      to: 'kitchen'
+      for: '00:00:20'
+    - platform: state
+      entity_id: binary_sensor.kitchen_motion_occupancy
+      to: 'on'
+  condition:
+    - condition: time
+      after: '06:30:00'
+      before: '09:30:00'
+    - condition: state
+      entity_id: input_boolean.good_morning_report
+      state: 'off'
+    - condition: state
+      entity_id: sensor.espresence_chip_s24u
+      state: 'kitchen'
+    - condition: state
+      entity_id: binary_sensor.kitchen_motion_occupancy
+      state: 'on'
+  action:
+  - service: script.morning_briefing
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.good_morning_report
+
+- alias: Good Night Report
+  id: 5cdd4e12-b942-42d6-99cc-4945d4172314
+  initial_state: true
+  variables:
+    called_announcement: night_briefing
+  trigger:
+    - platform: state
+      entity_id: sensor.espresence_chip_s24u
+      to: 'kitchen'
+      for: '00:00:10'
+  condition:
+    - condition: state
+      entity_id: input_boolean.preparing_for_bedtime
+      state: 'on'
+    - condition: state
+      entity_id: input_boolean.good_night_report
+      state: 'off'
+  action:
+    - service: script.night_briefing
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.good_night_report
+
+- alias: Office status report
+  id: d8f1dc14-6b5e-4c16-979f-8e346690325f
+  initial_state: true
+  mode: single
+  variables:
+    called_announcement: office_reminder
+  trigger:
+    - platform: state
+      entity_id: sensor.espresence_chip_s24u
+      to: 'office'
+      for: '00:00:30'
+  action:
+    - service: script.office_reminder
+    - delay: '01:00:00'
+
+script:
+  morning_briefing:
+    sequence:
+    - service: tts.clear_cache
+    - service: media_player.volume_set
+      data_template:
+        entity_id:
+          - media_player.kitchen_speaker
+        volume_level: 0.6
+    - service: tts.speak 
+      target: 
+        entity_id: tts.piper
+      data:
+        cache: true 
+        media_player_entity_id: media_player.kitchen_speaker
+        message: !include ../templates/speech/morning_briefing.yaml
+
+  night_briefing:
+    sequence:
+    - service: tts.clear_cache
+    - service: media_player.volume_set
+      data_template:
+        entity_id:
+          - media_player.kitchen_speaker
+        volume_level: 0.6
+    - service: tts.speak 
+      target: 
+        entity_id: tts.piper
+      data:
+        cache: true 
+        media_player_entity_id: media_player.kitchen_speaker
+        message: !include ../templates/speech/night_briefing.yaml
+
+  office_reminder:
+    sequence:
+    - service: tts.clear_cache
+    - service: media_player.volume_set
+      data_template:
+        entity_id:
+          - media_player.charcoal_mini
+        volume_level: 0.2
+    - service: tts.speak 
+      target: 
+        entity_id: tts.piper
+      data:
+        cache: true 
+        media_player_entity_id: media_player.charcoal_mini
+        message: !include ../templates/speech/office_reminder.yaml

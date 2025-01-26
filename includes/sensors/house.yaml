@@ -1,0 +1,84 @@
+- platform: template
+  sensors:
+    today_is:
+      friendly_name: 'Today is'
+      value_template: "{{ ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'][now().weekday()] }}"
+    month_is:
+      friendly_name: 'Month is'
+      value_template: "{{ ['January','February','March','April','May','June','July','August','September','October','November','December'][now().month-1] }}" 
+    holiday:
+      friendly_name: 'Holiday'
+      value_template: >-
+          {% if states.calendar.holidays_in_united_states.state == 'on' %}
+            {{ states.calendar.holidays_in_united_states.attributes.message }}
+          {% else %}
+            none
+          {% endif %}
+    hvac_action:
+      friendly_name: 'HVAC Action'
+      value_template: "{{states.climate.my_ecobee_2.state}}"
+- platform: history_stats
+  name: Heating Last Day
+  entity_id: sensor.hvac_action
+  state: 'heat'
+  type: time
+  end: '{{ now() }}'
+  duration:
+    hours: 24
+- platform: history_stats
+  name: Heating Last Month
+  entity_id: sensor.hvac_action
+  state: 'heat'
+  type: time
+  end: '{{ now() }}'
+  duration:
+    days: 30
+- platform: history_stats
+  name: Cooling Last Day
+  entity_id: sensor.hvac_action
+  state: 'cool'
+  type: time
+  end: '{{ now() }}'
+  duration:
+    hours: 24
+- platform: history_stats
+  name: Cooling Last Month
+  entity_id: sensor.hvac_action
+  state: 'cool'
+  type: time
+  end: '{{ now() }}'
+  duration:
+    days: 30
+- platform: statistics
+  name: Wind Speed Stats
+  entity_id: sensor.pirateweather_wind_speed
+  state_characteristic: mean
+  sampling_size: 500
+- platform: statistics
+  name: Visibility Stats
+  entity_id: sensor.openweathermap_visibility
+  state_characteristic: mean
+  sampling_size: 500
+- platform: statistics
+  name: Temperature Stats
+  entity_id: sensor.pirateweather_temperature
+  state_characteristic: mean
+  sampling_size: 500
+- platform: statistics
+  name: Humidity Stats
+  entity_id: sensor.pirateweather_humidity
+  state_characteristic: mean
+  sampling_size: 500
+- platform: statistics
+  name: Washer Power Stats
+  entity_id: sensor.washer_energy
+  state_characteristic: mean
+  sampling_size: 500
+- platform: history_stats
+  name: Cooling Last Month
+  entity_id: sensor.hvac_action
+  state: 'cooling'
+  type: time
+  end: '{{ now() }}'
+  duration:
+    days: 30

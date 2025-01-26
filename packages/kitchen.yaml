@@ -1,0 +1,215 @@
+automation:
+  - alias: turn on kitchen light on motion
+    id: 064e899c-2153-497b-9d1e-4a54f5da77a8
+    mode: restart
+    trigger: 
+      - platform: state
+        entity_id: binary_sensor.kitchen_motion_occupancy
+        to: 'on'
+        id: 'to_on'
+      - platform: state
+        entity_id: binary_sensor.kitchen_motion_occupancy
+        to: 'off'
+        for: '00:15:00'
+        id: 'to_off'
+    action:
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.kitchen
+            state: 'off'
+          - condition: state
+            entity_id: sun.sun
+            state: below_horizon
+          - condition: trigger
+            id: 'to_on'
+          - condition: state
+            entity_id: input_boolean.evening_lights
+            state: 'off'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.kitchen_dim
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.kitchen
+            state: 'off'
+          - condition: trigger
+            id: 'to_on'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.kitchen_normal
+          - service: switch.turn_on
+            entity_id: switch.cabinet_lights
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.kitchen
+            state: 'off'
+          - condition: trigger
+            id: 'to_on'
+          - condition: state
+            entity_id: input_boolean.evening_lights
+            state: 'on'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.kitchen_normal
+          - service: switch.turn_on
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: light.kitchen
+            state: 'on'
+          - condition: trigger
+            id: 'to_off'
+          - condition: state
+            entity_id: input_boolean.evening_lights
+            state: 'off'
+          - condition: state
+            entity_id: input_boolean.housecleaners_present
+            state: 'off'
+          sequence:
+          - service: scene.turn_on
+            entity_id: scene.kitchen_off
+
+# change input on sony42 when power turns on/off
+#
+  - alias: Change Sony42 input on shield power event
+    id: feecf8ef-f55a-4f19-a682-57c7f3fde3eb
+    trigger:
+      - platform: state
+        entity_id: remote.kitchen_shield_remote
+        from: 'off'
+        to: 'on'
+        id: 'to_on'
+      - platform: state
+        entity_id: remote.kitchen_shield_remote
+        from: 'on'
+        to: 'off'
+        id: 'to_off'
+    action:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: 'to_off'
+        sequence:
+        - service: script.turn_on
+          entity_id: script.samsung65_from_hdmi2_to_hdmi1
+      - conditions:
+        - condition: trigger
+          id: 'to_on'
+        sequence:
+        - service: script.turn_on
+          entity_id: script.samsung65_from_hdmi1_to_hdmi2
+
+  - alias: toggle the samsung65 every night
+    id: 5bf0e66e-3b0e-45a6-a9a3-5b20daf7fd09
+    trigger:
+      - platform: time
+        at: "06:00:00"
+      - platform: time
+        at: "02:00:00"
+    action:
+      - service: script.turn_on
+        entity_id: script.samsung65_power_toggle
+            
+scene:
+  - name: Kitchen Normal
+    entities:
+      light.diningroom_ne:
+        state: on
+        brightness: 191
+        color_temp: 454
+      light.diningroom_nw:
+        state: on
+        brightness: 191
+        color_temp: 454
+      light.buffet:
+        state: on
+        brightness: 100
+        color_temp: 454
+      switch.cabinet_lights:
+        state: on
+  
+  - name: Kitchen Dim
+    entities:
+      light.diningroom_ne:
+        state: on
+        brightness: 50
+        color_temp: 454
+      light.diningroom_nw:
+        state: on
+        brightness: 50
+        color_temp: 454
+      light.buffet:
+        state: on
+        brightness: 20
+        color_temp: 454
+      switch.cabinet_lights:
+        state: on
+
+  - name: Kitchen Full
+    entities:
+      light.diningroom_ne:
+        state: on
+        brightness: 255
+        color_temp: 454
+      light.diningroom_nw:
+        state: on
+        brightness: 255
+        color_temp: 454
+      light.buffet:
+        state: on
+        brightness: 255
+        color_temp: 454
+      switch.cabinet_lights:
+        state: on
+
+  - name: Kitchen off
+    entities:
+      light.diningroom_ne:
+        state: off
+      light.diningroom_nw:
+        state: off
+      switch.cabinet_lights:
+        state: off
+      light.buffet:
+        state: off
+
+script:
+  samsung65_from_hdmi1_to_hdmi2:
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini2
+        data:
+          device: kitchen_samsung65
+          delay_secs: 2
+          command:
+            - input
+            - right
+            - select
+
+  samsung65_from_hdmi2_to_hdmi1:
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini2
+        data:
+          device: kitchen_samsung65
+          delay_secs: 2
+          command:
+            - input
+            - left
+            - select
+
+  samsung65_power_toggle:
+    sequence:
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini2
+        data:
+          device: kitchen_samsung65
+          delay_secs: 2
+          command:
+            - power toggle

@@ -1,0 +1,67 @@
+script:
+  turn_on_witches:
+    sequence: 
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini4
+        data:
+          device: tea_light
+          command:
+            - power on
+
+  turn_off_witches:
+    sequence: 
+      - service: remote.send_command
+        target:
+          entity_id: remote.rm3mini4
+        data:
+          device: tea_light
+          command:
+            - power off
+
+automation:
+  - alias: turn on witches for cindy
+    id: 78ddc65b-b076-4079-b9d4-fa24c6a3c06e
+    trigger: 
+    - platform: state
+      entity_id: sensor.espresence_cindy_s22u
+      to: 'kitchen'
+      id: incoming
+    - platform: state
+      entity_id: sensor.espresence_cindy_s22u
+      to: 'living_room'
+      id: incoming
+    - platform: state
+      entity_id: sensor.espresence_cindy_s22u
+      to: 'mbr'
+      id: away
+    - platform: state
+      entity_id: person.cindy
+      to: 'not_home'
+      id: away
+    condition:
+      - condition: state
+        entity_id: person.cindy
+        state: 'home'
+    action:
+    - choose:
+      - conditions:
+        - condition: trigger
+          id: incoming
+        sequence:
+        - service: script.turn_on
+          entity_id: script.turn_on_witches
+        - service: switch.turn_on
+          entity_id: switch.zplug1
+        - service: light.turn_on
+          entity_id: light.ec_fairy
+      - conditions:
+        - condition: trigger
+          id: away
+        sequence:
+        - service: switch.turn_off
+          entity_id: switch.zplug1
+        - service: script.turn_on
+          entity_id: script.turn_off_witches
+        - service: light.turn_off
+          entity_id: light.ec_fairy
