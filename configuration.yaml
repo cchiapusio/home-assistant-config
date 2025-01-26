@@ -8,20 +8,10 @@
 homeassistant:
   # Packages
   packages: !include_dir_named packages
-#  name: Home
-#  latitude: !secret home_lat
-#  longitude: !secret home_long
-#  elevation: 1227
-#  unit_system: imperial
-#  time_zone: America/New_York
-#  external_url: !secret external_url
-#  internal_url: !secret internal_url
   allowlist_external_dirs:
     - /config/faces/
     - /config/www/
   auth_providers:
-   - type: legacy_api_password
-     api_password: !secret api_password
    - type: trusted_networks
      trusted_networks:
        - 172.17.0.0/16
@@ -50,17 +40,16 @@ homeassistant:
 config:
 #default_config:
 
+# https://www.home-assistant.io/integrations/zeroconf
+zeroconf:
+
+ssdp:
+
 # https://www.home-assistant.io/integrations/my/
 my:
 
 #https://www.home-assistant.io/docs/energy/
 energy:
-
-#https://www.home-assistant.io/components/mobile_app/
-#mobile_app:
-
-# https://www.home-assistant.io/hassio/
-#hassio:
 
 # https://home-assistant.io/components/history/
 history:
@@ -92,23 +81,17 @@ recorder:
       - person
       - climate
     entities:
-      - device_tracker.galaxy_note10 # unifi
-      - device_tracker.sm_s908u # Cindys S22 Ultra
+      - device_tracker.sm_s908u_2 # Cindys S22 Ultra
       - media_player.living_room_shield
       - media_player.living_room_tv
       - media_player.toris_bedroom_tv
       - media_player.mbr_shield
       - media_player.master_bedroom_tv
-      - device_tracker.toris_iphone_2 # unifi
-      - device_tracker.sm_n986u # HA App
+      - device_tracker.sm_s928u # HA App
       - device_tracker.wled_jeep # unifi
-      - automation.backdoor_motion_notification
 
 # https://home-assistant.io/components/http/
 http:
-  # Secrets are defined in the file secrets.yaml
-  # Uncomment this if you are using SSL/TLS, running in Docker container, etc.
-#  base_url: !secret base_url_secret
   ip_ban_enabled: true
   login_attempts_threshold: 5
   use_x_forwarded_for: true
@@ -123,25 +106,7 @@ logger:
     homeassistant.components.notify: debug
 #    homeassistant.components.google_assistant: debug
 #    homeassistant.core: debug
-#    homeassistant.components.zha: debug
-#    bellows.zigbee.application: debug
-#    bellows.ezsp: debug
-#    zigpy: debug
-#    zigpy_cc: debug
-#    zigpy_deconz.zigbee.application: debug
-#    zigpy_deconz.api: debug
-#    zigpy_xbee.zigbee.application: debug
-#    zigpy_xbee.api: debug
-#    zigpy_zigate: debug
-#    zigpy_znp: debug
-#    zhaquirks: debug
 #    homeassistant.components.mqtt: debug
-#    homeassistant.components.zha: debug
-#    bellows.ezsp: debug
-#    bellows.uart: debug
-#    zigpy.zdo: debug
-#    zigpy.application: debug
-
 #    aiounifi: debug
 #    homeassistant.components.unifi: debug
 #    homeassistant.components.device_tracker.unifi: debug
@@ -169,16 +134,17 @@ system_health:
 zone: !include includes/zones.yaml
 device_tracker: !include device_tracker.yaml
 group: !include groups.yaml
-script: !include scripts.yaml
+script: !include_dir_merge_list scripts
 automation: !include_dir_merge_list includes/automation
 scene: !include_dir_merge_list includes/scene
 notify: !include notification.yaml
 light: !include lights.yaml
 sensor: !include_dir_merge_list includes/sensors
+rest_command: !include_dir_merge_list rest_command
 binary_sensor: !include binary_sensor.yaml
 media_player: !include media_player.yaml
 person: !include includes/person.yaml
-switch: !include includes/switch.yaml
+#switch: !include includes/switch.yaml
 input_select: !include includes/inputs/input_select.yaml
 input_number: !include includes/inputs/input_number.yaml
 #input_boolean: !include includes/inputs/input_boolean.yaml
@@ -188,11 +154,13 @@ template: !include templates.yaml
 alert: !include includes/alerts.yaml
 #https://www.home-assistant.io/components/mqtt/
 mqtt: !include mqtt.yaml
-
-
+#modbus: !include modbus.yaml
 
 # https://www.home-assistant.io/integrations/stream
 stream:
+
+# https://www.home-assistant.io/integrations/media_source/
+media_source:
 
 # https://www.home-assistant.io/integrations/camera/
 camera: !include camera.yaml
@@ -209,7 +177,8 @@ cloud:
 backup:
 
 # https://www.home-assistant.io/integrations/bluetooth/
-bluetooth:
+#bluetooth:
+
 
 # https://www.home-assistant.io/integrations/google_assistant/
 google_assistant:
@@ -227,7 +196,7 @@ google_assistant:
   expose_by_default: true
   
 # Discover some devices automatically
-discovery:
+#discovery:
 
 # Allows you to issue voice commands from the frontend in enabled browsers
 conversation:
@@ -237,39 +206,21 @@ python_script:
 
 # Text to speech
 # https://www.home-assistant.io/components/tts/  
-tts:
-  - platform: google_translate
-    service_name: google_say
+#tts:
+#  - platform: google_translate
+#    service_name: google_say
+#    cache: true
+#    cache_dir: /tmp/tts
+#    time_memory: 300
 
-#https://www.home-assistant.io/components/eufy/
-#eufy:
-#  username: !secret eufy_username
-#  password: !secret eufy_password
-#  devices:
-#    - address: 192.168.10.202
-#      access_token: !secret eufy_access_token
-#      type: T1201
-#      name: Eufy Switch
-
-
-#https://www.home-assistant.io/components/panel_iframe/
-#panel_iframe:
-# nodered:
-#   title: 'Node-Red'
-#   icon: 'mdi:shuffle-variant'
-#   url: 'http://192.168.10.4:1880/'
-# tasmoadmin:
-#   title: 'TasmoAdmin'
-#   icon: mdi:lightbulb-on
-#   url: http://192.168.10.4:9541
 
 timer:
   alert:
+    name: Alert
     duration: '00:00:10'
   5m:
+    name: five minute timer for turning off lights at night
     duration: '00:05:00'
-  late_tori:
-    duration: '00:15:00'
 
 ####################################################
 #                                                  #
@@ -277,19 +228,12 @@ timer:
 #                                                  #
 ####################################################
 
-##
-## https://www.home-assistant.io/integrations/calendar.google/
-##
-#google:
-#  client_id: !secret google_oauth_user
-#  client_secret: !secret google_oauth_pass
-
 # https://www.home-assistant.io/integrations/weather.darksky/
 weather:
-  - platform: darksky
-    api_key: !secret darksky_api2
-    latitude: !secret home_lat
-    longitude: !secret home_long
+#  - platform: darksky
+#    api_key: !secret darksky_api2
+#    latitude: !secret home_lat
+#    longitude: !secret home_long
 
 # https://github.com/alexander0042/pirate-weather-ha
 # https://pirateweather.net/
@@ -322,3 +266,18 @@ weather:
 #  ll_hls: true
 #  part_duration: 0.75
 #  segment_duration: 6
+
+# https://www.home-assistant.io/integrations/ombi
+ombi:
+  host: 192.168.10.4
+  username: cchiapusio
+  api_key: !secret ombi_api_key
+  port: 3579
+  urlbase: /
+  ssl: false
+
+overseerr:
+  host: 192.168.10.4
+  port: 5055
+  api_key: !secret overseerr_api_key
+  scan_interval: 600

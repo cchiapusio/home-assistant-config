@@ -8,9 +8,10 @@
   - platform: group
     name: office lights
     entities: 
-    - light.office_lamp
-    - light.tv_wash_light
-    - light.monitor_backlight
+    - light.office_lamp_1
+    - light.office_lamp_2
+    - light.office_digquad_master
+    - light.oval
 
 #  - platform: group
 #    name: Front Yard Floods
@@ -25,10 +26,17 @@
   - platform: group
     name: Diningroom lights
     entities:
-      - light.diningroom_ne
-      - light.diningroom_nw
+      - light.hutch_led
       - light.diningroom_se
       - light.diningroom_sw
+
+  - platform: group
+    name: Family room
+    entities:
+      - light.hutch_led
+      - light.diningroom_se
+      - light.diningroom_sw
+  
   
   - platform: group
     name: Toris room lamps
@@ -37,3 +45,17 @@
       - light.nightstand_2
       - light.dresser_lamp
       - light.tplb01
+  
+  - platform: group
+    name: bedroom mood lighting
+    entities:
+      - light.mirror_fairy
+      - light.vanity_fairy
+      - light.crystal_castle_2
+      - light.fairy_lights
+
+  - platform: group
+    name: Kitchen
+    entities:
+      - light.diningroom_ne
+      - light.diningroom_nw

@@ -18,3 +18,19 @@
     server: vega.home.llamas.net
     port: 25
     encryption: none
+
+  - platform: group
+    name: mobile_app_chip_and_cindy
+    services:
+      - service: mobile_app_sm_s928u
+      - service: mobile_app_sm_s908u
+
+  - platform: group
+    name: mobile_app_chip
+    services:
+      - service: mobile_app_sm_s928u
+
+  - platform: group
+    name: mobile_app_cindy
+    services:
+      - service: mobile_app_sm_s908u
