@@ -1,8 +1,8 @@
 from datetime import datetime
 import logging
+import asyncio
 
 from homeassistant.components.binary_sensor import STATE_OFF
-from homeassistant.helpers.event import async_call_later
 
 from ..helpers.const import *
 from .base import BlueIrisBinarySensor
@@ -21,7 +21,7 @@ class BlueIrisAudioBinarySensor(BlueIrisBinarySensor):
 
     async def async_added_to_hass_local(self):
         """Subscribe MQTT events."""
-        _LOGGER.info(f"Added new {self.name}")
+        _LOGGER.debug(f"Added new {self.name}")
 
     def _immediate_update(self, previous_state: bool):
         if previous_state != self.entity.state:
@@ -32,8 +32,8 @@ class BlueIrisAudioBinarySensor(BlueIrisBinarySensor):
         is_trigger_off = self.state == STATE_OFF
         current_timestamp = datetime.now().timestamp()
 
-        def turn_off_automatically(now):
-            _LOGGER.info(f"Audio alert off | {self.name} @{now}")
+        async def turn_off_automatically():
+            _LOGGER.debug(f"Audio alert off | {self.name}")
 
             self.entity_manager.set_mqtt_state(self.topic, self.event_type, False)
 
@@ -59,11 +59,11 @@ class BlueIrisAudioBinarySensor(BlueIrisBinarySensor):
                     should_alert = False
 
             if should_alert:
-                _LOGGER.info(f"Audio alert on, {message} | {self.name}")
+                _LOGGER.debug(f"Audio alert on, {message} | {self.name}")
 
                 self._last_alert = current_timestamp
                 super()._immediate_update(previous_state)
 
-                async_call_later(self.hass, 2, turn_off_automatically)
+                self.hass.loop.call_later(2, asyncio.create_task, turn_off_automatically())
             else:
                 _LOGGER.debug(f"Audio alert on, {message} | {self.name}")

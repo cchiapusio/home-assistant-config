@@ -1,4 +1,5 @@
 """Storage handers."""
+
 from homeassistant.helpers.json import JSONEncoder
 from homeassistant.helpers.storage import Store
 from homeassistant.util import json as json_util
@@ -17,7 +18,9 @@ class HACSStore(Store):
         """Load the data from disk if version matches."""
         try:
             data = json_util.load_json(self.path)
-        except BaseException as exception:  # lgtm [py/catch-base-exception] pylint: disable=broad-except
+        except (
+            BaseException  # lgtm [py/catch-base-exception] pylint: disable=broad-except
+        ) as exception:
             _LOGGER.critical(
                 "Could not load '%s', restore it from a backup or delete the file: %s",
                 self.path,

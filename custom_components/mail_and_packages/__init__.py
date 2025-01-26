@@ -1,32 +1,40 @@
 """Mail and Packages Integration."""
+
 import asyncio
 import logging
+import os
 from datetime import timedelta
 
-from async_timeout import timeout
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_HOST, CONF_RESOURCES
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .const import (
-    CONF_ALLOW_EXTERNAL,
+    ATTR_AMAZON_IMAGE,
+    ATTR_IMAGE_NAME,
+    ATTR_IMAGE_PATH,
     CONF_AMAZON_DAYS,
+    CONF_AMAZON_DOMAIN,
     CONF_AMAZON_FWDS,
     CONF_IMAGE_SECURITY,
+    CONF_IMAP_SECURITY,
     CONF_IMAP_TIMEOUT,
     CONF_PATH,
     CONF_SCAN_INTERVAL,
+    CONF_STORAGE,
+    CONF_VERIFY_SSL,
+    CONFIG_VER,
     COORDINATOR,
     DEFAULT_AMAZON_DAYS,
-    DEFAULT_IMAP_TIMEOUT,
     DOMAIN,
     ISSUE_URL,
     PLATFORMS,
     VERSION,
 )
-from .helpers import default_image_path, process_emails
+from .helpers import default_image_path, hash_file, process_emails
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -48,52 +56,17 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
     hass.data.setdefault(DOMAIN, {})
     updated_config = config_entry.data.copy()
 
-    # Set amazon fwd blank if missing
-    if CONF_AMAZON_FWDS not in updated_config.keys():
-        updated_config[CONF_AMAZON_FWDS] = []
-
-    # Set default timeout if missing
-    if CONF_IMAP_TIMEOUT not in updated_config.keys():
-        updated_config[CONF_IMAP_TIMEOUT] = DEFAULT_IMAP_TIMEOUT
-
-    # Set external path off by default
-    if CONF_ALLOW_EXTERNAL not in config_entry.data.keys():
-        updated_config[CONF_ALLOW_EXTERNAL] = False
-
-    updated_config[CONF_PATH] = default_image_path(hass, config_entry)
-
-    # Set image security always on
-    if CONF_IMAGE_SECURITY not in config_entry.data.keys():
-        updated_config[CONF_IMAGE_SECURITY] = True
-
     # Sort the resources
     updated_config[CONF_RESOURCES] = sorted(updated_config[CONF_RESOURCES])
-
-    # Make sure amazon forwarding emails are not a string
-    if isinstance(updated_config[CONF_AMAZON_FWDS], str):
-        tmp = updated_config[CONF_AMAZON_FWDS]
-        tmp_list = []
-        if "," in tmp:
-            tmp_list = tmp.split(",")
-        else:
-            tmp_list.append(tmp)
-        updated_config[CONF_AMAZON_FWDS] = tmp_list
 
     if updated_config != config_entry.data:
         hass.config_entries.async_update_entry(config_entry, data=updated_config)
 
-    config_entry.add_update_listener(update_listener)
-
-    config_entry.options = config_entry.data
+    # Variables for data coordinator
     config = config_entry.data
 
-    # Variables for data coordinator
-    host = config.get(CONF_HOST)
-    the_timeout = config.get(CONF_IMAP_TIMEOUT)
-    interval = config.get(CONF_SCAN_INTERVAL)
-
     # Setup the data coordinator
-    coordinator = MailDataUpdateCoordinator(hass, host, the_timeout, interval, config)
+    coordinator = MailDataUpdateCoordinator(hass, config)
 
     # Fetch initial data so we have data when entities subscribe
     await coordinator.async_refresh()
@@ -107,12 +80,20 @@ async def async_setup_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> b
         COORDINATOR: coordinator,
     }
 
-    for platform in PLATFORMS:
-        hass.async_create_task(
-            hass.config_entries.async_forward_entry_setup(config_entry, platform)
-        )
-
+    await hass.config_entries.async_forward_entry_setups(config_entry, PLATFORMS)
     return True
+
+
+async def async_remove_config_entry_device(  # pylint: disable-next=unused-argument
+    hass: HomeAssistant, config_entry: ConfigEntry, device_entry: dr.DeviceEntry
+) -> bool:
+    """Remove config entry from a device if its no longer present."""
+    return not any(
+        identifier
+        for identifier in device_entry.identifiers
+        if identifier[0] == DOMAIN
+        and config_entry.runtime_data.get_device(identifier[1])
+    )
 
 
 async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
@@ -135,33 +116,16 @@ async def async_unload_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> 
     return unload_ok
 
 
-async def update_listener(hass: HomeAssistant, config_entry: ConfigEntry) -> None:
-    """Update listener."""
-    _LOGGER.debug("Attempting to reload sensors from the %s integration", DOMAIN)
-
-    if config_entry.data == config_entry.options:
-        _LOGGER.debug("No changes detected not reloading sensors.")
-        return
-
-    new_data = config_entry.options.copy()
-
-    hass.config_entries.async_update_entry(
-        entry=config_entry,
-        data=new_data,
-    )
-
-    await hass.config_entries.async_reload(config_entry.entry_id)
-
-
 async def async_migrate_entry(hass, config_entry):
     """Migrate an old config entry."""
     version = config_entry.version
+    new_version = CONFIG_VER
+
+    _LOGGER.debug("Migrating from version %s", version)
+    updated_config = {**config_entry.data}
 
     # 1 -> 4: Migrate format
     if version == 1:
-        _LOGGER.debug("Migrating from version %s", version)
-        updated_config = config_entry.data.copy()
-
         if CONF_AMAZON_FWDS in updated_config.keys():
             if not isinstance(updated_config[CONF_AMAZON_FWDS], list):
                 updated_config[CONF_AMAZON_FWDS] = [
@@ -173,7 +137,7 @@ async def async_migrate_entry(hass, config_entry):
             _LOGGER.warning("Missing configuration data: %s", CONF_AMAZON_FWDS)
 
         # Force path change
-        updated_config[CONF_PATH] = "images/mail_and_packages/"
+        updated_config[CONF_PATH] = "custom_components/mail_and_packages/images/"
 
         # Always on image security
         if not config_entry.data[CONF_IMAGE_SECURITY]:
@@ -181,20 +145,11 @@ async def async_migrate_entry(hass, config_entry):
 
         # Add default Amazon Days configuration
         updated_config[CONF_AMAZON_DAYS] = DEFAULT_AMAZON_DAYS
-
-        if updated_config != config_entry.data:
-            hass.config_entries.async_update_entry(config_entry, data=updated_config)
-
-        config_entry.version = 4
-        _LOGGER.debug("Migration to version %s complete", config_entry.version)
 
     # 2 -> 4
-    if version == 2:
-        _LOGGER.debug("Migrating from version %s", version)
-        updated_config = config_entry.data.copy()
-
+    if version <= 2:
         # Force path change
-        updated_config[CONF_PATH] = "images/mail_and_packages/"
+        updated_config[CONF_PATH] = "custom_components/mail_and_packages/images/"
 
         # Always on image security
         if not config_entry.data[CONF_IMAGE_SECURITY]:
@@ -203,24 +158,42 @@ async def async_migrate_entry(hass, config_entry):
         # Add default Amazon Days configuration
         updated_config[CONF_AMAZON_DAYS] = DEFAULT_AMAZON_DAYS
 
-        if updated_config != config_entry.data:
-            hass.config_entries.async_update_entry(config_entry, data=updated_config)
-
-        config_entry.version = 4
-        _LOGGER.debug("Migration to version %s complete", config_entry.version)
-
-    if version == 3:
-        _LOGGER.debug("Migrating from version %s", version)
-        updated_config = config_entry.data.copy()
-
+    if version <= 3:
         # Add default Amazon Days configuration
         updated_config[CONF_AMAZON_DAYS] = DEFAULT_AMAZON_DAYS
 
-        if updated_config != config_entry.data:
-            hass.config_entries.async_update_entry(config_entry, data=updated_config)
+    if version <= 4:
+        if CONF_AMAZON_FWDS in updated_config and updated_config[CONF_AMAZON_FWDS] == [
+            '""'
+        ]:
+            updated_config[CONF_AMAZON_FWDS] = []
 
-        config_entry.version = 4
-        _LOGGER.debug("Migration to version %s complete", config_entry.version)
+    if version <= 5:
+        if CONF_VERIFY_SSL not in updated_config:
+            updated_config[CONF_VERIFY_SSL] = True
+
+    if version <= 6:
+        if CONF_IMAP_SECURITY not in updated_config:
+            updated_config[CONF_IMAP_SECURITY] = "SSL"
+
+    if version <= 7:
+        if CONF_AMAZON_DOMAIN not in updated_config:
+            updated_config[CONF_AMAZON_DOMAIN] = "amazon.com"
+
+    if version < 10:
+        # Add default for image storage config
+        if CONF_STORAGE not in updated_config:
+            updated_config[CONF_STORAGE] = "custom_components/mail_and_packages/images/"
+
+    if CONF_PATH not in updated_config:
+        updated_config[CONF_PATH] = "custom_components/mail_and_packages/images/"
+
+    if updated_config != config_entry.data:
+        hass.config_entries.async_update_entry(
+            config_entry, data=updated_config, version=new_version
+        )
+
+    _LOGGER.debug("Migration complete to version %s", new_version)
 
     return True
 
@@ -228,13 +201,14 @@ async def async_migrate_entry(hass, config_entry):
 class MailDataUpdateCoordinator(DataUpdateCoordinator):
     """Class to manage fetching mail data."""
 
-    def __init__(self, hass, host, the_timeout, interval, config):
+    def __init__(self, hass, config):
         """Initialize."""
-        self.interval = timedelta(minutes=interval)
-        self.name = f"Mail and Packages ({host})"
-        self.timeout = the_timeout
+        self.interval = timedelta(minutes=config.get(CONF_SCAN_INTERVAL))
+        self.name = f"Mail and Packages ({config.get(CONF_HOST)})"
+        self.timeout = config.get(CONF_IMAP_TIMEOUT)
         self.config = config
         self.hass = hass
+        self._data = {}
 
         _LOGGER.debug("Data will be update every %s", self.interval)
 
@@ -242,7 +216,7 @@ class MailDataUpdateCoordinator(DataUpdateCoordinator):
 
     async def _async_update_data(self):
         """Fetch data."""
-        async with timeout(self.timeout):
+        async with asyncio.timeout(self.timeout):
             try:
                 data = await self.hass.async_add_executor_job(
                     process_emails, self.hass, self.config
@@ -250,4 +224,55 @@ class MailDataUpdateCoordinator(DataUpdateCoordinator):
             except Exception as error:
                 _LOGGER.error("Problem updating sensors: %s", error)
                 raise UpdateFailed(error) from error
-            return data
+
+            if data:
+                self._data = data
+                await self._binary_sensor_update()
+            return self._data
+
+    async def _binary_sensor_update(self):
+        """Update binary sensor states."""
+        attributes = (ATTR_IMAGE_NAME, ATTR_IMAGE_PATH)
+        if set(attributes).issubset(self._data.keys()):
+            image = self._data[ATTR_IMAGE_NAME]
+            path = default_image_path(self.hass, self.config)
+            usps_image = f"{path}/{image}"
+            usps_none = f"{os.path.dirname(__file__)}/mail_none.gif"
+            usps_check = os.path.exists(usps_image)
+            _LOGGER.debug("USPS Check: %s", usps_check)
+            if usps_check:
+                image_hash = await self.hass.async_add_executor_job(
+                    hash_file, usps_image
+                )
+                none_hash = await self.hass.async_add_executor_job(hash_file, usps_none)
+
+                _LOGGER.debug("USPS Image hash: %s", image_hash)
+                _LOGGER.debug("USPS None hash: %s", none_hash)
+
+                if image_hash != none_hash:
+                    self._data["usps_update"] = True
+                else:
+                    self._data["usps_update"] = False
+        attributes = (ATTR_AMAZON_IMAGE, ATTR_IMAGE_PATH)
+        if set(attributes).issubset(self._data.keys()):
+            image = self._data[ATTR_AMAZON_IMAGE]
+            path = f"{default_image_path(self.hass, self.config)}/amazon/"
+            amazon_image = f"{path}{image}"
+            amazon_none = f"{os.path.dirname(__file__)}/no_deliveries.jpg"
+            amazon_check = os.path.exists(amazon_image)
+            _LOGGER.debug("Amazon Check: %s", amazon_check)
+            if amazon_check:
+                image_hash = await self.hass.async_add_executor_job(
+                    hash_file, amazon_image
+                )
+                none_hash = await self.hass.async_add_executor_job(
+                    hash_file, amazon_none
+                )
+
+                _LOGGER.debug("Amazon Image hash: %s", image_hash)
+                _LOGGER.debug("Amazon None hash: %s", none_hash)
+
+                if image_hash != none_hash:
+                    self._data["amazon_update"] = True
+                else:
+                    self._data["amazon_update"] = False

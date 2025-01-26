@@ -139,7 +139,7 @@ class DahuaClient:
         """ get_max_extra_streams returns the max number of sub streams supported by the camera """
         try:
             result = await self.get("/cgi-bin/magicBox.cgi?action=getProductDefinition&name=MaxExtraStream")
-            return int(result.get("table.MaxExtraStreams", "2"))
+            return int(result.get("table.MaxExtraStream", "2"))
         except aiohttp.ClientResponseError as e:
             pass
         # If we can't fetch, just assume 2 since that's pretty standard
@@ -306,6 +306,23 @@ class DahuaClient:
         url = "/cgi-bin/configManager.cgi?action=getConfig&name=LightGlobal[0].Enable"
         return await self.get(url)
 
+    async def async_get_floodlightmode(self) -> dict:
+        """ async_get_config_floodlightmode gets floodlight mode """
+        url = "/cgi-bin/configManager.cgi?action=getConfig&name=FloodLightMode.Mode"
+        try:
+            return await self.async_get_config("FloodLightMode.Mode")
+        except aiohttp.ClientResponseError as e:
+            return 2
+
+    async def async_set_floodlightmode(self, mode: int) -> dict:
+        """ async_set_floodlightmode will set the floodlight lighting control  """
+        # 1 - Motion Acvtivation
+        # 2 - Manual (for manual switching)
+        # 3 - Schedule
+        # 4 - PIR
+        url = "/cgi-bin/configManager.cgi?action=setConfig&FloodLightMode.Mode={mode}".format(mode=mode)
+        return await self.get(url)
+
     async def async_set_lighting_v1(self, channel: int, enabled: bool, brightness: int) -> dict:
         """ async_get_lighting_v1 will turn the IR light (InfraRed light) on or off """
         # on = Manual, off = Off
@@ -344,6 +361,26 @@ class DahuaClient:
             mode = "0"
 
         url = "/cgi-bin/configManager.cgi?action=setConfig&VideoInMode[{0}].Config[0]={1}".format(channel, mode)
+        return await self.get(url, True)
+
+    async def async_adjustfocus_v1(self, focus: str, zoom: str):
+        """
+        async_adjustfocus will set the zoom and focus
+        """
+
+
+        url = "/cgi-bin/devVideoInput.cgi?action=adjustFocus&focus={0}&zoom={1}".format(focus, zoom)
+        return await self.get(url, True)
+
+    async def async_setprivacymask(self, index: int, enabled: bool):
+        """
+        async_setprivacymask will enable or disable the privacy mask
+        """
+
+
+        url = "/cgi-bin/configManager.cgi?action=setConfig&PrivacyMasking[0][{0}].Enable={1}".format(
+            index, str(enabled).lower()
+        )
         return await self.get(url, True)
 
     async def async_set_night_switch_mode(self, channel: int, mode: str):
@@ -449,10 +486,10 @@ class DahuaClient:
         _LOGGER.debug("Turning light on: %s", url)
         return await self.get(url)
 
-    # async def async_set_lighting_v2_for_amcrest_flood_lights(self, channel: int, enabled: bool, brightness: int, profile_mode: str) -> dict:
-    async def async_set_lighting_v2_for_amcrest_flood_lights(self, channel: int, enabled: bool, profile_mode: str) -> dict:
+    # async def async_set_lighting_v2_for_flood_lights(self, channel: int, enabled: bool, brightness: int, profile_mode: str) -> dict:
+    async def async_set_lighting_v2_for_flood_lights(self, channel: int, enabled: bool, profile_mode: str) -> dict:
         """
-        async_set_lighting_v2_for_amcrest_floodlights will turn on or off the flood light on the camera. If turning on, the brightness will be used.
+        async_set_lighting_v2_for_floodlights will turn on or off the flood light on the camera. If turning on, the brightness will be used.
         brightness is in the range of 0 to 100 inclusive where 100 is the brightest.
         NOTE: While the flood lights do support an auto or "smart" mode, the api does not handle this change properly.
               If one wishes to make the change back to auto, it must be done in the 'Amcrest Smart Home' smartphone app.
@@ -567,6 +604,18 @@ class DahuaClient:
         url = "/cgi-bin/configManager.cgi?action=setConfig&DisableLinkage[{0}].Enable={1}".format(channel, value)
         return await self.get(url)
 
+    async def async_set_event_notifications(self, channel: int, enabled: bool) -> dict:
+        """
+        async_set_event_notifications will set the camera's disarming event notifications (Event -> Disarming -> Event Notifications in the UI)
+        """
+
+        value = "true"
+        if enabled:
+            value = "false"
+
+        url = "/cgi-bin/configManager.cgi?action=setConfig&DisableEventNotify[{0}].Enable={1}".format(channel, value)
+        return await self.get(url)
+
     async def async_set_record_mode(self, channel: int, mode: str) -> dict:
         """
         async_set_record_mode sets the record mode.
@@ -592,10 +641,18 @@ class DahuaClient:
         """
 
         url = "/cgi-bin/configManager.cgi?action=getConfig&name=DisableLinkage"
-        try:
-            return await self.get(url)
-        except aiohttp.ClientResponseError as e:
-            return {"table.DisableLinkage.Enable": "false"}
+        return await self.get(url)
+
+    async def async_get_event_notifications(self) -> dict:
+        """
+        async_get_event_notifications will return false if the event notifications in disarmed state are enabled
+
+        returns
+        table.DisableEventNotify.Enable=false
+        """
+
+        url = "/cgi-bin/configManager.cgi?action=getConfig&name=DisableEventNotify"
+        return await self.get(url)
 
     async def async_access_control_open_door(self, door_id: int = 1) -> dict:
         """

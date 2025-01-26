@@ -9,9 +9,7 @@ from homeassistant.components.fan import (
     DIRECTION_FORWARD,
     DIRECTION_REVERSE,
     DOMAIN,
-    SUPPORT_DIRECTION,
-    SUPPORT_OSCILLATE,
-    SUPPORT_SET_SPEED,
+    FanEntityFeature,
     FanEntity,
 )
 from homeassistant.util.percentage import (
@@ -27,12 +25,12 @@ from .const import (
     CONF_FAN_DIRECTION,
     CONF_FAN_DIRECTION_FWD,
     CONF_FAN_DIRECTION_REV,
+    CONF_FAN_DPS_TYPE,
     CONF_FAN_ORDERED_LIST,
     CONF_FAN_OSCILLATING_CONTROL,
     CONF_FAN_SPEED_CONTROL,
     CONF_FAN_SPEED_MAX,
     CONF_FAN_SPEED_MIN,
-    CONF_FAN_DPS_TYPE,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -189,18 +187,21 @@ class LocaltuyaFan(LocalTuyaEntity, FanEntity):
         self.schedule_update_ha_state()
 
     @property
-    def supported_features(self) -> int:
+    def supported_features(self) -> FanEntityFeature:
         """Flag supported features."""
-        features = 0
+        features = FanEntityFeature(0)
 
         if self.has_config(CONF_FAN_OSCILLATING_CONTROL):
-            features |= SUPPORT_OSCILLATE
+            features |= FanEntityFeature.OSCILLATE
 
         if self.has_config(CONF_FAN_SPEED_CONTROL):
-            features |= SUPPORT_SET_SPEED
+            features |= FanEntityFeature.SET_SPEED
 
         if self.has_config(CONF_FAN_DIRECTION):
-            features |= SUPPORT_DIRECTION
+            features |= FanEntityFeature.DIRECTION
+
+        features |= FanEntityFeature.TURN_OFF
+        features |= FanEntityFeature.TURN_ON
 
         return features
 

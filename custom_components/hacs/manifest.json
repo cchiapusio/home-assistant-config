@@ -1,4 +1,9 @@
 {
+    "domain": "hacs",
+    "name": "HACS",
+    "after_dependencies": [
+        "python_script"
+    ],
     "codeowners": [
         "@ludeeus"
     ],
@@ -11,13 +16,11 @@
         "lovelace",
         "repairs"
     ],
-    "documentation": "https://hacs.xyz/docs/configuration/start",
-    "domain": "hacs",
+    "documentation": "https://hacs.xyz/docs/use/",
     "iot_class": "cloud_polling",
     "issue_tracker": "https://github.com/hacs/integration/issues",
-    "name": "HACS",
     "requirements": [
         "aiogithubapi>=22.10.1"
     ],
-    "version": "1.29.0"
+    "version": "2.0.3"
 }

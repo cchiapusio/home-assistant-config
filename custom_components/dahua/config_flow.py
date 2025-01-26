@@ -1,7 +1,10 @@
 """Adds config flow (UI flow) for Dahua IP cameras."""
 import logging
+import ssl
 
 import voluptuous as vol
+
+from aiohttp import ClientSession, TCPConnector
 
 from homeassistant import config_entries
 from homeassistant.core import callback
@@ -26,6 +29,12 @@ from .const import (
 https://developers.home-assistant.io/docs/config_entries_config_flow_handler
 https://developers.home-assistant.io/docs/data_entry_flow_index/
 """
+
+SSL_CONTEXT = ssl.create_default_context()
+#SSL_CONTEXT.minimum_version = ssl.TLSVersion.TLSv1_2
+SSL_CONTEXT.set_ciphers("DEFAULT")
+SSL_CONTEXT.check_hostname = False
+SSL_CONTEXT.verify_mode = ssl.CERT_NONE
 
 _LOGGER: logging.Logger = logging.getLogger(__package__)
 
@@ -139,7 +148,7 @@ class DahuaFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
-        return DahuaOptionsFlowHandler(config_entry)
+        return DahuaOptionsFlowHandler()
 
     async def _show_config_form_user(self, user_input):  # pylint: disable=unused-argument
         """Show the configuration form to edit camera name."""
@@ -173,7 +182,9 @@ class DahuaFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 
     async def _test_credentials(self, username, password, address, port, rtsp_port, channel):
         """Return name and serialNumber if credentials is valid."""
-        session = async_create_clientsession(hass=self.hass, verify_ssl=False)
+        # Self signed certs are used over HTTPS so we'll disable SSL verification
+        connector = TCPConnector(enable_cleanup_closed=True, ssl=SSL_CONTEXT)
+        session = ClientSession(connector=connector)
         try:
             client = DahuaClient(username, password, address, port, rtsp_port, session)
             data = await client.get_machine_name()
@@ -189,13 +200,9 @@ class DahuaFlowHandler(config_entries.ConfigFlow, domain=DOMAIN):
 class DahuaOptionsFlowHandler(config_entries.OptionsFlow):
     """Dahua config flow options handler."""
 
-    def __init__(self, config_entry):
-        """Initialize HACS options flow."""
-        self.config_entry = config_entry
-        self.options = dict(config_entry.options)
-
     async def async_step_init(self, user_input=None):  # pylint: disable=unused-argument
         """Manage the options."""
+        self.options = dict(self.config_entry.options)
         return await self.async_step_user()
 
     async def async_step_user(self, user_input=None):

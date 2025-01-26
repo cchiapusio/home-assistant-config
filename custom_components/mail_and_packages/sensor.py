@@ -3,6 +3,7 @@
 https://blog.kalavala.net/usps/homeassistant/mqtt/2018/01/12/usps.html
 Configuration code contribution from @firstof9 https://github.com/firstof9/
 """
+
 import datetime
 import logging
 from datetime import timezone
@@ -15,8 +16,11 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
 from .const import (
+    AMAZON_DELIVERED,
+    AMAZON_EXCEPTION,
     AMAZON_EXCEPTION_ORDER,
     AMAZON_ORDER,
+    ATTR_GRID_IMAGE_NAME,
     ATTR_IMAGE,
     ATTR_IMAGE_NAME,
     ATTR_IMAGE_PATH,
@@ -40,7 +44,8 @@ async def async_setup_entry(hass, entry, async_add_entities):
     resources = entry.data[CONF_RESOURCES]
 
     for variable in resources:
-        sensors.append(PackagesSensor(entry, SENSOR_TYPES[variable], coordinator))
+        if variable in SENSOR_TYPES:
+            sensors.append(PackagesSensor(entry, SENSOR_TYPES[variable], coordinator))
 
     for variable, value in IMAGE_SENSORS.items():
         sensors.append(ImagePathSensors(hass, entry, value, coordinator))
@@ -107,11 +112,6 @@ class PackagesSensor(CoordinatorEntity, SensorEntity):
         return False
 
     @property
-    def available(self) -> bool:
-        """Return if entity is available."""
-        return self.coordinator.last_update_success
-
-    @property
     def extra_state_attributes(self) -> Optional[str]:
         """Return device specific state attributes."""
         attr = {}
@@ -123,13 +123,18 @@ class PackagesSensor(CoordinatorEntity, SensorEntity):
             return attr
 
         if "Amazon" in self._name:
-            if self._name == "amazon_exception":
+            if self._name == AMAZON_EXCEPTION and AMAZON_EXCEPTION_ORDER in data.keys():
                 attr[ATTR_ORDER] = data[AMAZON_EXCEPTION_ORDER]
-            else:
+            elif self._name == AMAZON_DELIVERED:
+                attr[ATTR_ORDER] = data[AMAZON_DELIVERED]
+            elif AMAZON_ORDER in data.keys():
                 attr[ATTR_ORDER] = data[AMAZON_ORDER]
-        elif self._name == "Mail USPS Mail":
+        elif self._name == "Mail USPS Mail" and ATTR_IMAGE_NAME in data.keys():
             attr[ATTR_IMAGE] = data[ATTR_IMAGE_NAME]
-        elif "_delivering" in self.type and tracking in self.data.keys():
+        elif (
+            any(sensor in self.type for sensor in ["_delivering", "_delivered"])
+            and tracking in data.keys()
+        ):
             attr[ATTR_TRACKING_NUM] = data[tracking]
             # TODO: Add Tracking URL when applicable
         return attr
@@ -179,17 +184,21 @@ class ImagePathSensors(CoordinatorEntity, SensorEntity):
     @property
     def native_value(self) -> Optional[str]:
         """Return the state of the sensor."""
-        image = self.coordinator.data[ATTR_IMAGE_NAME]
+        image = ""
         the_path = None
 
-        if ATTR_IMAGE_PATH in self.coordinator.data.keys():
-            path = self.coordinator.data[ATTR_IMAGE_PATH]
-        else:
-            path = self._config.data[CONF_PATH]
+        image = self.coordinator.data.get(ATTR_IMAGE_NAME)
+
+        grid_image = self.coordinator.data.get(ATTR_GRID_IMAGE_NAME)
+
+        path = self.coordinator.data.get(ATTR_IMAGE_PATH, self._config.data[CONF_PATH])
 
         if self.type == "usps_mail_image_system_path":
             _LOGGER.debug("Updating system image path to: %s", path)
             the_path = f"{self.hass.config.path()}/{path}{image}"
+        elif self.type == "usps_mail_grid_image_path":
+            _LOGGER.debug("Updating grid image path to: %s", path)
+            the_path = f"{self.hass.config.path()}/{path}{grid_image}"
         elif self.type == "usps_mail_image_url":
             if (
                 self.hass.config.external_url is None
@@ -197,7 +206,7 @@ class ImagePathSensors(CoordinatorEntity, SensorEntity):
             ):
                 the_path = None
             elif self.hass.config.external_url is None:
-                _LOGGER.warning("External URL not set in configuration.")
+                _LOGGER.debug("External URL not set in configuration.")
                 url = self.hass.config.internal_url
                 the_path = f"{url.rstrip('/')}/local/mail_and_packages/{image}"
             else:

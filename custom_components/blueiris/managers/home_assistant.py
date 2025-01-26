@@ -14,7 +14,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.entity_registry import EntityRegistry, async_get
-from homeassistant.helpers.event import async_call_later, async_track_time_interval
+from homeassistant.helpers.event import async_track_time_interval
 
 from ..api.blue_iris_api import BlueIrisApi
 from ..helpers.advanced_configurations_generator import AdvancedConfigurationGenerator
@@ -115,10 +115,7 @@ class BlueIrisHomeAssistant:
             _LOGGER.error(f"Failed to async_init, error: {ex}, line: {line_number}")
 
     async def _async_init(self):
-        load = self._hass.config_entries.async_forward_entry_setup
-
-        for domain in SIGNALS:
-            await load(self._config_manager.config_entry, domain)
+        await self._hass.config_entries.async_forward_entry_setups(self._config_manager.config_entry, list(SIGNALS.keys()))
 
         self._is_initialized = True
 
@@ -138,12 +135,12 @@ class BlueIrisHomeAssistant:
             )
 
         if not self._is_initialized:
-            _LOGGER.info(
+            _LOGGER.debug(
                 f"NOT INITIALIZED - Failed handling ConfigEntry change: {entry.as_dict()}"
             )
             return
 
-        _LOGGER.info(f"Handling ConfigEntry change: {entry.as_dict()}")
+        _LOGGER.debug(f"Handling ConfigEntry change: {entry.as_dict()}")
 
         if update_config_manager:
             await self._config_manager.update(entry)
@@ -157,14 +154,14 @@ class BlueIrisHomeAssistant:
 
         if update_config_manager and integration_data is not None:
             if integration_data.generate_configuration_files:
-                async_call_later(self._hass, 5, self.generate_config_files)
+                self._hass.loop.call_later(self._hass, 5, self.generate_config_files)
 
                 integration_data.generate_configuration_files = False
 
             await self.storage_manager.async_save_to_store(data)
 
     async def async_remove(self, entry: ConfigEntry):
-        _LOGGER.info(f"Removing current integration - {entry.title}")
+        _LOGGER.debug(f"Removing current integration - {entry.title}")
 
         if self._remove_async_track_time is not None:
             self._remove_async_track_time()
@@ -177,11 +174,11 @@ class BlueIrisHomeAssistant:
 
         await self._device_manager.async_remove()
 
-        _LOGGER.info(f"Current integration ({entry.title}) removed")
+        _LOGGER.debug(f"Current integration ({entry.title}) removed")
 
     async def async_update(self, event_time):
         if not self._is_initialized:
-            _LOGGER.info(f"NOT INITIALIZED - Failed updating @{event_time}")
+            _LOGGER.debug(f"NOT INITIALIZED - Failed updating @{event_time}")
             return
 
         try:
@@ -231,7 +228,7 @@ class BlueIrisHomeAssistant:
 
     async def dispatch_all(self):
         if not self._is_initialized:
-            _LOGGER.info("NOT INITIALIZED - Failed discovering components")
+            _LOGGER.debug("NOT INITIALIZED - Failed discovering components")
             return
 
         for domain in SUPPORTED_DOMAINS:
@@ -239,5 +236,5 @@ class BlueIrisHomeAssistant:
 
             async_dispatcher_send(self._hass, signal)
 
-    def generate_config_files(self, now):
+    async def generate_config_files(self, _now):
         self._config_generator.generate()

@@ -6,7 +6,7 @@ import voluptuous as vol
 
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_platform
-from homeassistant.components.camera import SUPPORT_STREAM, Camera
+from homeassistant.components.camera import Camera, CameraEntityFeature
 
 from custom_components.dahua import DahuaDataUpdateCoordinator
 from custom_components.dahua.entity import DahuaBaseEntity
@@ -21,6 +21,8 @@ _LOGGER: logging.Logger = logging.getLogger(__package__)
 SERVICE_SET_INFRARED_MODE = "set_infrared_mode"
 # This service handles setting the video profile mode to day or night
 SERVICE_SET_VIDEO_PROFILE_MODE = "set_video_profile_mode"
+SERVICE_SET_FOCUS_ZOOM = "set_focus_zoom"
+SERVICE_SET_PRIVACY_MASKING = "set_privacy_masking"
 SERVICE_SET_CHANNEL_TITLE = "set_channel_title"
 SERVICE_SET_TEXT_OVERLAY = "set_text_overlay"
 SERVICE_SET_CUSTOM_OVERLAY = "set_custom_overlay"
@@ -71,6 +73,24 @@ async def async_setup_entry(hass: HomeAssistant, config_entry, async_add_entitie
                 ])
         },
         "async_set_video_profile_mode"
+    )
+
+    platform.async_register_entity_service(
+        SERVICE_SET_FOCUS_ZOOM,
+        {
+            vol.Required("focus", default=""): str,
+            vol.Required("zoom", default=""): str,
+        },
+        "async_adjustfocus"
+    )
+
+    platform.async_register_entity_service(
+        SERVICE_SET_PRIVACY_MASKING,
+        {
+            vol.Required("index", default=0): int,
+            vol.Required("enabled", default=False): bool,
+        },
+        "async_set_privacy_masking"
     )
 
     platform.async_register_entity_service(
@@ -234,8 +254,8 @@ class DahuaCamera(DahuaBaseEntity, Camera):
 
     @property
     def supported_features(self):
-        """Return supported features."""
-        return SUPPORT_STREAM
+        """Flag supported features."""
+        return CameraEntityFeature.STREAM
 
     async def stream_source(self):
         """Return the RTSP stream source."""
@@ -296,10 +316,19 @@ class DahuaCamera(DahuaBaseEntity, Camera):
         channel = self._coordinator.get_channel()
         model = self._coordinator.get_model()
         # Some NVRs like the Lorex DHI-NVR4108HS-8P-4KS2 change the day/night mode through a switch
-        if 'NVR4108HS' in model:
+        if any(substring in model for substring in ['NVR4108HS', 'IPC-Color4K']):
             await self._coordinator.client.async_set_night_switch_mode(channel, mode)
         else:
             await self._coordinator.client.async_set_video_profile_mode(channel, mode)
+
+    async def async_adjustfocus(self, focus: str, zoom: str):
+        """ Handles the service call from SERVICE_SET_INFRARED_MODE to set zoom and focus """
+        await self._coordinator.client.async_adjustfocus_v1(focus, zoom)
+        await self._coordinator.async_refresh()
+
+    async def async_set_privacy_masking(self, index: int, enabled: bool):
+        """ Handles the service call from SERVICE_SET_PRIVACY_MASKING to control the privacy masking """
+        await self._coordinator.client.async_setprivacymask(index, enabled)
 
     async def async_set_enable_channel_title(self, enabled: bool):
         """ Handles the service call from SERVICE_ENABLE_CHANNEL_TITLE """
