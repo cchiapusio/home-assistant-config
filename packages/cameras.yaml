@@ -20,6 +20,24 @@ input_boolean:
   suspend_camera_notifications_amcrest1:
     name: Suspend amcrest1 camera notifications
     initial: off
+  suspend_camera_notifications_deck:
+    name: Suspend deck camera notifications
+    initial: off
+  suspend_camera_notifications_kitchen:
+    name: Suspend Graveyard West camera notifications
+    initial: off
+  suspend_camera_notifications_frontyardover:
+    name: Suspend Graveyard East camera notifications
+    initial: off
+  suspend_camera_notifications_skelecam:
+    name: Suspend skelecam camera notifications
+    initial: off
+
+timer:
+  nfc_tag_disable_camera_alerts:
+    name: Disable camera alerts on nfc tag
+    restore: true
+    duration: '1:00:00'
 
 automation:
   - alias: camera motion notification
@@ -47,23 +65,35 @@ automation:
         variables:
           camera_name: frontyard
       - platform: state
-        entity_id: binary_sensor.person_at_front_door,binary_sensor.vehicle_at_front_door,binary_sensor.front_door_smart_motion_human
+        entity_id: binary_sensor.person_at_front_door,binary_sensor.vehicle_at_front_door
         from: 'off'
         to: 'on'
         variables:
           camera_name: doorbell
-      - platform: state
-        entity_id: binary_sensor.motion_at_amcrest1
-        from: 'off'
-        to: 'on'
-        variables:
-          camera_name: amcrest1
       - platform: state
         entity_id: binary_sensor.person_in_driveway
         from: 'off'
         to: 'on'
         variables:
           camera_name: driveway
+      - platform: state
+        entity_id: binary_sensor.person_in_front_yard_overwatch
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: frontyardover
+      - platform: state
+        entity_id: binary_sensor.person_at_kitchen
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: kitchen
+      - platform: state
+        entity_id: binary_sensor.person_in_skelecam
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: skelecam
     condition:
       - condition: state
         entity_id: input_boolean.suspend_camera_notifications
@@ -75,6 +105,39 @@ automation:
         data_template:
           camera: "{{ camera_name }}"
 
+  - alias: disable outside camera alerts temporarily
+    id: 47de9614-cce5-424f-b6f6-966047ac32b0
+    trigger:
+      - platform: tag
+        tag_id: b34eb2d9-0811-4cd4-8ad6-14b374fc3f7f
+    action:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.suspend_camera_notifications
+#    - service: switch.turn_off
+#      entity_id: switch.front_door_smart_motion_detection
+#    - service: automation.turn_off
+#      entity_id: automation.re_enable_doorbell_human_detection
+    - service: timer.cancel
+      data:
+        entity_id: timer.nfc_tag_disable_camera_alerts
+    - service: timer.start
+      data:
+        entity_id: timer.nfc_tag_disable_camera_alerts
+
+  - alias: enable camera alerts after nfc tag timer
+    id: 297d4b07-3c4f-486b-8f23-c032eb54388b
+    trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.nfc_tag_disable_camera_alerts
+    action:
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.suspend_camera_notifications
+#    - service: switch.turn_on
+#      entity_id: switch.front_door_smart_motion_detection
+#    - service: automation.turn_on
+#      entity_id: automation.re_enable_doorbell_human_detection
 
   - alias: reenable motion notifications after six hours
     id: 7cb6b9f6-abeb-437b-aae9-5ba0711cb3b3
@@ -87,6 +150,7 @@ automation:
         hours: 6
     action:
     - service: input_boolean.turn_off
+      entity_id: input_boolean.suspend_camera_notifications
 
   - alias: disable back camera when door opens
     id: 28e2c714-b59c-41e4-981a-2d2390e82467
@@ -155,7 +219,7 @@ automation:
     id: 052b5cec-b075-45bf-a08a-a178e59939fd
     trigger: 
       - platform: state
-        entity_id: binary_sensor.back_door_motion
+        entity_id: binary_sensor.person_in_front_yard,binary_sensor.person_at_back_door,binary_sensor.person_in_driveway,binary_sensor.person_at_front_door
         from: 'off'
         to: 'on'
     condition:
@@ -165,15 +229,15 @@ automation:
             entity_id: sun.sun
             state: below_horizon
           - condition: state
-            entity_id: light.dining_room_lamp_west
+            entity_id: light.family_room
             state: 'off'
     action:
       - service: switch.turn_on
-        entity_id: switch.shelly_2_5_e8db84d2729c_relay_1
+        entity_id: switch.shellyplus2pm_c4d8d5565bac_switch_1
       - delay:
           minutes: 5
       - service: switch.turn_off
-        entity_id: switch.shelly_2_5_e8db84d2729c_relay_1
+        entity_id: switch.shellyplus2pm_c4d8d5565bac_switch_1
       
 
   - alias: turn on lights when person detected at back door
@@ -197,7 +261,7 @@ automation:
       - condition: or
         conditions:
           - condition: state
-            entity_id: switch.shelly_2_5_e8db84d2729c_relay_1
+            entity_id: switch.shellyplus2pm_c4d8d5565bac_switch_1
             state: 'off'
           - condition: state
             entity_id: group.persons
@@ -207,20 +271,19 @@ automation:
         data:
           scene_id: entryway_motion_save
           snapshot_entities:
-          - light.dining_room_lights
-          - switch.hutch_light
+          - light.family_room
           - light.foyer_lamp
           - light.living_room_lamp_1
           - light.living_room_lamp_2
           - light.crystal_castle_2
+#      - service: light.turn_on
+#        entity_id: light.crystal_castle_2
+#        data:
+#          rgb_color: [0,0,255]
+#          brightness: 130
       - service: light.turn_on
-        entity_id: light.crystal_castle_2
         data:
-          rgb_color: [0,0,255]
-          brightness: 130
-      - service: light.turn_on
-        data:
-          entity_id: light.dining_room_lights
+          entity_id: light.family_room
           brightness: 255
       - service: light.turn_on
         data:
@@ -236,13 +299,13 @@ automation:
         data:
           entity_id: light.living_room_lamp_2
           brightness: 255
-      - service: switch.turn_on
-        entity_id: switch.hutch_light
+      - service: light.turn_on
+        entity_id: light.hutch_led
       - delay:
           minutes: 1
       - service: light.turn_on
         data:
-          entity_id: light.dining_room_lights
+          entity_id: light.family_room
           brightness: 100
       - service: light.turn_on
         data:
@@ -262,17 +325,131 @@ automation:
         entity_id: scene.entryway_motion_save
 
 
-  - alias: re-enable doorbell human detection
-    id: a628f4ce-9f5f-4197-ac39-3d3019bc5176 
+#  - alias: re-enable doorbell human detection
+#    id: a628f4ce-9f5f-4197-ac39-3d3019bc5176 
+#    trigger:
+#      platform: state
+#      entity_id: switch.front_door_smart_motion_detection
+#      to: 'off'
+#      for:
+#        minutes: 30
+#    action:
+#      - service: switch.turn_on
+#        entity_id: switch.front_door_smart_motion_detection
+
+
+  - alias: Suspend camera notifications when Chip comes home
+    id: 73f5932d-2ad6-45b5-b96d-6e5ec506124a
     trigger:
       platform: state
-      entity_id: switch.front_door_smart_motion_detection
-      to: 'off'
-      for:
-        minutes: 30
+      entity_id: person.chip
+      to: home
     action:
-      - service: switch.turn_on
-        entity_id: switch.front_door_smart_motion_detection
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.suspend_camera_notifications_frontyard
+#      - service: input_boolean.turn_on
+#        entity_id: input_boolean.suspend_camera_notifications_backdoor
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.suspend_camera_notifications_driveway
+      - delay:
+          minutes: 10
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.suspend_camera_notifications_frontyard
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.suspend_camera_notifications_backdoor
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.suspend_camera_notifications_driveway
+        
+  - alias: Enable all camera notifications when Chip leaves home
+    id: fcbe23d6-074f-484b-b281-f7fcd8b2bff3
+    trigger:
+      platform: state
+      entity_id: person.chip
+      from: home
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.suspend_camera_notifications
+#      - service: switch.turn_on
+#        entity_id: switch.front_door_smart_motion_detection
+      - service: automation.turn_on
+        entity_id: automation.re_enable_doorbell_human_detection
+      
+
+  - alias: suspend frontyard camera notifications when jeep-wled
+    id: bdc0a8d7-71e2-4986-b652-9192045efdb5
+    trigger:
+      platform: state
+      entity_id: device_tracker.wled_jeep
+      to: home
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.suspend_camera_notifications_frontyard
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.suspend_camera_notifications_backdoor
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.suspend_camera_notifications_driveway
+      - delay:
+          minutes: 10
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.suspend_camera_notifications_frontyard
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.suspend_camera_notifications_backdoor
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.suspend_camera_notifications_driveway
+
+  - alias: Halloween intruder warning
+    id: 00722919-1da0-4acb-bd96-91da87f457a3
+    mode: parallel
+    max: 25
+    trigger: 
+      - platform: state
+        entity_id: binary_sensor.person_in_front_yard_overwatch
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: frontyardover
+      - platform: state
+        entity_id: binary_sensor.person_in_skelecam
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: skelecam
+      - platform: state
+        entity_id: binary_sensor.person_at_kitchen
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: kitchen
+      - platform: state
+        entity_id: binary_sensor.person_in_front_yard
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: frontyard
+      - platform: state
+        entity_id: binary_sensor.person_at_front_door
+        from: 'off'
+        to: 'on'
+        variables:
+          camera_name: doorbell
+    condition:
+      - condition: numeric_state
+        entity_id: sun.sun
+        value_template: '{{ state.attributes.elevation }}'
+        below: -10
+      - condition: state
+        entity_id: switch.outdoor_switch_5_1
+        state: 'off'
+      - condition: state
+        entity_id: 'input_select.outdoor_light_scene'
+        state: 'Halloween'
+    action:
+      - service: script.camera_activity_notify
+        data_template:
+          camera: "{{ camera_name }}"
+      - service: script.halloween_warning
+        data_template:
+          camera: "{{ camera_name }}"
 
 script:
   camera_activity_notify:
@@ -285,9 +462,23 @@ script:
       - variables:
           action_pause10: "{{ 'PAUSE10' ~ context.id }}"
           action_pause30: "{{ 'PAUSE30' ~ context.id }}"
-      - service: notify.mobile_app_sm_n986u
+      - service: google_generative_ai_conversation.generate_content
+        metadata: {}
         data:
-          message: "{{ camera }} Alert"
+          image_filename: "/config/www/alerts/{{ states('sensor.' ~ camera ~ '_alert_image') }}"
+          prompt: >-
+            Very briefly describe what you see in this image, but only if the image
+            has a person or a dog in it,  from my {{ camera }} security camera. Your
+            message needs to be short to fit in a phone notification. Don't describe
+            stationary objects or buildings.
+        response_variable: generated_content
+      - service: system_log.write
+        data:
+          message: "LOG AI: {{ generated_content.text }} on {{ camera }}"
+          level: info
+      - service: notify.mobile_app_chip_and_cindy
+        data:
+          message: "{{ generated_content.text }}"
           data:
             image: "https://hass.chiapusio.org/local/alerts/{{ states('sensor.' ~ camera ~ '_alert_image') }}"
             #image: "/api/camera_proxy/{{ 'camera.' ~ camera ~ '_alert_image' }}"
@@ -344,9 +535,36 @@ script:
     sequence:
       - service: camera.snapshot
         target:
-          entity_id: camera.backdoor_alert_image_2
+          entity_id: camera.backdoor_alert_image
         data:
           filename: '/config/www/alerts/frontyard-latest.jpg'
+  
+  halloween_warning:
+    sequence:
+      - service: media_player.play_media
+        target:
+          entity_id: media_player.chromecastaudio3274
+        data:
+          media_content_type: music
+          media_content_id: 'https://hass.chiapusio.org/local/audio/test.mp3'
+      - service: notify.mobile_app_chip
+        data:
+          message: "Potential Intruder on camera:{{ camera }}"
+
+  ai_test:
+    sequence:
+      - variables:
+          camera: "doorbell"
+      - service: google_generative_ai_conversation.generate_content
+        metadata: {}
+        data:
+          image_filename: "/config/www/alerts/driveway.20241020_120000.1387736.3-1.jpg"
+          prompt: >-
+            with only a single digit, tell me how many garbage and recycling cans are in the driveway
+        response_variable: generated_content
+      - service: notify.mobile_app_chip
+        data:
+          message: "{{ generated_content.text }}"
 
 
 mqtt:
@@ -363,7 +581,7 @@ mqtt:
 #      payload_off: "OFF"
 #      device_class: motion
 
-    - name: "Animal at the Back Door "
+    - name: "Animal at the Back Door"
       unique_id: ecbdb384-1c13-4524-8fd1-d5069dc9fed0
       device_class: motion
       state_topic: "BlueIris/sensor/backdoor/ai"
@@ -372,7 +590,7 @@ mqtt:
       value_template: "{{ 'cat' in value | lower or 'dog' in value | lower }}"
 
     - name: "Person at Back Door"
-      unique_id: d89ab007-0171-4638-a1aa-d67bc64989bf
+      unique_id: 209dcff0-90e0-42ef-9254-42244da4658a
       device_class: motion
       state_topic: "BlueIris/sensor/backdoor/ai"
       payload_on: true
@@ -597,6 +815,18 @@ mqtt:
     - name: amcrest2 Alert Image
       unique_id: dd77c272-2ef0-4da5-a5bc-08ab3ff576e8
       state_topic: "BlueIris/sensor/amcrest2/image"
+    
+    - name: amcrest1 Alert Image
+      unique_id: 0e5589ad-1aeb-4731-a85f-103473973197
+      state_topic: "BlueIris/sensor/amcrest1/image"
+    
+    - name: driveway Alert Image
+      unique_id: c067920b-e3dc-4c44-80ba-4ce7790dc64f
+      state_topic: "BlueIris/sensor/driveway/image"
+    
+    - name: deck Alert Image
+      unique_id: 34a7e794-94f3-4e1f-9508-375a934e787f
+      state_topic: "BlueIris/sensor/deck/image"
 
   camera:
     - name: frontyard Alert Image
@@ -633,3 +863,19 @@ mqtt:
       unique_id: bba7a5ff-149c-4ad9-a91e-4e443843dd2c
       topic: "BlueIris/sensor/deck/b64"
       image_encoding: b64
+
+#image:
+#  - name: Deck Alert Image test
+#    unique_id: 97550481-bc5a-4bc7-8132-8e34318d141c
+#    platform: mqtt
+#    content_type: "image/jpeg"
+#    image_encoding: b64
+#    image_topic: "BlueIris/sensor/deck/b64"
+#    
+#  - name: Driveway_Alert_Image_test
+#    unique_id: bfdbf3c4-3af9-4772-a04b-3420d516a9c1
+#    platform: mqtt
+#    content_type: "image/jpeg"
+#    image_encoding: b64
+#    image_topic: "BlueIris/sensor/driveway/b64"
+    
