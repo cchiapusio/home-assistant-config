@@ -43,3 +43,19 @@
         {% else %}
           {{ 'unavailable' }}
         {% endif %}
+
+#- binary_sensor:
+#    - name: "MBR Closet Radar"
+#      device_class: "presence"
+#      state: >-
+#        {% if is_state('sensor.mbr_closet_motion', '1') %}
+#        On
+#        {% else %}
+#        Off
+#        {% endif %}
+#      availability: >-
+#        {% if has_value('sensor.mbr_closet_motion') %}
+#        True
+#        {% else %}
+#        False
+#        {% endif %}

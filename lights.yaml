@@ -24,13 +24,6 @@
 #      - light.flood08
 
   - platform: group
-    name: Diningroom lights
-    entities:
-      - light.hutch_led
-      - light.diningroom_se
-      - light.diningroom_sw
-
-  - platform: group
     name: Family room
     entities:
       - light.hutch_led
@@ -46,13 +39,12 @@
       - light.dresser_lamp
       - light.tplb01
   
-  - platform: group
-    name: bedroom mood lighting
-    entities:
-      - light.mirror_fairy
-      - light.vanity_fairy
-      - light.crystal_castle_2
-      - light.fairy_lights
+#  - platform: group
+#    name: bedroom mood lighting
+#    entities:
+#      - light.mirror_fairy
+#      - light.vanity_fairy
+#      - light.crystal_castle_2
 
   - platform: group
     name: Kitchen

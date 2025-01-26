@@ -5,8 +5,8 @@ persons:
     - person.cindy
     - person.tori
 
-Cast_Cameras_Group:
-  entities:
-    - input_select.camera_dropdown
-    - input_select.cast_to_screen_dropdown
-    - script.execute_cast_dropdown
+#Cast_Cameras_Group:
+#  entities:
+#    - input_select.camera_dropdown
+#    - input_select.cast_to_screen_dropdown
+#    - script.execute_cast_dropdown

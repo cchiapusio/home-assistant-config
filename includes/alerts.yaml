@@ -10,7 +10,7 @@ front_door_open:
   can_acknowledge: true
   skip_first: true
   notifiers:
-    - mobile_app_sm_n986u
+    - mobile_app_chip
 
 back_door_open:
   name: Back door is left open
@@ -24,4 +24,4 @@ back_door_open:
   can_acknowledge: true
   skip_first: true
   notifiers:
-    - mobile_app_sm_n986u
+    - mobile_app_chip

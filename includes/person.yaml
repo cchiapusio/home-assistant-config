@@ -4,9 +4,8 @@
   device_trackers:
 #    - device_tracker.v30_mqtt
 #    - device_tracker.lg_v30
-    - device_tracker.sm_n986u
-    - device_tracker.galaxy_note20_ultra_5g
-    - device_tracker.samsung_galaxy_note_20_ultra_tracker
+#    - device_tracker.sm_n986u
+    - device_tracker.sm_s928u
 
 - name: Tori
   id: tori2399
@@ -21,6 +20,6 @@
   id: cindy9371
   user_id: !secret userid_cindy
   device_trackers:
+    - device_tracker.sm_908u_2
 #    - device_tracker.sm_n950u
 #    - device_tracker.samsung_sm_n950u
-    - device_tracker.sm_s908u

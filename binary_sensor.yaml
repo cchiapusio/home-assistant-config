@@ -1,9 +1,3 @@
-  - platform: workday
-    name: schoolday
-    country: US
-    add_holidays:
-      - '2019-10-09'
-
 ###
 ### Not currently using these elevation sensors but they make a great logging tool to see
 ### when they would be in effect for these settings, historically
@@ -19,12 +13,12 @@
     entity_id: sensor.sun_elevation
   
     
-  - platform: threshold
-    entity_id: sensor.washer_running_filter
-    name: Washer running
-    device_class: running
-    upper: 10
-    hysteresis: 0.1
+#  - platform: threshold
+#    entity_id: sensor.washer_running_filter
+#    name: Washer running
+#    device_class: running
+#    upper: 10
+#    hysteresis: 0.1
     
 #  - platform: threshold
 #    entity_id: sensor.zplug3_power
@@ -45,5 +39,38 @@
           {% endif %}
           {{ free > 0}}
 
+  # Times Of Day
+  - platform: tod
+    name: Night
+    after: sunset
+    before: sunrise
 
-    
+  - platform: tod
+    name: Day
+    after: sunrise
+    before: sunset
+
+  - platform: tod
+    name: Quiet time
+    after: '21:00'
+    before: '06:00'
+
+  - platform: tod
+    name: Morning
+    after: '06:00'
+    before: '08:30'
+
+  - platform: tod
+    name: Midday
+    after: '08:30'
+    before: '17:00'
+
+  - platform: tod
+    name: Evening
+    after: '17:00'
+    before: '21:00'
+
+  - platform: tod
+    name: Overnight
+    after: '18:00'
+    before: '06:00'
