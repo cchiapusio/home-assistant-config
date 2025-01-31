@@ -18,7 +18,7 @@
 
   {%- macro getGarbage() -%}
     {% if is_state('sensor.garbage_day','1') %}
-      {% if is_state(input_boolean.garbage_out,'off') %}
+      {% if is_state('input_boolean.garbage_out','off') %}
         Remember to take out the garbage
         {% if is_state_attr('calendar.garbage','message','recycling') %}
           and recycling

@@ -1,0 +1,6 @@
+custom_components/hacs/hacs_frontend/entrypoint.js
+custom_components/hacs/hacs_frontend/version.py
+custom_components/hacs/manifest.json
+custom_components/hacs/repositories/plugin.py
+custom_components/mail_and_packages/const.py
+custom_components/mail_and_packages/manifest.json
