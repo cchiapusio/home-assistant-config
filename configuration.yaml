@@ -98,6 +98,8 @@ recorder:
       - media_player.master_bedroom_tv
       - device_tracker.sm_s928u # HA App
       - device_tracker.wled_jeep # unifi
+      - input_boolean.preparing_for_bedtime
+      - input_boolean.evening_lights
 
 # https://home-assistant.io/components/http/
 http:
