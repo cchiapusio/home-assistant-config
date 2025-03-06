@@ -159,12 +159,9 @@ automation:
     trigger:
       - platform: state
         entity_id: media_player.home_music_group
-        to: playing
+        to: 'Playing'
+        from: 'off'
         id: 'home_music_group'
-      - platform: state
-        entity_id: media_player.master_bedroom_pair_2
-        to: playing
-        id: 'all_mbr'
     action:
       - choose:
         - conditions:
@@ -176,17 +173,7 @@ automation:
           - service: media_player.volume_set
             data_template:
               entity_id: media_player.home_music_group
-              volume_level: 0.5
-        - conditions:
-          - condition: trigger
-            id: all_mbr
-          - condition: template
-            value_template: "{{ state_attr('media_player.master_bedroom_pair_2','app_name') == 'Spotify'}}"
-          sequence:
-          - service: media_player.volume_set
-            data_template:
-              entity_id: media_player.master_bedroom_pair_2
-              volume_level: 0.5
+              volume_level: 0.25
 
 
 
@@ -260,9 +247,9 @@ script:
       - service: scene.turn_on
         entity_id: scene.yard_light_night
       - service: switch.turn_off
-        entity_id:
-          - switch.shellyplus2pm_c4d8d5565bac_switch_1
-          - switch.shelly_2_5_8caab55f9707_relay_0
+        entity_id: switch.shellyplus2pm_c4d8d5565bac_switch_1
+      - service: switch.turn_off
+        entity_id: switch.shelly_2_5_8caab55f9707_relay_0
       - service: script.turn_on
         entity_id: script.turn_off_string_lights
       - service: input_boolean.turn_off
@@ -309,3 +296,17 @@ script:
           device: rf_tapers
           command:
             - power off
+          
+
+  level_volume_on_all_nest_audio:
+    sequence:
+      - service: media_player.volume_set
+        data_template:
+          entity_id: 
+            - media_player.home_music_group
+            - media_player.family_room_speaker
+            - media_player.kitchen_speaker
+            - media_player.library_pair
+            - media_player.living_room_pair
+            - media_player.master_bedroom_pair
+          volume_level: 0.25
