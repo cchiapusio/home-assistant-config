@@ -304,6 +304,8 @@ scene:
         state: on
       light.mirror_fairy:
         state: on
+      light.crystal_castle_1:
+        state: on
       light.crystal_castle_2:
         state: on
       light.vanity_fairy:
@@ -327,6 +329,8 @@ scene:
         color_temp: 326
       switch.zplug5:
         state: on
+      light.crystal_castle_1:
+        state: on
       light.crystal_castle_2:
         state: on
       light.vanity_fairy:
@@ -340,6 +344,8 @@ scene:
       light.bedroom_lamps:
         state: off
       switch.zplug5:
+        state: off
+      light.crystal_castle_1:
         state: off
       light.crystal_castle_2:
         state: off
@@ -358,6 +364,8 @@ scene:
         white_value: 125
         brightness: 255
       switch.zplug5:
+        state: on
+      light.crystal_castle_1:
         state: on
       light.crystal_castle_2:
         state: on
