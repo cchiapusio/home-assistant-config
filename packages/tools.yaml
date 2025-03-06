@@ -16,6 +16,14 @@ automation:
     use_blueprint:
       path: gmlupatelli/unavailable_entities_notification.yaml
       input:
+        time: 09:00:00
+        monday_enabled: false
+        tuesday_enabled: false
+        wednesday_enabled: false
+        thursday_enabled: false
+        friday_enabled: false
+        saturday_enabled: true
+        sunday_enabled: true
         actions:
         - service: notify.chip_email
           data:
