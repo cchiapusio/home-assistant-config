@@ -75,7 +75,7 @@ automation:
           attribute: rising
           state: false
     action:
-      - service: homeassistant.turn_on
+      - service: switch.turn_on
         entity_id: switch.shellyplus2pm_c4d8d5565bac_switch_1
 
   - alias: turn on front porch lights 
@@ -105,7 +105,7 @@ automation:
           attribute: rising
           state: false
     action:
-      - service: homeassistant.turn_on
+      - service: switch.turn_on
         entity_id: switch.shelly_2_5_8caab55f9707_relay_0
       
   - alias: turn front driveway floods
@@ -135,14 +135,14 @@ automation:
           entity_id: input_select.front_flood_setting
           state: 'always on'
     action:
-      - service: homeassistant.turn_on
+      - service: switch.turn_on
         target:
           entity_id: switch.shelly_2_5_8caab55f9707_relay_1
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         target:
           entity_id: switch.shelly_2_5_8caab55f9707_relay_1
       - delay: 00:00:02
-      - service: homeassistant.turn_on
+      - service: switch.turn_on
         target:
           entity_id: switch.shelly_2_5_8caab55f9707_relay_1
     
@@ -170,13 +170,13 @@ automation:
           entity_id: sun.sun
           state: below_horizon
     action:
-      - service: homeassistant.turn_on
+      - service: switch.turn_on
         target:
           entity_id: switch.shellyplus2pm_c4d8d5565bac_switch_0
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         target:
           entity_id: switch.shellyplus2pm_c4d8d5565bac_switch_0
       - delay: 00:00:02
-      - service: homeassistant.turn_on
+      - service: switch.turn_on
         target:
           entity_id: switch.shellyplus2pm_c4d8d5565bac_switch_0

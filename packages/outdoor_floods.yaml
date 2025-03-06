@@ -168,15 +168,15 @@ automation:
     action:
       - service: scene.turn_on
         entity_id: scene.yard_lights_night
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_1_1
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_3_1
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_4_1
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_5_1
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_5_2
       - service: switch.turn_off
         entity_id: switch.fairy_lights
@@ -196,19 +196,19 @@ automation:
         entity_id: input_select.outdoor_light_scene
         state: 'Halloween'
     action:
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_3_1
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_3_2
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_4_1
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_4_2
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_5_1
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_5_2
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.head_turner
       - service: script.audio_security_mode
 
@@ -222,9 +222,9 @@ automation:
         entity_id: input_select.outdoor_light_scene
         state: 'Halloween'
     action:
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_3_1
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.outdoor_switch_5_2
 
   - alias: turn on halloween props for morning commute
@@ -240,10 +240,10 @@ automation:
         entity_id: switch.outdoor_switch_5_2
       - service: switch.turn_on
         entity_id: switch.outdoor_switch_3_1
-      - service: homeassistant.turn_on
+      - service: switch.turn_on
         entity_id: switch.head_turner
       - delay: 00:00:05
-      - service: homeassistant.turn_off
+      - service: switch.turn_off
         entity_id: switch.head_turner
       - service: remote.send_command
         target:
@@ -268,7 +268,7 @@ automation:
         entity_id: switch.outdoor_switch_3_1
       - service: switch.turn_on
         entity_id: switch.outdoor_switch_5_2
-      - service: homeassistant.turn_on
+      - service: switch.turn_on
         entity_id: switch.head_turner
 
 
