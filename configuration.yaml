@@ -96,6 +96,7 @@ recorder:
       - media_player.toris_bedroom_tv
       - media_player.mbr_shield
       - media_player.master_bedroom_tv
+      - media_player.home_music_group
       - device_tracker.sm_s928u # HA App
       - device_tracker.wled_jeep # unifi
       - input_boolean.preparing_for_bedtime
@@ -145,7 +146,7 @@ system_health:
 zone: !include includes/zones.yaml
 device_tracker: !include device_tracker.yaml
 group: !include groups.yaml
-script: !include_dir_merge_list scripts
+#script: !include_dir_merge_list scripts
 automation manual: !include_dir_merge_list includes/automation
 automation ui: !include automations.yaml
 scene: !include_dir_merge_list includes/scene
@@ -257,16 +258,16 @@ weather:
 
 
 # https://www.home-assistant.io/integrations/ombi
-ombi:
-  host: 192.168.10.4
-  username: cchiapusio
-  api_key: !secret ombi_api_key
-  port: 3579
-  urlbase: /
-  ssl: false
+#ombi:
+#  host: 192.168.10.4
+#  username: cchiapusio
+#  api_key: !secret ombi_api_key
+#  port: 3579
+#  urlbase: /
+#  ssl: false
 
-overseerr:
-  host: 192.168.10.4
-  port: 5055
-  api_key: !secret overseerr_api_key
-  scan_interval: 600
+#overseerr:
+#  host: 192.168.10.4
+#  port: 5055
+#  api_key: !secret overseerr_api_key
+#  scan_interval: 600
