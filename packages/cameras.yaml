@@ -558,7 +558,7 @@ script:
       - service: google_generative_ai_conversation.generate_content
         metadata: {}
         data:
-          image_filename: "/config/www/alerts/driveway.20241020_120000.1387736.3-1.jpg"
+          filenames: "/config/www/alerts/driveway.20241020_120000.1387736.3-1.jpg"
           prompt: >-
             with only a single digit, tell me how many garbage and recycling cans are in the driveway
         response_variable: generated_content

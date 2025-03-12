@@ -32,7 +32,7 @@ script:
       - service: google_generative_ai_conversation.generate_content
         metadata: {}
         data:
-          image_filename: "/config/tmp/snapshots/trash-check.jpg"
+          filenames: "/config/tmp/snapshots/trash-check.jpg"
           prompt: >-
             using only a single whole number and no text, tell me how many garbage bins
         response_variable: generated_content
@@ -52,9 +52,9 @@ script:
       - service: google_generative_ai_conversation.generate_content
         metadata: {}
         data:
-          image_filename: "/config/tmp/snapshots/trash-check.jpg"
+          filenames: "/config/tmp/snapshots/trash-check.jpg"
           prompt: >-
-            using only a single whole number and no text, tell me how many garbage bins
+            using only a single whole number and no text, tell me how many garbage bins are to the left of the car
         response_variable: generated_content
       - condition: template
         value_template: "{{ generated_content['text']|int < 3 }}"
