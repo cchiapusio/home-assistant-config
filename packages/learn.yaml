@@ -69,6 +69,22 @@ script:
             - left
             - right
 
+  learn_kitchen_sony75:
+    sequence:
+      - service: remote.learn_command
+        target:
+          entity_id: remote.rm3mini2
+        data:
+          device: kitchen_sony75
+          command:
+            - power toggle
+            - input 
+            - select
+            - up
+            - down
+            - left
+            - right
+
   learn_haier_ac:
     sequence:
       - service: remote.learn_command

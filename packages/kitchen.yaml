@@ -94,15 +94,15 @@ automation:
           id: 'to_off'
         sequence:
         - service: script.turn_on
-          entity_id: script.samsung65_from_hdmi2_to_hdmi1
+          entity_id: script.sony75_hdmi2
       - conditions:
         - condition: trigger
           id: 'to_on'
         sequence:
         - service: script.turn_on
-          entity_id: script.samsung65_from_hdmi1_to_hdmi2
+          entity_id: script.sony75_hdmi3
 
-  - alias: toggle the samsung65 every night
+  - alias: toggle the sony75 every night
     id: 5bf0e66e-3b0e-45a6-a9a3-5b20daf7fd09
     trigger:
       - platform: time
@@ -111,7 +111,7 @@ automation:
         at: "02:00:00"
     action:
       - service: script.turn_on
-        entity_id: script.samsung65_power_toggle
+        entity_id: script.sony75_power_toggle
             
 scene:
   - name: Kitchen Normal
@@ -177,39 +177,30 @@ scene:
         state: off
 
 script:
-  samsung65_from_hdmi1_to_hdmi2:
+  sony75_hdmi3:
     sequence:
-      - service: remote.send_command
-        target:
-          entity_id: remote.rm3mini2
+      - action: remote.send_command
         data:
-          device: kitchen_samsung65
-          delay_secs: 2
-          command:
-            - input
-            - right
-            - select
+          entity_id: remote.sony_xbr_75x850e
+          command: "Hdmi3" 
 
-  samsung65_from_hdmi2_to_hdmi1:
+  sony75_hdmi2:
     sequence:
-      - service: remote.send_command
-        target:
-          entity_id: remote.rm3mini2
+      - action: remote.send_command
         data:
-          device: kitchen_samsung65
-          delay_secs: 2
-          command:
-            - input
-            - left
-            - select
+          entity_id: remote.sony_xbr_75x850e
+          command: "Hdmi2" 
 
-  samsung65_power_toggle:
+  sony75_power_toggle:
     sequence:
-      - service: remote.send_command
-        target:
-          entity_id: remote.rm3mini2
+      - action: remote.send_command
         data:
-          device: kitchen_samsung65
-          delay_secs: 2
-          command:
-            - power toggle
+          entity_id: remote.sony_xbr_75x850e
+          command: "TvPower" 
+  
+  bravia75_test:
+    sequence:
+      - action: remote.send_command
+        data:
+          entity_id: remote.sony_xbr_75x850e
+          command: "Hdmi3" 
