@@ -231,7 +231,7 @@ scene:
   - name: Office Normal
     entities:
       switch.tv_wash:
-        state: on
+        state: off
       switch.skeleton_head:
         state: on
       light.office_lamp_1:
@@ -248,7 +248,7 @@ scene:
   - name: Office Dim
     entities:
       switch.tv_wash:
-        state: on
+        state: off
       light.wled:
         state: on
         effect: Solid
