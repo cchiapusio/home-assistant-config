@@ -3,6 +3,10 @@ input_boolean:
     name: Garbage NFC tag scanned
   garbage_out:
     name: Garbage cans have been taken out
+  garbage_day_tomorrow:
+    name: Is tomorrow garbage day
+  recycling_day_tomorrow:
+    name: is tomorrow recyling day
 
 template:
   - sensor:
@@ -14,6 +18,11 @@ template:
       - name: trash_bins
         state: >-
           {{ state_attr('calendar.garbage','message') }}
+  
+  - binary_sensor:
+      - name: garbage_day
+        state: >-
+          {{ is_state('calendar.garbage', 'on') and is_state_attr('calendar.garbage', 'message', 'garbage') }}
   
   - binary_sensor:
       - name: recycling_day
@@ -63,16 +72,43 @@ script:
 
 automation:
 
+  - alias: is tommorow trash day
+    trigger:
+      - platform: time
+        at: "01:00:00"
+    condition: []
+    action:
+      - alias: Get calendar events for tomorrow
+        service: calendar.get_events
+        data:
+          start_date_time: "{{ today_at() }}"
+          end_date_time: "{{ today_at() + timedelta(days=2) }}"
+        target:
+          entity_id: calendar.garbage
+        response_variable: agenda
+      - variables:
+          garbage: |
+            {{ agenda['calendar.garbage'].events | selectattr('summary', 'search', 'garbage', true) | list | count > 0 }}
+      - service: input_boolean.turn_{{ 'on' if garbage else 'off' }} 
+        target:
+          entity_id: input_boolean.garbage_day_tomorrow
+      - variables:
+          recycling: |
+            {{ agenda['calendar.garbage'].events | selectattr('summary', 'search', 'recycling', true) | list | count > 0 }}
+      - service: input_boolean.turn_{{ 'on' if recycling else 'off' }} 
+        target:
+          entity_id: input_boolean.recycling_day_tomorrow
+
   - alias: check if the garbage has been taken out
     id: b30798c5-ba5c-4322-900a-64cc1fc35f7e
     trigger:
       - platform: state
-        entity_id: binary_sensor.person_in_driveway,binary_sensor.person_in_front_yard
+        entity_id: binary_sensor.person_in_driveway
         from: 'off'
         to: 'on'
     condition:   
     - condition: time
-      after: "18:00:00"
+      after: "12:00:00"
     - condition: numeric_state
       entity_id: sensor.garbage_day
       below: 2
